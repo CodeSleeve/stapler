@@ -38,32 +38,81 @@ class StaplerServiceProvider extends ServiceProvider {
 	public function register()
 	{
 		$this->staplerNull = sha1(time());
-		
+
 		if (!defined('STAPLER_NULL')) {
 			define('STAPLER_NULL', $this->staplerNull);
 		}
+		
+		$this->registerAttachment();
+		$this->registerResizer();
+		$this->registerStorage();
+		$this->registerUtility();
+		$this->registerUploadedFile();
+		$this->registerStaplerFasten();
 
+		$this->commands('stapler.fasten');
+	}
+
+	/**
+	 * Register Codesleeve\Stapler\Attachment with the container.
+	 * 
+	 * @return void
+	 */
+	protected function registerAttachment()
+	{
 		$this->app->bind('Attachment', function($app, $params)
         {
             return new Attachment($params['name'], $params['options']);
         });
+	}
 
+	/**
+	 * Register Codesleeve\Stapler\Resizer with the contaioner.
+	 * 
+	 * @return void 
+	 */
+	protected function registerResizer()
+	{
 		$this->app->bind('Resizer', function($app, $file)
         {
             return new Resizer($file);
         });
+	}
 
-        $this->app->bind('Storage', function($app, $attachedFile)
+	/**
+	 * Register Codesleeve\Stapler\Storage with the contaioner.
+	 * 
+	 * @return void
+	 */
+	protected function registerStorage()
+	{
+		$this->app->bind('Storage', function($app, $attachedFile)
         {
             return new Storage($attachedFile);
         });
+	}
 
-        $this->app->bind('Utility', function($app, $arrayElements)
+	/**
+	 * Register Codesleeve\Stapler\Utility with the container.
+	 * 
+	 * @return void
+	 */
+	protected function registerUtility()
+	{
+		$this->app->bind('Utility', function($app, $arrayElements)
         {
             return new Utility($arrayElements);
         });
+	}
 
-        $this->app->bind('UploadedFile', function($app, $uploadedFile)
+	/**
+	 * Register Codesleeve\Stapler\UploadedFile with the container.
+	 * 
+	 * @return void
+	 */
+	protected function registerUploadedFile()
+	{
+		$this->app->bind('UploadedFile', function($app, $uploadedFile)
         {
             $path = $uploadedFile->getPathname();
             $originalName = $uploadedFile->getClientOriginalName();
@@ -73,6 +122,19 @@ class StaplerServiceProvider extends ServiceProvider {
             
             return new UploadedFile($path, $originalName, $mimeType, $size, $error);
         });
+	}
+
+	/**
+	 * Register the stapler fasten command with the container.
+	 * 
+	 * @return void
+	 */
+	protected function registerStaplerFasten()
+	{
+		$this->app->bind('stapler.fasten', function($app) 
+		{
+			return new Commands\FastenCommand;
+		});
 	}
 
 	/**

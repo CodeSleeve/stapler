@@ -31,43 +31,6 @@ class AttachmentTest extends PHPUnit_Framework_TestCase
         return $method;
     }
 
-    /**
-     * testReturnResource method
-     *
-     * @dataProvider returnResourceDataProvider
-     * @return void
-     */
-    /*public function testReturnResource($type, $expected, $attachment)
-    {
-        $method = $this->makeMethodPublic('returnResource');
-        $actual = $method->invokeArgs($attachment, [$type]);
-
-        $this->assertEquals($expected, $actual);
-    }*/
-
-    /**
-     * returnResourceDataProvider method
-     * 
-     * @return array 
-     */
-    /*public function returnResourceDataProvider()
-    {
-        $attachment1 = $this->getMock('Codesleeve\Stapler\Attachment', ['validateOptions', 'returnPath'], ['testAttachment']);
-        $attachment1->expects($this->once())
-            ->method('returnPath')
-            ->will($this->returnValue('foo'));
-
-        $attachment2 = $this->getMock('Codesleeve\Stapler\Attachment', ['validateOptions', 'returnUrl'], ['testAttachment']);
-        $attachment2->expects($this->once())
-            ->method('returnUrl')
-            ->will($this->returnValue('bar'));
-
-        return [
-            'path' => ['path', 'foo', $attachment1],
-            'url' => ['url', 'bar', $attachment2]
-        ];
-    }*/
-
     public function testReturnResourceReturnsAPath()
     {
         $expected = 'foo';
