@@ -18,7 +18,7 @@ use App;
  * @link 	
  */
 
-trait Stapler
+trait StaplerTrait
 {
 	/**
 	 * All of the model's current file attachments.

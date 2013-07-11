@@ -39,7 +39,7 @@ In your model:
 
 ```php
 class User extends Eloquent {
-	use Stapler\stapler;
+	use Codesleeve\Stapler\StaplerTrait;
 
     public function __construct($attributes = array(), $exists = false){
         parent::__construct($attributes, $exists);
@@ -80,9 +80,9 @@ public function store()
 
 In your show view:
 ```php
-<?= HTML::image($user->avatar_url() ?>
-<?= HTML::image($user->avatar_url('medium') ?>
-<?= HTML::image($user->avatar_url('thumb') ?>
+<img src="<?= $user->avatar_url() ?>" >
+<img src="<?= $user->avatar_url('medium') ?>" >
+<img src="<?= $user->avatar_url('thumb') ?>" >
 ```
 
 To detach (reset) a file, simply set the attribute to the constant STAPLER_NULL:
@@ -97,7 +97,7 @@ Stapler works by attaching file uploads to records stored within a database tabl
 basis only.  Each model can have multiple attachments defined (avatar, photo, some_random_attachment, etc) and in turn each attachment can have 
 multiple sizes (styles) defined.  When an image or file is uploaded, Stapler will handle all the file processing (moving, resizing, etc) and 
 provide helper methods for retreiving the uploaded assets.  To accomplish this, four fields (named after the attachemnt) are created (via stapler:fasten) 
-in the corresponding table for any model containing a file attachment.  For example, an attachment named 'avatar' the following fields would be created:
+in the corresponding table for any model containing a file attachment (these should be included in the model's fillable array).  For example, an attachment named 'avatar' the following fields would be created:
 
 *   avatar_file_name
 *   avatar_file_size
@@ -192,8 +192,7 @@ public function __construct($attributes = array(), $exists = false){
 }
 ```
 
-Stapler makes it easy to manage multiple file uploads as well.  A custom static method 'arrange_files' is provided
-in order to arrange the $_FILES array into a more convient form for handling multiple files.  Here's an example of how this might work:
+Stapler makes it easy to manage multiple file uploads as well.  Here's an example of how this might work:
 
 In models/user.php:
 
@@ -218,11 +217,11 @@ public function __construct($attributes = array(), $exists = false){
 
 // A photo belongs to a user.
 public function user(){
-    return $this->belongs_to('User');
+    return $this->belongsTo('User');
 }
 ```
 
-In the user new view:
+In the user create view:
 
 ```php
 <?= Form::open_for_files('/users', 'POST') ?>
@@ -232,15 +231,12 @@ In the user new view:
 <?= Form::close() ?>
 ```
 
-In controllers/user.php
+In controllers/UsersController.php
 ```php
-public function post_create()
+public function store()
 {
-    $user = new User();
+    $user = new User;
 
-    // Re-arrange the $_FILES array
-    $files = Photo::arrange_files(Input::file('photos'));
-    
     // Attach each photo to the user and save it.
     foreach($files as $file){
         $photo = new Photo();
@@ -256,17 +252,17 @@ Assuming an attachment named photo that's attached to a User model, consider the
 
 Display a resized thumbnail style image belonging to a user record:
 ```php
-<?= HTML::image($user->photo_url('thumbnail')) ?>
+<img src="<?= $user->photo_url('thumbnail') ?>" >
 ```
 
 Display the original image style (unmodified image):
 ```php
-<?= HTML::image($user->photo_url('original')) ?>
+<img src="<?= $user->photo_url('original') ?>" >
 ```
 
 This also displays the unmodified original image (unless the :default_url interpolation has been set to a different style):
 ```php
-<?= HTML::image($user->photo_url()) ?>
+<img src="<?= $user->photo_url() ?>" >
 ```
 
 We can also retrieve the file path of an uploaded file.
