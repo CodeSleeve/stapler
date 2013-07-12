@@ -1,6 +1,8 @@
 {
     "name": "codesleeve/stapler",
-    "description": "",
+    "description": "Easy file attachment management using Eloquent in Laravel 4",
+    "keywords": ["laravel", "file", "upload", "paperclip"],
+    "license": "MIT",
     "authors": [
         {
             "name": "Travis Bennett",
