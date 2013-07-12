@@ -30,7 +30,7 @@ class <?= $className ?> extends Migration {
 	 */
 	public function down()
 	{
-		Schema::table('<?= $table ?>', function($table) {
+		Schema::table('<?= $table ?>', function(Blueprint $table) {
 
 			$table->dropColumn("<?php echo $attachment ?>_file_name");
 			$table->dropColumn("<?php echo $attachment ?>_file_size");

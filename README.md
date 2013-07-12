@@ -13,7 +13,7 @@ Stapler was created by Travis Bennett.
 
 Stapler currently requires php >= 5.4 (Stapler is implemented via the use of traits).
 
-## Installing the Bundle
+## Installing The Package
 Stapler is distributed as a packagist package, which is how it should be used in your app.
 
 Install the package using Composer.  Edit your project's `composer.json` file to require `codesleeve/stapler`.
