@@ -100,7 +100,7 @@ class Local implements StorageInterface
 	 */
 	public function emptyDirectory($directory, $deleteDirectory = false)
 	{
-		if (!$directoryHandle = opendir($directory)) {
+		if (!is_dir($directory) || !($directoryHandle = opendir($directory))) {
 			return;
 		}
 		
