@@ -13,7 +13,7 @@ use App;
  * 
  * 
  * @package tabennett/stapler
- * @version 1.0 Alpha
+ * @version 1.1 Alpha
  * @author Travis Bennett <tandrewbennett@hotmail.com>
  * @link 	
  */
@@ -37,16 +37,16 @@ trait Stapler
 	/**
      * Handle the dynamic retrieval of attachment objects.
      * 
-     * @param  string $attachmentName
+     * @param  string $property
      * @return mixed
      */
-    public function __get($attachmentName)
+    public function __get($property)
     {
-		if (array_key_exists($attachmentName, $this->attachedFiles)) {
-		    return $this->options[$attachmentName];
+		if (array_key_exists($property, $this->attachedFiles)) {
+		    return $this->getAttachedFile($this->attachedFiles[$property]);
 		}
 
-		return null;
+		return parent::__get($property);
     }
 
 	/**
@@ -76,7 +76,7 @@ trait Stapler
 		// containing a file then we'll fill the model attributes for that attachment type.
 		foreach($model->attachedFiles as $attachedFile) 
 		{
-			$attachmentName = $attachedFile->getName();
+			$attachmentName = $attachedFile->name;
 
 			if (array_key_exists($attachmentName, $model->attributes))
 			{
@@ -161,60 +161,6 @@ trait Stapler
 	}
 
 	/**
-	 * Handle dynamic method calls on the model.
-	 *
-	 * This allows for the creation of our file url/path convenience methods
-	 * on the model: {attachment}_file path and {attachment}_file url.  If 
-	 * the format of the called function doesn't match these functions we'll 
-	 * hand control back over to the __call function of the parent model class.
-	 *
-	 * @param  string  $method
-	 * @param  array   $parameters
-	 * @return mixed
-	 */
-	public function __call($method, $parameters = null)
-	{
-		foreach ($this->attachedFiles as $attachedFile)
-		{
-			$attachmentName = $attachedFile->getName();
-
-			if (starts_with($method, "{$attachmentName}_"))
-			{
-				// Bootstrap the attachment.
-				if (!$attachedFile->getRecordId) {
-					$attachedFile->bootstrap($this);
-				}
-				
-				$pieces = explode('_', $method);
-				switch ($pieces[1]) {
-					case 'path':
-						if ($parameters){
-							return $attachedFile->returnResource('path', $parameters[0]);
-						}
-						
-						return $attachedFile->returnResource('path');
-						
-						break;
-					
-					case 'url':
-						if ($parameters){
-							return $attachedFile->returnResource('url', $parameters[0]);
-						}
-						
-						return $attachedFile->returnResource('url');
-						
-						break;
-
-					default:
-						break;
-				}
-			}
-		}
-
-		return parent::__call($method, $parameters);
-	}
-
-	/**
 	 * Accessor method to return the attributes for a given attachment type.
 	 * 
 	 * @param  string $attachmentName 
@@ -233,7 +179,23 @@ trait Stapler
 	}
 
 	/**
-	 * Register an attachment type
+	 * Pass through method to ensure that all attachedFile objects returned
+	 * from the __get() method are bootstrapped before they're accessed.
+	 * 
+	 * @param  Attachment $attachedFile
+	 * @return Attachemnt 
+	 */
+	protected function getAttachedFile($attachedFile)
+	{
+		if (!$attachedFile->instance) {
+			$attachedFile->bootstrap($this);
+		}
+
+		return $attachedFile;
+	}
+
+	/**
+	 * Register an attachment type.
 	 *
 	 * @param  string $name
 	 * @param  array $options
@@ -241,17 +203,17 @@ trait Stapler
 	 */
 	protected function registerAttachment($name, $options)
 	{
-		// Merge user defined options with the stapler defaults
+		// Here we'll merge user defined options with the stapler defaults
+	    // and add the attachment to the list of attachments to be processed during saving.
 		$defaultOptions = Config::get('stapler::stapler.options');
 		$options = array_merge($defaultOptions, (array) $options);
 		$options['styles'] = array_merge( (array) $options['styles'], ['original' => '']);
-		
-		// Add the attachment to the list of attachments to be processed during saving.
-		$this->attachedFiles[] = App::make('Attachment', ['name' => $name, 'options' => $options]);
+
+		$this->attachedFiles[$name] = App::make('Attachment', ['name' => $name, 'options' => $options]);
 	}
 
 	/**
-	 * registerEvents method
+	 * Register beforeSave, afterSave, and after Delete event handlers.
 	 * 
 	 * @return void 
 	 */
@@ -261,23 +223,20 @@ trait Stapler
 		$beforeSave = "eloquent.saving: $currentClass";
 		$afterSave = "eloquent.saved: $currentClass";
 		$afterDelete = "eloquent.deleted: $currentClass";
-
-        if (!Event::hasListeners($beforeSave))
-        {
+        
+		// To register the event listeners we'll call the Event::Listen method directly,
+		// however it's worth mentioning that we could have alternatively used the new
+		// L4 syntax: e.g $this->saving("$currentClass@beforeSave"),  $this->saved("$currentClass@afterSave"), etc.
+        if (!Event::hasListeners($beforeSave)) {
         	Event::listen($beforeSave, "$currentClass@beforeSave");
-        	//$this->saving("$currentClass@beforeSave");
         }
  
-        if (!Event::hasListeners($afterSave))
-        {
+        if (!Event::hasListeners($afterSave)) {
         	Event::listen($afterSave, "$currentClass@afterSave");
-        	//$this->saved("$currentClass@afterSave");
         }
 
-        if (!Event::hasListeners($afterDelete))
-        {
+        if (!Event::hasListeners($afterDelete)) {
         	Event::listen($afterDelete, "$currentClass@afterDelete");
-        	//$this->deleted("$currentClass@afterDelete");
         }
 	}
 }

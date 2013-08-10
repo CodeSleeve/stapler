@@ -5,13 +5,6 @@ use Illuminate\Support\Str;
 class Interpolator
 {
 	/**
-	 * The attachment attributes on the model
-	 * 
-	 * @var array
-	 */
-	protected $attributes;
-
-	/**
 	 * Interpolate a string.
 	 *
 	 * @param  string $string
@@ -61,7 +54,7 @@ class Interpolator
 	*/
 	protected function filename($attachment, $styleName = '') 
 	{
-		return $attachment->attributes['fileName'];
+		return $attachment->instance->getAttachmentAttributes($attachment->name)['fileName'];
 	}
 
 	/**
@@ -198,7 +191,7 @@ class Interpolator
 	*/
 	protected function attachment($attachment, $styleName = '') 
 	{
-		return Str::plural($attachment->getName());
+		return Str::plural($attachment->name);
 	}
 
 	/**

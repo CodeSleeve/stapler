@@ -16,7 +16,7 @@ class Attachment
 	 * 
 	 * @var string
 	 */
-	protected $name;
+	public $name;
 
 	/**
 	 * The attachment options.
@@ -84,16 +84,6 @@ class Attachment
     }
 
     /**
-     * Accessor for the name property
-     * 
-     * @return string
-     */
-    public function getName()
-    {
-    	return $this->name;
-    }
-
-    /**
 	 * Mutator method for the uploadedFile property.
 	 * Takes a symfony uploaded file object and builds a Codesleeve\Stapler\UploadedFile from it.
 	 * 
@@ -151,15 +141,14 @@ class Attachment
 	/**
 	 * Bootstrap the attachment.  
 	 * This provides a mechanism for the attachment to access properties of the
-	 * corresponding model it's attached to.
+	 * corresponding model instance it's attached to.
 	 * 
-	 * @param  Model $model      
+	 * @param  Model $instance      
 	 * @return void             
 	 */
-	public function bootstrap($model)
+	public function bootstrap($instance)
 	{
-		$this->instance = $model;
- 		$this->attributes = $model->getAttachmentAttributes($this->name);
+		$this->instance = $instance;
 	}
 
 	/**
