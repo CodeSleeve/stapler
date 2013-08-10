@@ -119,25 +119,6 @@ class Attachment
 		return $this->interpolator ?: new Interpolator;
 	}
 
-    /**
-	 * Returns a file upload resource location (path or url).
-	 *
-	 * @param string $type
-	 * @param string $styleName
-	 * @return string
-	*/
-	public function returnResource($type, $styleName = '')
-	{
-		if ($type == 'path') {
-			return $this->returnPath($styleName);
-		}
-		elseif ($type == 'url') {
-			return $this->returnUrl($styleName);
-		}
-
-		return '';
-	}
-
 	/**
 	 * Bootstrap the attachment.  
 	 * This provides a mechanism for the attachment to access properties of the
@@ -149,6 +130,75 @@ class Attachment
 	public function bootstrap($instance)
 	{
 		$this->instance = $instance;
+	}
+
+	/**
+	 * Utility function to return the string offset of the directory
+	 * portion of a file path with an :id or :idPartition interpolation.
+	 *
+	 * <code>
+	 *		// Returns an offset of '27'.
+	 *      $directory = '/some_directory/000/000/001/some_file.jpg'
+	 *		return $this->getOffset($directory, $attachment);
+	 * </code>
+	 *
+	 * @param string $string
+	 * @param string $styleName
+	 * @return string
+	 */
+	public function getOffset($string, $styleName = '') 
+	{
+		// Get the partition of the id
+		$idPartition = $this->idPartition($styleName);
+		$match = strpos($string, $idPartition);
+		
+		if ($match !== false)
+		{
+			// Id partitioning is being used, so we're looking for a
+			// directory that has the pattern /000/000/001 at the end,
+			// so we know we'll need to add 11 spaces to the string offset.
+			$offset = $match + 11;
+		}
+		else
+		{
+			// Id partitioning is not being used, so we're looking for
+			// a directory that has the pattern /1 at the end, so we'll
+			// need to add the length of the record id + 1 to the string offset.
+			$match = strpos($string, (string) $this->instance->getKey());
+			$offset = $match + strlen($this->instance->getKey());
+		}
+
+		return $offset;
+	}
+
+	/**
+	 * Handle dynamic method calls on the attachment.
+	 * This allows us to call methods on the underlying 
+	 * storage or utility objects directly via the attachment.
+	 *
+	 * @param  string  $method
+	 * @param  array   $parameters
+	 * @return mixed
+	 */
+	public function __call($method, $parameters)
+	{
+		// Storage methods
+		$callable = ['reset', 'remove', 'findDirectory', 'buildDirectory', 'cleanDirectory', 'emptyDirectory', 'move', 'setPermissions'];
+		
+		if (in_array($method, $callable))
+		{
+			$storage = App::make($this->storage, $this);
+			return call_user_func_array([$storage, $method], $parameters);
+		}
+
+		// Utility methods
+		$callable = ['convertToObject'];
+
+		if (in_array($method, $callable))
+		{
+			$utility = App::make('Utility', $this);
+			return call_user_func_array([$utility, $method], $parameters);
+		}
 	}
 
 	/**
@@ -171,6 +221,62 @@ class Attachment
 	}
 
 	/**
+	 * Generates the url to a file upload.
+	 *
+	 * @param string $styleName
+	 * @return string
+	*/
+	public function url($styleName = '')
+	{
+		if ($this->instance->getAttachmentAttributes($this->name)['fileName']) {
+			return $this->getInterpolator()->interpolate($this->url, $this, $styleName);
+		}
+		
+		return $this->defaultUrl($styleName);
+	}
+
+	/**
+	 * Generates the file system path to an uploaded file.  This is used for saving files, etc.
+	 *
+	 * @param string $styleName
+	 * @return string
+	*/
+	public function path($styleName = '')
+	{
+		if ($this->instance->getAttachmentAttributes($this->name)['fileName']) {
+			return $this->getInterpolator()->interpolate($this->path, $this, $styleName);
+		}
+
+		return $this->defaultPath($styleName);
+	}
+
+	/**
+	 * Generates the default url if no file attachment is present.
+	 *
+	 * @param string $styleName
+	 * @return string
+	*/
+	protected function defaultUrl($styleName = '')
+	{
+		if ($url = $this->default_url) {
+			return $this->getInterpolator()->interpolate($url, $this, $styleName);
+		}
+		
+		return '';
+	}
+
+	/**
+	 * Generates the default path if no file attachment is present.
+	 *
+	 * @param string $styleName
+	 * @return string
+	*/
+	protected function defaultPath($styleName = '')
+	{
+		return $this->publicPath() . $this->defaultUrl($styleName);
+	}
+
+	/**
 	 * processStyle method 
 	 * 
 	 * Parse the given style dimensions to extract out the file processing options,
@@ -179,7 +285,7 @@ class Attachment
 	 * @param  stdClass $style
 	 * @return boolean
 	 */
-	public function processStyle($style)
+	protected function processStyle($style)
 	{
 		$filePath = $this->path($style->name);
 		$resizer = App::make('Resizer', $this->uploadedFile);
@@ -228,170 +334,6 @@ class Attachment
 		}
 
 		$this->setPermissions($filePath, $this->override_file_permissions);
-	}
-
-	/**
-	 * Utility function to return the string offset of the directory
-	 * portion of a file path with an :id or :idPartition interpolation.
-	 *
-	 * <code>
-	 *		// Returns an offset of '27'.
-	 *      $directory = '/some_directory/000/000/001/some_file.jpg'
-	 *		return $this->getOffset($directory, $attachment);
-	 * </code>
-	 *
-	 * @param string $string
-	 * @param string $styleName
-	 * @return string
-	 */
-	public function getOffset($string, $styleName = '') 
-	{
-		// Get the partition of the id
-		$idPartition = $this->idPartition($styleName);
-		$match = strpos($string, $idPartition);
-		
-		if ($match !== false)
-		{
-			// Id partitioning is being used, so we're looking for a
-			// directory that has the pattern /000/000/001 at the end,
-			// so we know we'll need to add 11 spaces to the string offset.
-			$offset = $match + 11;
-		}
-		else
-		{
-			// Id partitioning is not being used, so we're looking for
-			// a directory that has the pattern /1 at the end, so we'll
-			// need to add the length of the record id + 1 to the string offset.
-			$match = strpos($string, (string) $this->instance->getKey());
-			$offset = $match + strlen($this->instance->getKey());
-		}
-
-		return $offset;
-	}
-
-	/**
-	 * Generates the file system path to an uploaded file.  This is used for saving files, etc.
-	 *
-	 * @param string $styleName
-	 * @return string
-	*/
-	public function path($styleName = '')
-	{
-		return $this->getInterpolator()->interpolate($this->path, $this, $styleName);
-	}
-
-	/**
-	 * Handle dynamic method calls on the attachment.
-	 * This allows us to call methods on the underlying 
-	 * storage or utility objects directly via the attachment.
-	 *
-	 * @param  string  $method
-	 * @param  array   $parameters
-	 * @return mixed
-	 */
-	public function __call($method, $parameters)
-	{
-		// Storage methods
-		$callable = ['reset', 'remove', 'findDirectory', 'buildDirectory', 'cleanDirectory', 'emptyDirectory', 'move', 'setPermissions'];
-		
-		if (in_array($method, $callable))
-		{
-			$storage = App::make($this->storage, $this);
-			return call_user_func_array([$storage, $method], $parameters);
-		}
-
-		// Utility methods
-		$callable = ['convertToObject'];
-
-		if (in_array($method, $callable))
-		{
-			$utility = App::make('Utility', $this);
-			return call_user_func_array([$utility, $method], $parameters);
-		}
-	}
-
-	/**
-	 * Returns the path to a file upload resource location.
-	 * 
-	 * @param string $styleName
-	 * @return string
-	 */
-	protected function returnPath($styleName)
-	{
-		$resource = $this->path($styleName);
-
-		if (file_exists($resource)) {
-			return $resource;
-		}
-		else {
-			return $this->defaultPath($styleName);
-		}
-	}
-
-	/**
-	 * Returns the url to a file upload resource location.
-	 * 
-	 * @param string $styleName
-	 * @return string
-	 */
-	protected function returnUrl($styleName)
-	{
-		$resource = $this->absoluteUrl($styleName);
-		
-		if (file_exists($resource)) {
-			return $this->url($styleName);
-		}
-		else {
-			return $this->defaultUrl($styleName);
-		}
-	}
-
-	/**
-	 * Generates the default path if no file attachment is present.
-	 *
-	 * @param string $styleName
-	 * @return string
-	*/
-	protected function defaultPath($styleName = '')
-	{
-		return $this->publicPath() . $this->defaultUrl($styleName);
-	}
-
-	/**
-	 * Generates the absolute url to an uploaded file.
-	 * 
-	 * @param string $styleName     
-	 * @return string             
-	 */
-	protected function absoluteUrl($styleName = '')
-	{
-		return realpath($this->publicPath() . $this->url($styleName));
-	}
-
-	/**
-	 * Generates the url to a file upload.
-	 *
-	 * @param string $styleName
-	 * @return string
-	*/
-	protected function url($styleName = '')
-	{
-		return $this->getInterpolator()->interpolate($this->url, $this, $styleName);
-	}
-
-	/**
-	 * Generates the default url if no file attachment is present.
-	 *
-	 * @param string $styleName
-	 * @return string
-	*/
-	protected function defaultUrl($styleName = '')
-	{
-		if ($url = $this->default_url) {
-			return $this->getInterpolator()->interpolate($url, $this, $styleName);
-		}
-		
-		return '';
 	}
 
 	/**
