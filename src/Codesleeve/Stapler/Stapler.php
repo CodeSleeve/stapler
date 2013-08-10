@@ -18,7 +18,7 @@ use App;
  * @link 	
  */
 
-trait StaplerTrait
+trait Stapler
 {
 	/**
 	 * All of the model's current file attachments.
@@ -35,6 +35,21 @@ trait StaplerTrait
 	protected $staplerUploads = [];
 
 	/**
+     * Handle the dynamic retrieval of attachment objects.
+     * 
+     * @param  string $attachmentName
+     * @return mixed
+     */
+    public function __get($attachmentName)
+    {
+		if (array_key_exists($attachmentName, $this->attachedFiles)) {
+		    return $this->options[$attachmentName];
+		}
+
+		return null;
+    }
+
+	/**
 	 * Add a new file attachment type to the list of available attachments.
 	 * This function acts as a quasi constructor for this trait.
 	 *
@@ -42,7 +57,7 @@ trait StaplerTrait
 	 * @param array $options
 	 * @return void
 	*/
-	protected function hasAttachedFile($name, $options = [])
+	public function hasAttachedFile($name, $options = [])
 	{
 		// Register the attachment with stapler and setup event listeners.
 		$this->registerAttachment($name, $options);
@@ -200,6 +215,24 @@ trait StaplerTrait
 	}
 
 	/**
+	 * Accessor method to return the attributes for a given attachment type.
+	 * 
+	 * @param  string $attachmentName 
+	 * @return array 
+	 */
+	public function getAttachmentAttributes($attachmentName)
+	{
+		$attributes = [
+			'fileName' => $this->getAttribute("{$attachmentName}_file_name"),
+			'fileSize' => $this->getAttribute("{$attachmentName}_file_size"),
+			'contentType' => $this->getAttribute("{$attachmentName}_content_type"),
+			'uploadedAt' => $this->getAttribute("{$attachmentName}_uploaded_at")
+		];
+
+		return $attributes;
+	}
+
+	/**
 	 * Register an attachment type
 	 *
 	 * @param  string $name
@@ -222,7 +255,7 @@ trait StaplerTrait
 	 * 
 	 * @return void 
 	 */
-	public function registerEvents()
+	protected function registerEvents()
 	{
 		$currentClass = get_class();
 		$beforeSave = "eloquent.saving: $currentClass";
@@ -246,23 +279,5 @@ trait StaplerTrait
         	Event::listen($afterDelete, "$currentClass@afterDelete");
         	//$this->deleted("$currentClass@afterDelete");
         }
-	}
-
-	/**
-	 * Accessor method to return the attributes for a given attachment type.
-	 * 
-	 * @param  string $attachmentName 
-	 * @return array 
-	 */
-	public function getAttachmentAttributes($attachmentName)
-	{
-		$attributes = [
-			'fileName' => $this->getAttribute("{$attachmentName}_file_name"),
-			'fileSize' => $this->getAttribute("{$attachmentName}_file_size"),
-			'contentType' => $this->getAttribute("{$attachmentName}_content_type"),
-			'uploadedAt' => $this->getAttribute("{$attachmentName}_uploaded_at")
-		];
-
-		return $attributes;
 	}
 }

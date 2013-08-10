@@ -2,28 +2,33 @@
 
 use Illuminate\Support\Str;
 
-Abstract class Interpolator
+class Interpolator
 {
-	/**
-	 * The id of the database record the attachment is tied to.
-	 * 
-	 * @var integer
-	 */
-	protected $recordId;
-
-	/**
-	 * The name of the model the attachment belongs to
-	 * 
-	 * @var string
-	 */
-	protected $modelName;
-
 	/**
 	 * The attachment attributes on the model
 	 * 
 	 * @var array
 	 */
 	protected $attributes;
+
+	/**
+	 * Interpolate a string.
+	 *
+	 * @param  string $string
+	 * @param string $styleName
+	 * @return string
+	*/
+	public function interpolate($string, $attachment, $styleName = '')
+	{
+		foreach ($this->interpolations() as $key => $value)
+		{
+			if (strpos($string, $key) !== false) {
+				$string = preg_replace("/$key\b/", $this->$value($attachment, $styleName), $string);
+			}
+		}
+
+		return $string;
+	}
 
 	/**
 	 * Returns a sorted list of all interpolations.  This list is currently hard coded
@@ -35,6 +40,7 @@ Abstract class Interpolator
 	protected function interpolations() 
 	{
 		return [
+			':url' => 'url',
 			':attachment' => 'attachment',
 			':basename' => 'basename',
 			':class' => 'getClass',
@@ -48,43 +54,47 @@ Abstract class Interpolator
 	}
 
 	/**
-	 * Interpolating a string.
+	 * Returns the file name.
 	 *
-	 * @param  string $string
 	 * @param string $styleName
 	 * @return string
 	*/
-	protected function interpolateString($string, $styleName = '')
+	protected function filename($attachment, $styleName = '') 
 	{
-		foreach ($this->interpolations() as $key => $value)
-		{
-			$string = preg_replace("/$key\b/", $this->$value($styleName), $string);
-		}
-
-		return $string;
+		return $attachment->attributes['fileName'];
 	}
 
 	/**
-	 * Returns the pluralized form of the attachment name. e.g.
-     * "avatars" for an attachment of :avatar.
+	 * Generates the url to a file upload.
 	 *
 	 * @param string $styleName
 	 * @return string
 	*/
-	protected function attachment($styleName = '') 
+	protected function url($attachment, $styleName = '')
 	{
-		return Str::plural($this->name);
+		return $this->interpolate($attachment->url, $attachment, $styleName);
 	}
 
 	/**
-	 * Returns the basename portion of the attached file, e.g 'file' for file.jpg.
+	 * Returns an integer timestamp from the updated_at column of the corresponding attachment model.
 	 *
 	 * @param string $styleName
 	 * @return string
 	*/
-	protected function basename($styleName = '') 
+	protected function updatedAt($attachment, $styleName = '')
 	{
-		return pathinfo($this->attributes['fileName'], PATHINFO_FILENAME);
+		# code...
+	}
+
+	/**
+	 * Returns the root of the Laravel project.
+	 *
+	 * @param string $styleName
+	 * @return string
+	*/
+	protected function laravelRoot($attachment, $styleName = '') 
+	{
+		return realpath(base_path());
 	}
 
 	/**
@@ -94,10 +104,21 @@ Abstract class Interpolator
 	 * @param string $styleName
 	 * @return string
 	*/
-    protected function getClass($styleName = '') 
+    protected function getClass($attachment, $styleName = '') 
     {
-    	return $this->handleBackslashes($this->modelName);
+    	return $this->handleBackslashes(get_class($attachment->instance));
     }
+
+    /**
+	 * Returns the basename portion of the attached file, e.g 'file' for file.jpg.
+	 *
+	 * @param string $styleName
+	 * @return string
+	*/
+	protected function basename($attachment, $styleName = '') 
+	{
+		return pathinfo($attachment->attributes['fileName'], PATHINFO_FILENAME);
+	}
 
     /**
 	 * Returns the extension of the attached file, e.g 'jpg' for file.jpg.
@@ -105,20 +126,9 @@ Abstract class Interpolator
 	 * @param string $styleName
 	 * @return string
 	*/
-	protected function extension($styleName = '') 
+	protected function extension($attachment, $styleName = '') 
 	{
-		return pathinfo($this->attributes['fileName'], PATHINFO_EXTENSION);
-	}
-
-	/**
-	 * Returns the file name.
-	 *
-	 * @param string $styleName
-	 * @return string
-	*/
-	protected function filename($styleName = '') 
-	{
-		return $this->attributes['fileName'];
+		return pathinfo($attachment->attributes['fileName'], PATHINFO_EXTENSION);
 	}
 
 	/**
@@ -127,70 +137,31 @@ Abstract class Interpolator
 	 * @param string $styleName
 	 * @return string
 	*/
-    protected function id($styleName = '') 
+    protected function id($attachment, $styleName = '') 
     {
-     	return $this->recordId;
+     	return $attachment->instance->getKey();
     }
 
 	/**
-	 * Returns the root of the Laravel project.
-	 *
-	 * @param string $styleName
-	 * @return string
-	*/
-	protected function laravelRoot($styleName = '') 
-	{
-		return $this->basePath();
-	}
-
-	/**
-	 * Returns the style, or the default style if an empty style is supplied.
-	 *
-	 * @param string $styleName
-	 * @return string
-	*/
-	protected function style($styleName = '') 
-	{
-		return $styleName ?: $this->default_style;
-	}
-
-	/**
-	 * Utility function to return the string offset of the directory
-	 * portion of a file path with an :id or :idPartition interpolation.
-	 *
-	 * <code>
-	 *		// Returns an offset of '27'.
-	 *      $directory = '/some_directory/000/000/001/some_file.jpg'
-	 *		return $this->getOffset($directory, $attachment);
-	 * </code>
-	 *
-	 * @param string $string
-	 * @param string $styleName
-	 * @return string
+	 * Returns the fingerprint of the instance
+	 * 
+	 * @param  string $styleName 
+	 * @return void
 	 */
-	public function getOffset($string, $styleName = '') 
+	protected function fingerprint($attachment, $styleName = '')
 	{
-		// Get the partition of the id
-		$idPartition = $this->idPartition($styleName);
-		$match = strpos($string, $idPartition);
-		
-		if ($match !== false)
-		{
-			// Id partitioning is being used, so we're looking for a
-			// directory that has the pattern /000/000/001 at the end,
-			// so we know we'll need to add 11 spaces to the string offset.
-			$offset = $match + 11;
-		}
-		else
-		{
-			// Id partitioning is not being used, so we're looking for
-			// a directory that has the pattern /1 at the end, so we'll
-			// need to add the length of the record id + 1 to the string offset.
-			$match = strpos($string, (string) $this->recordId);
-			$offset = $match + strlen($this->recordId);
-		}
+		# code...
+	}
 
-		return $offset;
+	/**
+	 * Return the attachment hash.
+	 * 
+	 * @param  string $styleName 
+	 * @return void
+	 */
+	protected function hash($attachment, $styleName = '')
+	{
+		# code...
 	}
 
 	/**
@@ -200,9 +171,9 @@ Abstract class Interpolator
 	* @param string $styleName
 	* @return mixed
 	*/
-	protected function idPartition($styleName = '')
+	protected function idPartition($attachment, $styleName = '')
 	{
-		$id = $this->id($styleName);
+		$id = $attachment->instance->getKey();
 
 		if (is_numeric($id))
 		{
@@ -219,6 +190,29 @@ Abstract class Interpolator
 	}
 
 	/**
+	 * Returns the pluralized form of the attachment name. e.g.
+     * "avatars" for an attachment of :avatar.
+	 *
+	 * @param string $styleName
+	 * @return string
+	*/
+	protected function attachment($attachment, $styleName = '') 
+	{
+		return Str::plural($attachment->getName());
+	}
+
+	/**
+	 * Returns the style, or the default style if an empty style is supplied.
+	 *
+	 * @param string $styleName
+	 * @return string
+	*/
+	protected function style($attachment, $styleName = '') 
+	{
+		return $styleName ?: $attachment->default_style;
+	}
+
+	/**
 	 * Utitlity function to turn a backslashed string into a string
 	 * suitable for use in a file path, e.g '\foo\bar' becomes 'foo/bar'.
 	 *
@@ -229,29 +223,4 @@ Abstract class Interpolator
 	{
 		return str_replace('\\', '/', ltrim($string, '\\'));
 	}
-
-	/**
-	 * Returns a path to the project base directory.
-	 * 
-	 * @return mixed        
-	 */
-	abstract protected function basePath();
-	
-
-	/**
-	 * Returns a path to the project document root directory.
-	 * 
-	 * @return mixed        
-	 */
-	abstract protected function publicPath();
-	
-
-	/**
-	 * Wrapper for php's realPath function.
-	 * 
-	 * @param  string $value 
-	 * @return mixed        
-	 */
-	abstract protected function realPath($value);
-	
 }

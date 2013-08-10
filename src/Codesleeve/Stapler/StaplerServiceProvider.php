@@ -2,7 +2,8 @@
 
 use Illuminate\Support\ServiceProvider;
 use Codesleeve\Stapler\File\UploadedFile;
-use Codesleeve\Stapler\Storage\Local as Storage;
+use Codesleeve\Stapler\Storage\Filesystem;
+use Codesleeve\Stapler\Storage\S3;
 
 class StaplerServiceProvider extends ServiceProvider {
 
@@ -45,7 +46,8 @@ class StaplerServiceProvider extends ServiceProvider {
 		
 		$this->registerAttachment();
 		$this->registerResizer();
-		$this->registerStorage();
+		$this->registerFilesystemStorage();
+		$this->registerS3Storage();
 		$this->registerUtility();
 		$this->registerUploadedFile();
 		$this->registerStaplerFasten();
@@ -80,15 +82,28 @@ class StaplerServiceProvider extends ServiceProvider {
 	}
 
 	/**
-	 * Register Codesleeve\Stapler\Storage with the contaioner.
+	 * Register Codesleeve\Stapler\Filesystem with the contaioner.
 	 * 
 	 * @return void
 	 */
-	protected function registerStorage()
+	protected function registerFilesystemStorage()
 	{
-		$this->app->bind('Storage', function($app, $attachedFile)
+		$this->app->bind('filesystem', function($app, $attachedFile)
         {
-            return new Storage($attachedFile);
+            return new Filesystem($attachedFile);
+        });
+	}
+
+	/**
+	 * Register Codesleeve\Stapler\S3 with the contaioner.
+	 * 
+	 * @return void
+	 */
+	protected function registerS3Storage()
+	{
+		$this->app->bind('s3', function($app, $attachedFile)
+        {
+            return new S3($attachedFile);
         });
 	}
 

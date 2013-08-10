@@ -3,7 +3,7 @@
 use Codesleeve\Stapler\Exceptions;
 use Illuminate\Support\Facades\Config as Config;
 
-class Local implements StorageInterface
+class Filesystem implements StorageInterface
 {
 	/**
 	 * The currenty attachedFile object being processed
@@ -68,9 +68,10 @@ class Local implements StorageInterface
 	public function buildDirectory($styleName)
 	{
 		$filePath = $this->attachedFile->path($styleName);
-
-		if (!is_dir(dirname($filePath))) {
-			mkdir(dirname($filePath), 0777, true);
+		$directory = dirname($filePath);
+		
+		if (!is_dir($directory)) {
+			mkdir($directory, 0777, true);
 		}
 	}
 
@@ -132,7 +133,7 @@ class Local implements StorageInterface
 	 * @param  string $filePath 
 	 * @return void 
 	 */
-	public function move($file, $filePath, $mode)
+	public function move($file, $filePath, $overrideFilePermissions)
 	{
 		if ($file->isValid()) 
 		{
@@ -141,7 +142,7 @@ class Local implements StorageInterface
                 throw new Exceptions\FileException(sprintf('Could not move the file "%s" to "%s" (%s)', $file->getPathname(), $filePath, strip_tags($error['message'])));
             }
 
-            $this->setPermissions($filePath, $mode);
+            $this->setPermissions($filePath, $overrideFilePermissions);
 
             return $filePath;
         }
@@ -154,10 +155,15 @@ class Local implements StorageInterface
 	 * Does not ignore umask.
 	 * 
 	 * @param string $filePath
-	 * @param integer $mode
+	 * @param integer $overrideFilePermissions
 	 */
-	public function setPermissions($filePath, $mode)
+	public function setPermissions($filePath, $overrideFilePermissions)
 	{
-		chmod($filePath, $mode & ~umask());
+		if ($overrideFilePermissions) {
+			chmod($filePath, $overrideFilePermissions & ~umask());
+		}
+		elseif (is_null($overrideFilePermissions)) {
+			chmod($filePath, 0666 & ~umask());
+		}
 	}
 }
