@@ -161,28 +161,6 @@ trait Stapler
 	}
 
 	/**
-	 * Accessor method to return the attributes for a given attachment type.
-	 * 
-	 * @param  string $attachmentName 
-	 * @return array 
-	 */
-	public function getAttachmentAttributes($attachmentName)
-	{
-		$attributes = null;
-
-		if (array_key_exists($attachmentName, $this->attachedFiles)) {
-			$attributes = [
-				'fileName' => $this->getAttribute("{$attachmentName}_file_name"),
-				'fileSize' => $this->getAttribute("{$attachmentName}_file_size"),
-				'contentType' => $this->getAttribute("{$attachmentName}_content_type"),
-				'updatedAt' => $this->getAttribute("{$attachmentName}_updated_at")
-			];
-		}
-
-		return $attributes;
-	}
-
-	/**
 	 * Pass through method to ensure that all attachedFile objects returned
 	 * from the __get() method are bootstrapped before they're accessed.
 	 * 

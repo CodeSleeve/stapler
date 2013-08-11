@@ -229,7 +229,7 @@ class Attachment
 	*/
 	public function url($styleName = '')
 	{
-		if ($this->instance->getAttachmentAttributes($this->name)['fileName']) {
+		if ($this->originalFilename()) {
 			return $this->getInterpolator()->interpolate($this->url, $this, $styleName);
 		}
 		
@@ -244,11 +244,67 @@ class Attachment
 	*/
 	public function path($styleName = '')
 	{
-		if ($this->instance->getAttachmentAttributes($this->name)['fileName']) {
+		if ($this->originalFilename()) {
 			return $this->getInterpolator()->interpolate($this->path, $this, $styleName);
 		}
 
 		return $this->defaultPath($styleName);
+	}
+
+	/**
+	 * Returns the creation time of the file as originally assigned to this attachment's model.
+	 * Lives in the <attachment>_created_at attribute of the model.
+	 * This attribute may conditionally exist on the model, it is not one of the four required fields.
+     * 
+	 * @return datetime
+	 */
+	public function createdAt()
+	{
+		return $this->instance->getAttribute("{$this->name}_created_at");
+	}
+
+	/**
+	 * Returns the last modified time of the file as originally assigned to this attachment's model.
+	 * Lives in the <attachment>_updated_at attribute of the model.
+     * 
+	 * @return datetime
+	 */
+	public function updatedAt()
+	{
+		return $this->instance->getAttribute("{$this->name}_updated_at");
+	}
+
+	/**
+	 * Returns the content type of the file as originally assigned to this attachment's model.
+	 * Lives in the <attachment>_content_type attribute of the model.
+     * 
+	 * @return string
+	 */
+	public function contentType()
+	{
+		return $this->instance->getAttribute("{$this->name}_content_type");
+	}
+
+	/**
+	 * Returns the size of the file as originally assigned to this attachment's model.
+	 * Lives in the <attachment>_file_size attribute of the model.
+     * 
+	 * @return integer
+	 */
+	public function size()
+	{
+		return $this->instance->getAttribute("{$this->name}_file_size");
+	}
+
+	/**
+	 * Returns the name of the file as originally assigned to this attachment's model.
+	 * Lives in the <attachment>_file_name attribute of the model.
+     * 
+	 * @return string
+	 */
+	public function originalFilename()
+	{
+		return $this->instance->getAttribute("{$this->name}_file_name");
 	}
 
 	/**

@@ -54,7 +54,7 @@ class Interpolator
 	*/
 	protected function filename($attachment, $styleName = '') 
 	{
-		return $attachment->instance->getAttachmentAttributes($attachment->name)['fileName'];
+		return $attachment->originalFilename();
 	}
 
 	/**
