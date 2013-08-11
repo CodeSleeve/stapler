@@ -88,7 +88,7 @@ trait Stapler
 						"{$attachmentName}_file_name" => '',
 						"{$attachmentName}_file_size" => '',
 						"{$attachmentName}_content_type" => '',
-						"{$attachmentName}_uploaded_at" => ''
+						"{$attachmentName}_updated_at" => ''
 					];
 
 					$model->fill($attributes, true);
@@ -104,7 +104,7 @@ trait Stapler
 						"{$attachmentName}_file_name" => $uploadedFile->getClientOriginalName(),
 						"{$attachmentName}_file_size" => $uploadedFile->getClientSize(),
 						"{$attachmentName}_content_type" => $uploadedFile->getMimeType(),
-						"{$attachmentName}_uploaded_at" => date('Y-m-d H:i:s')
+						"{$attachmentName}_updated_at" => date('Y-m-d H:i:s')
 					];
 
 					$model->fill($attributes, true);
@@ -175,7 +175,7 @@ trait Stapler
 				'fileName' => $this->getAttribute("{$attachmentName}_file_name"),
 				'fileSize' => $this->getAttribute("{$attachmentName}_file_size"),
 				'contentType' => $this->getAttribute("{$attachmentName}_content_type"),
-				'uploadedAt' => $this->getAttribute("{$attachmentName}_uploaded_at")
+				'updatedAt' => $this->getAttribute("{$attachmentName}_updated_at")
 			];
 		}
 
