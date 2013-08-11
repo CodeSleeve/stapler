@@ -42,8 +42,10 @@ class Filesystem implements StorageInterface
 	 */
 	public function remove()
 	{
-		$directory = $this->findDirectory($this->attachedFile);
-		$this->emptyDirectory($directory, true);
+		if ($this->attachedFile->instance->getAttachmentAttributes($this->attachedFile->name)['fileName']) {
+			$directory = $this->findDirectory($this->attachedFile);
+			$this->emptyDirectory($directory, true);
+		}
 	}
 
 	/**

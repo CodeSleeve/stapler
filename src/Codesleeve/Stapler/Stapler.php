@@ -168,12 +168,16 @@ trait Stapler
 	 */
 	public function getAttachmentAttributes($attachmentName)
 	{
-		$attributes = [
-			'fileName' => $this->getAttribute("{$attachmentName}_file_name"),
-			'fileSize' => $this->getAttribute("{$attachmentName}_file_size"),
-			'contentType' => $this->getAttribute("{$attachmentName}_content_type"),
-			'uploadedAt' => $this->getAttribute("{$attachmentName}_uploaded_at")
-		];
+		$attributes = null;
+
+		if (array_key_exists($attachmentName, $this->attachedFiles)) {
+			$attributes = [
+				'fileName' => $this->getAttribute("{$attachmentName}_file_name"),
+				'fileSize' => $this->getAttribute("{$attachmentName}_file_size"),
+				'contentType' => $this->getAttribute("{$attachmentName}_content_type"),
+				'uploadedAt' => $this->getAttribute("{$attachmentName}_uploaded_at")
+			];
+		}
 
 		return $attributes;
 	}
