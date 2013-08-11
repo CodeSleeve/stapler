@@ -97,7 +97,7 @@ trait Stapler
 				elseif ($uploadedFile) 
 				{
 					if (!$uploadedFile->isValid()) {
-						throw new Exceptions\FileException('File upload hijacking detected!');
+						throw new Exceptions\FileException($uploadedFile->getErrorMessage($uploadedFile->getError()));
 					}
 
 					$attributes = [

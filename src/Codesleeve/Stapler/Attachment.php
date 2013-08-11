@@ -183,7 +183,7 @@ class Attachment
 	public function __call($method, $parameters)
 	{
 		// Storage methods
-		$callable = ['reset', 'remove', 'findDirectory', 'buildDirectory', 'cleanDirectory', 'emptyDirectory', 'move', 'setPermissions'];
+		$callable = ['reset', 'remove', 'findDirectory', 'buildDirectory', 'cleanDirectory', 'emptyDirectory', 'move'];
 		
 		if (in_array($method, $callable))
 		{
@@ -213,7 +213,8 @@ class Attachment
 		$this->cleanDirectory($style->name);
 
 		if ($style->value && $this->uploadedFile->isImage()) {
-			$this->processStyle($style);
+			$tmpFilePath = $this->processStyle($style);
+			$this->move($tmpFilePath, $this->path($style->name), $this->override_file_permissions);
 		}
 		else {
 			$this->move($this->uploadedFile, $this->path($style->name), $this->override_file_permissions);
@@ -287,7 +288,7 @@ class Attachment
 	 */
 	protected function processStyle($style)
 	{
-		$filePath = $this->path($style->name);
+		$filePath = tempnam(sys_get_temp_dir(), 'STP');
 		$resizer = App::make('Resizer', $this->uploadedFile);
 
 		if (strpos($style->value, 'x') === false) 
@@ -295,9 +296,8 @@ class Attachment
 			// Width given, height automagically selected to preserve aspect ratio (landscape).
 			$width = $style->value;
 			$resizer->resize($width, null, 'landscape')->save($filePath);
-			$this->setPermissions($filePath, $this->override_file_permissions);
 
-			return;
+			return $filePath;
 		}
 		
 		$dimensions = explode('x', $style->value);
@@ -308,9 +308,8 @@ class Attachment
 		{
 			// Height given, width automagically selected to preserve aspect ratio (portrait).
 			$resizer->resize(null, $height, 'portrait')->save($filePath);
-			$this->setPermissions($filePath, $this->override_file_permissions);
 
-			return;
+			return $filePath;
 		}
 		
 		$resizing_option = substr($height, -1, 1);
@@ -333,7 +332,7 @@ class Attachment
 				break;
 		}
 
-		$this->setPermissions($filePath, $this->override_file_permissions);
+		return $filePath;
 	}
 
 	/**

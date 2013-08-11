@@ -1,7 +1,8 @@
 <?php namespace Codesleeve\Stapler\Storage;
 
 use Codesleeve\Stapler\Exceptions;
-use Illuminate\Support\Facades\Config as Config;
+use Codesleeve\Stapler\File;
+use Config;
 
 class Filesystem implements StorageInterface
 {
@@ -127,27 +128,20 @@ class Filesystem implements StorageInterface
 	}
 
 	/**
-	 * Move an uploaded file to it's intended destination
+	 * Move an uploaded file to it's intended destination.
+	 * The file can be an actual uploaded file object or the path to
+	 * a resized image file on disk.
 	 *
-	 * @param  Symfony\Component\HttpFoundation\File\UploadedFile $file 
+	 * @param  UploadedFile $file 
 	 * @param  string $filePath 
 	 * @return void 
 	 */
 	public function move($file, $filePath, $overrideFilePermissions)
 	{
-		if ($file->isValid()) 
-		{
-            if (!move_uploaded_file($file->getPathname(), $filePath)) {
-                $error = error_get_last();
-                throw new Exceptions\FileException(sprintf('Could not move the file "%s" to "%s" (%s)', $file->getPathname(), $filePath, strip_tags($error['message'])));
-            }
+ 		$file instanceof \UploadedFile ? $this->moveUploadedFile($file, $filePath) : rename($file, $filePath);
+        $this->setPermissions($filePath, $overrideFilePermissions);
 
-            $this->setPermissions($filePath, $overrideFilePermissions);
-
-            return $filePath;
-        }
-
-        throw new Exceptions\FileException($file->getErrorMessage($file->getError()));
+        return $filePath;
 	}
 
 	/**
@@ -157,7 +151,7 @@ class Filesystem implements StorageInterface
 	 * @param string $filePath
 	 * @param integer $overrideFilePermissions
 	 */
-	public function setPermissions($filePath, $overrideFilePermissions)
+	protected function setPermissions($filePath, $overrideFilePermissions)
 	{
 		if ($overrideFilePermissions) {
 			chmod($filePath, $overrideFilePermissions & ~umask());
@@ -165,5 +159,20 @@ class Filesystem implements StorageInterface
 		elseif (is_null($overrideFilePermissions)) {
 			chmod($filePath, 0666 & ~umask());
 		}
+	}
+
+	/**
+	 * Attempt to move and uploaded file to it's intended location on disk.
+	 * 
+	 * @param  UploadedFile $file   
+	 * @param  string $filePath
+	 * @return void           
+	 */
+	protected function moveUploadedFile($file, $filePath)
+	{
+		if (!move_uploaded_file($file->getPathname(), $filePath)) {
+            $error = error_get_last();
+            throw new Exceptions\FileException(sprintf('Could not move the file "%s" to "%s" (%s)', $file->getPathname(), $filePath, strip_tags($error['message'])));
+        }
 	}
 }
