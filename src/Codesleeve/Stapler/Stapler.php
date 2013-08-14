@@ -134,7 +134,7 @@ trait Stapler
 			if ($uploadedFile) 
 			{
 				if ($uploadedFile == STAPLER_NULL) {
-					$attachedFile->reset();
+					$attachedFile->reset($attachedFile);
 					
 					continue;
 				}
@@ -178,6 +178,7 @@ trait Stapler
 
 	/**
 	 * Register an attachment type.
+	 * and add the attachment to the list of attachments to be processed during saving.
 	 *
 	 * @param  string $name
 	 * @param  array $options
@@ -185,13 +186,68 @@ trait Stapler
 	 */
 	protected function registerAttachment($name, $options)
 	{
-		// Here we'll merge user defined options with the stapler defaults
-	    // and add the attachment to the list of attachments to be processed during saving.
-		$defaultOptions = Config::get('stapler::stapler.options');
+		$options = $this->mergeOptions($options);
+		$this->validateOptions($options);
+		$interpolator = App::make('Interpolator');
+		$this->attachedFiles[$name] = App::make('Attachment', ['name' => $name, 'options' => $options, 'interpolator' => $interpolator]);
+	}
+
+	/**
+	 * Merge configuration options.
+	 * Here we'll merge user defined options with the stapler defaults in a cascading manner.
+	 * We start with overall stapler options.  Next we merge in storage driver specific options.
+	 * Finally we'll merge in attachment specific options on top of that.
+	 *
+	 * @param  array $options
+	 * @return array
+	 */
+	public function mergeOptions($options)
+	{
+		$defaultOptions = Config::get('stapler::stapler');
 		$options = array_merge($defaultOptions, (array) $options);
+		$storage = $options['storage'];
+		$options = array_merge(Config::get("stapler::{$storage}"), $options);
 		$options['styles'] = array_merge( (array) $options['styles'], ['original' => '']);
 
-		$this->attachedFiles[$name] = App::make('Attachment', ['name' => $name, 'options' => $options]);
+		return $options;
+	}
+
+	/**
+	 * Validate the attachment options for an attachment type.
+	 * A url is required to have either an :id or an :id_partition interpolation.
+	 * 
+	 * @param  array $options
+	 * @return void
+	 */
+	protected function validateOptions($options)
+	{
+		$options['storage'] == 'filesystem' ? $this->validateFilesystemOptions($options) : $this->validateS3Options($options);
+	}
+
+	/**
+	 * Validate the attachment optioins for an attachment type when the storage
+	 * driver is set to 'filesystem'.
+	 * 
+	 * @param  array $options 
+	 * @return void
+	 */
+	protected function validateFilesystemOptions($options)
+	{
+		if (preg_match("/:id\b/", $options['url']) !== 1 && preg_match("/:id_partition\b/", $options['url']) !== 1) {
+			throw new Exceptions\InvalidUrlOptionException('Invalid file url: an :id or :id_partition is required.', 1);
+		}
+	}
+
+	/**
+	 * Validate the attachment optioins for an attachment type when the storage
+	 * driver is set to 's3'.
+	 * 
+	 * @param  array $options 
+	 * @return void
+	 */
+	protected function validateS3Options($options)
+	{
+		# code...
 	}
 
 	/**

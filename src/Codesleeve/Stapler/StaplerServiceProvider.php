@@ -2,8 +2,6 @@
 
 use Illuminate\Support\ServiceProvider;
 use Codesleeve\Stapler\File\UploadedFile;
-use Codesleeve\Stapler\Storage\Filesystem;
-use Codesleeve\Stapler\Storage\S3;
 
 class StaplerServiceProvider extends ServiceProvider {
 
@@ -45,6 +43,7 @@ class StaplerServiceProvider extends ServiceProvider {
 		}
 		
 		$this->registerAttachment();
+		$this->registerInterpolator();
 		$this->registerResizer();
 		$this->registerFilesystemStorage();
 		$this->registerS3Storage();
@@ -64,7 +63,20 @@ class StaplerServiceProvider extends ServiceProvider {
 	{
 		$this->app->bind('Attachment', function($app, $params)
         {
-            return new Attachment($params['name'], $params['options']);
+            return new Attachment($params['name'], $params['options'], $params['interpolator']);
+        });
+	}
+
+	/**
+	 * Register Codesleeve\Stapler\Interpolator with the container.
+	 * 
+	 * @return void
+	 */
+	protected function registerInterpolator()
+	{
+		$this->app->singleton('Interpolator', function($app)
+        {
+            return new Interpolator();
         });
 	}
 
@@ -82,28 +94,28 @@ class StaplerServiceProvider extends ServiceProvider {
 	}
 
 	/**
-	 * Register Codesleeve\Stapler\Filesystem with the contaioner.
+	 * Register Storage\Filesystem with the contaioner.
 	 * 
 	 * @return void
 	 */
 	protected function registerFilesystemStorage()
 	{
-		$this->app->bind('filesystem', function($app, $attachedFile)
+		$this->app->bind('filesystem', function($app, $attachment)
         {
-            return new Filesystem($attachedFile);
+            return new Storage\Filesystem($attachment);
         });
 	}
 
 	/**
-	 * Register Codesleeve\Stapler\S3 with the contaioner.
+	 * Register Storage\S3 with the contaioner.
 	 * 
 	 * @return void
 	 */
 	protected function registerS3Storage()
 	{
-		$this->app->bind('s3', function($app, $attachedFile)
+		$this->app->bind('s3', function($app, $attachment)
         {
-            return new S3($attachedFile);
+            return new Storage\S3($attachment);
         });
 	}
 
@@ -114,7 +126,7 @@ class StaplerServiceProvider extends ServiceProvider {
 	 */
 	protected function registerUtility()
 	{
-		$this->app->bind('Utility', function($app, $arrayElements)
+		$this->app->singleton('Utility', function($app, $arrayElements)
         {
             return new Utility($arrayElements);
         });

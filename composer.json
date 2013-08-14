@@ -14,7 +14,8 @@
         "illuminate/foundation": "4.0.x"
     },
     "require-dev": {
-        "mikey179/vfsStream": "1.2.0"
+        "mikey179/vfsStream": "1.2.0",
+        "aws/aws-sdk-php": "2.4.*@dev"
     },
     "autoload": {
         "classmap": [

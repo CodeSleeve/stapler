@@ -1,16 +1,24 @@
 <?php namespace Codesleeve\Stapler\Storage;
 
 use Codesleeve\Stapler\Exceptions;
-use Illuminate\Support\Facades\Config as Config;
+use Aws\S3\S3Client;
+use Config;
 
 class S3 implements StorageInterface
 {
 	/**
-	 * The currenty attachedFile object being processed
+	 * The currenty attachedFile object being processed.
 	 * 
 	 * @var Codesleeve\Stapler\Attachment
 	 */
 	protected $attachedFile;
+
+	/**
+	 * An AWS S3Client instance.
+	 * 
+	 * @var S3Client
+	 */
+	protected $s3Client;
 
 	/**
 	 * Constructor method
@@ -20,6 +28,34 @@ class S3 implements StorageInterface
 	function __construct($attachedFile)
 	{
 		$this->attachedFile = $attachedFile;
+		$this->s3Client = S3Client::factory([
+			'key' => $attachedFile->key, 
+			'secret' => $attachedFile->secret, 
+			'region' => $attachedFile->region, 
+			'scheme' => $attachedFile->scheme
+		]);
+	}
+
+	/**
+	 * Return the url for a file upload.
+	 * 
+	 * @param  string $styleName 
+	 * @return string          
+	 */
+	public function url($styleName)
+	{
+		return $this->s3Client->getObjectUrl('stapler.test.bucket', $this->path($styleName));
+	}
+
+	/**
+	 * Return the key the uploaded file object is stored under within a bucket.
+	 * 
+	 * @param  string $styleName 
+	 * @return string          
+	 */
+	public function path($styleName)
+	{
+		return $this->attachedFile->getInterpolator()->interpolate($this->attachedFile->path, $this->attachedFile, $styleName);
 	}
 
 	/**

@@ -19,18 +19,18 @@ class Attachment
 	public $name;
 
 	/**
+	 * An instance of the underlying storage driver that is being used.
+	 * 
+	 * @var mixed.
+	 */
+	protected $storageDriver;
+
+	/**
 	 * The attachment options.
 	 * 
 	 * @var array
 	 */
 	protected $options;
-
-	/**
-	 * The uploaded file object for the attachment.
-	 * 
-	 * @var Codesleeve\Stapler\UploadedFile
-	 */
-	protected $uploadedFile;
 
 	/**
 	 * An instance of the interpolator class for processing interpolations.
@@ -40,15 +40,23 @@ class Attachment
 	protected $interpolator;
 
 	/**
+	 * The uploaded file object for the attachment.
+	 * 
+	 * @var Codesleeve\Stapler\UploadedFile
+	 */
+	protected $uploadedFile;
+
+	/**
 	 * Constructor method
 	 * 
 	 * @param array $foo
 	 */
-	function __construct($name, $options = []) 
+	function __construct($name, $options = [], $interpolator) 
 	{
 		$this->name = $name;
-		$this->validateOptions($options);
 		$this->options = $options;
+		$this->interpolator = $interpolator;
+		$this->storageDriver = App::make($this->storage, $this);
 	}
 
 	/**
@@ -116,7 +124,7 @@ class Attachment
 	 */
 	public function getInterpolator()
 	{
-		return $this->interpolator ?: new Interpolator;
+		return $this->interpolator;
 	}
 
 	/**
@@ -185,10 +193,8 @@ class Attachment
 		// Storage methods
 		$callable = ['reset', 'remove', 'findDirectory', 'buildDirectory', 'cleanDirectory', 'emptyDirectory', 'move'];
 		
-		if (in_array($method, $callable))
-		{
-			$storage = App::make($this->storage, $this);
-			return call_user_func_array([$storage, $method], $parameters);
+		if (in_array($method, $callable)) {
+			return call_user_func_array([$this->storageDriver, $method], $parameters);
 		}
 
 		// Utility methods
@@ -209,8 +215,8 @@ class Attachment
 	 */
 	public function process($style)
 	{
-		$this->buildDirectory($style->name);
-		$this->cleanDirectory($style->name);
+		$this->buildDirectory($style->name, $this);
+		$this->cleanDirectory($style->name, $this);
 
 		if ($style->value && $this->uploadedFile->isImage()) {
 			$tmpFilePath = $this->processStyle($style);
@@ -230,7 +236,8 @@ class Attachment
 	public function url($styleName = '')
 	{
 		if ($this->originalFilename()) {
-			return $this->getInterpolator()->interpolate($this->url, $this, $styleName);
+			//return $this->getInterpolator()->interpolate($this->url, $this, $styleName);
+			return $this->storageDriver->url($styleName, $this);
 		}
 		
 		return $this->defaultUrl($styleName);
@@ -245,7 +252,8 @@ class Attachment
 	public function path($styleName = '')
 	{
 		if ($this->originalFilename()) {
-			return $this->getInterpolator()->interpolate($this->path, $this, $styleName);
+			//return $this->getInterpolator()->interpolate($this->path, $this, $styleName);
+			return $this->storageDriver->path($styleName, $this);
 		}
 
 		return $this->defaultPath($styleName);
@@ -389,20 +397,6 @@ class Attachment
 		}
 
 		return $filePath;
-	}
-
-	/**
-	 * Validate the attachment options for an attachment type.
-	 * A url is required to have either an :id or an :id_partition interpolation.
-	 * 
-	 * @param  array $options
-	 * @return void
-	 */
-	protected function validateOptions($options)
-	{
-		if (preg_match("/:id\b/", $options['url']) !== 1 && preg_match("/:id_partition\b/", $options['url']) !== 1) {
-			throw new Exceptions\InvalidUrlOptionException('Invalid file url: an :id or :id_partition is required.', 1);
-		}
 	}
 
 	/**

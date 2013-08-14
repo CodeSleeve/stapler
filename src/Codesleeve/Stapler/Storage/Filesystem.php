@@ -7,7 +7,7 @@ use Config;
 class Filesystem implements StorageInterface
 {
 	/**
-	 * The currenty attachedFile object being processed
+	 * The currenty attachedFile object being processed.
 	 * 
 	 * @var Codesleeve\Stapler\Attachment
 	 */
@@ -24,26 +24,47 @@ class Filesystem implements StorageInterface
 	}
 
 	/**
+	 * Return the url for a file upload.
+	 * 
+	 * @param  string $styleName 
+	 * @return string          
+	 */
+	public function url($styleName)
+	{
+		return $this->attachedFile->getInterpolator()->interpolate($this->attachedFile->url, $this->attachedFile, $styleName);
+	}
+
+	/**
+	 * Return the path (on disk) of a file upload.
+	 * 
+	 * @param  string $styleName 
+	 * @return string          
+	 */
+	public function path($styleName)
+	{
+		return $this->attachedFile->getInterpolator()->interpolate($this->attachedFile->path, $this->attachedFile, $styleName);
+	}
+
+	/**
 	 * Reset an attached file
 	 *
 	 * @return void
 	 */
 	public function reset()
 	{
-		$directory = $this->findDirectory($this->attachedFile);
+		$directory = $this->findDirectory();
 		$this->emptyDirectory($directory);
 	}
 
 	/**
 	 * Remove an attached file.
-	 * 
-	 * @param  Codesleeve\Stapler\Attachment $attachedFile
+	 *
 	 * @return void
 	 */
 	public function remove()
 	{
-		if ($this->attachedFile->originalFilename()) {
-			$directory = $this->findDirectory($this->attachedFile);
+		if ($attachedFile->originalFilename()) {
+			$directory = $this->findDirectory($attachedFile);
 			$this->emptyDirectory($directory, true);
 		}
 	}
@@ -51,7 +72,7 @@ class Filesystem implements StorageInterface
 	/**
 	 * Utility function to return the base directory of the uploaded file for 
 	 * a file attachment.
-	 * 
+	 *
 	 * @return string               
 	 */
 	public function findDirectory()
@@ -70,7 +91,7 @@ class Filesystem implements StorageInterface
 	 */
 	public function buildDirectory($styleName)
 	{
-		$filePath = $this->attachedFile->path($styleName);
+		$filePath = $this->path($styleName);
 		$directory = dirname($filePath);
 		
 		if (!is_dir($directory)) {
@@ -86,7 +107,7 @@ class Filesystem implements StorageInterface
 	 */
 	public function cleanDirectory($styleName)
 	{
-		$filePath = $this->attachedFile->path($styleName);
+		$filePath = $this->path($styleName);
 
 		if (!$this->attachedFile->keep_old_files) {
 			$fileDirectory = dirname($filePath);

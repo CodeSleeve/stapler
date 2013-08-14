@@ -3,6 +3,23 @@
 interface StorageInterface
 {
     /**
+	 * Return the url for a file upload.
+	 * 
+	 * @param  string $styleName 
+	 * @return string          
+	 */
+	public function url($styleName);
+
+	/**
+	 * For filesystem storge this method returns the path (on disk) of a file upload.
+	 * For s3 storage this method returns the key an uploaded object is stored under in a bucket.
+	 * 
+	 * @param  string $styleName 
+	 * @return string          
+	 */
+	public function path($styleName);
+
+    /**
 	 * Reset an attached file
 	 *
 	 * @return void
@@ -12,7 +29,6 @@ interface StorageInterface
     /**
 	 * Remove an attached file.
 	 * 
-	 * @param  Codesleeve\Stapler\Attachment $attachedFile
 	 * @return void
 	 */
     public function remove();
@@ -20,7 +36,7 @@ interface StorageInterface
     /**
 	 * Utility function to return the base directory of the uploaded file for 
 	 * a file attachment.
-	 * 
+	 *
 	 * @return string               
 	 */
     public function findDirectory();
