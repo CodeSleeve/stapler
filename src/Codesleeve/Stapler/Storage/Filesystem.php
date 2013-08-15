@@ -1,7 +1,7 @@
 <?php namespace Codesleeve\Stapler\Storage;
 
 use Codesleeve\Stapler\Exceptions;
-use Codesleeve\Stapler\File;
+use Codesleeve\Stapler\File\UploadedFile;
 use Config;
 
 class Filesystem implements StorageInterface
@@ -63,10 +63,30 @@ class Filesystem implements StorageInterface
 	 */
 	public function remove()
 	{
-		if ($attachedFile->originalFilename()) {
-			$directory = $this->findDirectory($attachedFile);
+		if ($this->attachedFile->originalFilename()) {
+			$directory = $this->findDirectory($this->attachedFile);
 			$this->emptyDirectory($directory, true);
 		}
+	}
+
+	/**
+	 * Move an uploaded file to it's intended destination.
+	 * The file can be an actual uploaded file object or the path to
+	 * a resized image file on disk.
+	 *
+	 * @param  UploadedFile $file 
+	 * @param  string $style
+	 * @param  mixed $overrideFilePermissions
+	 * @return void 
+	 */
+	public function move($file, $style, $overrideFilePermissions)
+	{
+ 		$this->buildDirectory($style->name, $this);
+		$this->cleanDirectory($style->name, $this);
+
+		$filePath = $this->path($style->name);
+ 		$file instanceof UploadedFile ? $this->moveUploadedFile($file, $filePath) : rename($file, $filePath);
+        $this->setPermissions($filePath, $overrideFilePermissions);
 	}
 
 	/**
@@ -75,7 +95,7 @@ class Filesystem implements StorageInterface
 	 *
 	 * @return string               
 	 */
-	public function findDirectory()
+	protected function findDirectory()
 	{
 		$filePath = $this->attachedFile->path();
 		$offset = $this->attachedFile->getOffset($filePath);
@@ -89,7 +109,7 @@ class Filesystem implements StorageInterface
 	 * @param  string $styleName
 	 * @return void
 	 */
-	public function buildDirectory($styleName)
+	protected function buildDirectory($styleName)
 	{
 		$filePath = $this->path($styleName);
 		$directory = dirname($filePath);
@@ -105,7 +125,7 @@ class Filesystem implements StorageInterface
 	 * @param  string $styleName
 	 * @return void
 	 */
-	public function cleanDirectory($styleName)
+	protected function cleanDirectory($styleName)
 	{
 		$filePath = $this->path($styleName);
 
@@ -115,57 +135,6 @@ class Filesystem implements StorageInterface
 		}
 	}
 
-	/**
-	 * Recursively delete the files in a directory.
-	 *
-	 * @desc Recursively loops through each file in the directory and deletes it.
-	 * @param string $directory
-	 * @param boolean $deleteDirectory
-	 * @return void
-	 */
-	public function emptyDirectory($directory, $deleteDirectory = false)
-	{
-		if (!is_dir($directory) || !($directoryHandle = opendir($directory))) {
-			return;
-		}
-		
-		while (false !== ($object = readdir($directoryHandle))) 
-		{
-			if ($object == '.' || $object == '..') {
-				continue;
-			}
-
-			if (!is_dir($directory.'/'.$object)) {
-				unlink($directory.'/'.$object);
-			}
-			else {
-				$this->emptyDirectory($directory.'/'.$object, true);	// The object is a folder, recurse through it.
-			}
-		}
-		
-		if ($deleteDirectory)
-		{
-			closedir($directoryHandle);
-			rmdir($directory);
-		}
-	}
-
-	/**
-	 * Move an uploaded file to it's intended destination.
-	 * The file can be an actual uploaded file object or the path to
-	 * a resized image file on disk.
-	 *
-	 * @param  UploadedFile $file 
-	 * @param  string $filePath 
-	 * @return void 
-	 */
-	public function move($file, $filePath, $overrideFilePermissions)
-	{
- 		$file instanceof \UploadedFile ? $this->moveUploadedFile($file, $filePath) : rename($file, $filePath);
-        $this->setPermissions($filePath, $overrideFilePermissions);
-
-        return $filePath;
-	}
 
 	/**
 	 * Set the file permissions of a file upload
@@ -197,5 +166,40 @@ class Filesystem implements StorageInterface
             $error = error_get_last();
             throw new Exceptions\FileException(sprintf('Could not move the file "%s" to "%s" (%s)', $file->getPathname(), $filePath, strip_tags($error['message'])));
         }
+	}
+
+	/**
+	 * Recursively delete the files in a directory.
+	 *
+	 * @desc Recursively loops through each file in the directory and deletes it.
+	 * @param string $directory
+	 * @param boolean $deleteDirectory
+	 * @return void
+	 */
+	protected function emptyDirectory($directory, $deleteDirectory = false)
+	{
+		if (!is_dir($directory) || !($directoryHandle = opendir($directory))) {
+			return;
+		}
+		
+		while (false !== ($object = readdir($directoryHandle))) 
+		{
+			if ($object == '.' || $object == '..') {
+				continue;
+			}
+
+			if (!is_dir($directory.'/'.$object)) {
+				unlink($directory.'/'.$object);
+			}
+			else {
+				$this->emptyDirectory($directory.'/'.$object, true);	// The object is a folder, recurse through it.
+			}
+		}
+		
+		if ($deleteDirectory)
+		{
+			closedir($directoryHandle);
+			rmdir($directory);
+		}
 	}
 }

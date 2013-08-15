@@ -1,6 +1,6 @@
 <?php namespace Codesleeve\Stapler\Storage;
 
-use Codesleeve\Stapler\Exceptions;
+use Codesleeve\Stapler\File\UploadedFile;
 use Aws\S3\S3Client;
 use Config;
 
@@ -44,7 +44,7 @@ class S3 implements StorageInterface
 	 */
 	public function url($styleName)
 	{
-		return $this->s3Client->getObjectUrl('stapler.test.bucket', $this->path($styleName));
+		return $this->s3Client->getObjectUrl($this->attachedFile->bucket, $this->path($styleName));
 	}
 
 	/**
@@ -65,7 +65,7 @@ class S3 implements StorageInterface
 	 */
 	public function reset()
 	{
-		
+		$this->remove();
 	}
 
 	/**
@@ -76,64 +76,41 @@ class S3 implements StorageInterface
 	 */
 	public function remove()
 	{
-		
+		$this->s3Client->deleteObjects(['Bucket' => $this->attachedFile->bucket, 'Objects' => $this->getKeys()]);
 	}
 
 	/**
-	 * Utility function to return the base directory of the uploaded file for 
-	 * a file attachment.
-	 * 
-	 * @return string               
-	 */
-	public function findDirectory()
-	{
-		
-	}
-
-	/**
-	 * Determine if a style directory needs to be built and if so create it.
+	 * Move an uploaded file to it's intended destination.
+	 * The file can be an actual uploaded file object or the path to
+	 * a resized image file on disk.
 	 *
-	 * @param  string $styleName
-	 * @return void
-	 */
-	public function buildDirectory($styleName)
-	{
-		
-	}
-
-	/**
-	 * Determine if a style directory needs to be cleaned (emptied) and if so empty it.
-	 *
-	 * @param  string $styleName
-	 * @return void
-	 */
-	public function cleanDirectory($styleName)
-	{
-		
-	}
-
-	/**
-	 * Recursively delete the files in a directory.
-	 *
-	 * @desc Recursively loops through each file in the directory and deletes it.
-	 * @param string $directory
-	 * @param boolean $deleteDirectory
-	 * @return void
-	 */
-	public function emptyDirectory($directory, $deleteDirectory = false)
-	{
-		
-	}
-
-	/**
-	 * Move an uploaded file to it's intended destination
-	 *
-	 * @param  Symfony\Component\HttpFoundation\File\UploadedFile $file 
-	 * @param  string $filePath 
+	 * @param  UploadedFile $file 
+	 * @param  string $style
+	 * @param  mixed $overrideFilePermissions
 	 * @return void 
 	 */
-	public function move($file, $filePath, $overrideFilePermissions)
+	public function move($file, $style, $overrideFilePermissions)
 	{
-		
+		$filePath = $this->path($style->name);
+ 		$file = $file instanceof UploadedFile ? $file->getRealPath() : $file;
+
+ 		$this->s3Client->putObject(['Bucket' => $this->attachedFile->bucket, 'Key' => $filePath, 'SourceFile' => $file, 'ACL' => $this->attachedFile->ACL]);
+	}
+
+	/**
+	 * Return an array of paths (bucket keys) for an attachment.
+	 * There will be one path for each of the attachmetn's styles.
+	 * 	
+	 * @return array
+	 */
+	protected function getKeys()
+	{
+		$keys = [];
+
+		foreach ($this->attachedFile->styles as $style) {
+			$keys[] = ['Key' => $this->path($style->name)];
+		}
+
+		return $keys;
 	}
 }

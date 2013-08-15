@@ -7,13 +7,13 @@ return [
 	| AWS Access Key
 	|--------------------------------------------------------------------------
 	|
-	| This is actually a  username . It is alphanumeric text string that uniquely 
+	| This is an alphanumeric text string that uniquely 
 	| identifies the user who owns the account. No two accounts can have the 
 	| same AWS Access Key.
 	|
 	*/
 
-	'key' => 'tandrewbennett@hotmail.com',
+	'key' => '',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -27,7 +27,7 @@ return [
 	|
 	*/
 
-	'secret' => 'Pirate44',
+	'secret' => '',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -42,7 +42,7 @@ return [
 	|
 	*/
 	
-	'bucket' => 'stapler.test.bucket',
+	'bucket' => '',
 
 	/*
 	|--------------------------------------------------------------------------

@@ -191,7 +191,7 @@ class Attachment
 	public function __call($method, $parameters)
 	{
 		// Storage methods
-		$callable = ['reset', 'remove', 'findDirectory', 'buildDirectory', 'cleanDirectory', 'emptyDirectory', 'move'];
+		$callable = ['reset', 'remove', 'buildDirectory', 'cleanDirectory', 'move'];
 		
 		if (in_array($method, $callable)) {
 			return call_user_func_array([$this->storageDriver, $method], $parameters);
@@ -215,15 +215,12 @@ class Attachment
 	 */
 	public function process($style)
 	{
-		$this->buildDirectory($style->name, $this);
-		$this->cleanDirectory($style->name, $this);
-
 		if ($style->value && $this->uploadedFile->isImage()) {
 			$tmpFilePath = $this->processStyle($style);
-			$this->move($tmpFilePath, $this->path($style->name), $this->override_file_permissions);
+			$this->move($tmpFilePath, $style, $this->override_file_permissions);
 		}
 		else {
-			$this->move($this->uploadedFile, $this->path($style->name), $this->override_file_permissions);
+			$this->move($this->uploadedFile, $style, $this->override_file_permissions);
 		}
 	}
 
@@ -236,7 +233,6 @@ class Attachment
 	public function url($styleName = '')
 	{
 		if ($this->originalFilename()) {
-			//return $this->getInterpolator()->interpolate($this->url, $this, $styleName);
 			return $this->storageDriver->url($styleName, $this);
 		}
 		
@@ -252,7 +248,6 @@ class Attachment
 	public function path($styleName = '')
 	{
 		if ($this->originalFilename()) {
-			//return $this->getInterpolator()->interpolate($this->path, $this, $styleName);
 			return $this->storageDriver->path($styleName, $this);
 		}
 
