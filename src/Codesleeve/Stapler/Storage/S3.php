@@ -86,11 +86,12 @@ class S3 implements StorageInterface
 	 *
 	 * @param  UploadedFile $file 
 	 * @param  string $style
-	 * @param  mixed $overrideFilePermissions
 	 * @return void 
 	 */
-	public function move($file, $style, $overrideFilePermissions)
+	public function move($file, $style)
 	{
+		$this->cleanDirectory($style->name, $this);
+
 		$filePath = $this->path($style->name);
  		$file = $file instanceof UploadedFile ? $file->getRealPath() : $file;
 
@@ -112,5 +113,32 @@ class S3 implements StorageInterface
 		}
 
 		return $keys;
+	}
+
+	/**
+	 * Determine if objects under a style prefix (directory) need to be cleaned (removed).
+	 *
+	 * @param  string $styleName
+	 * @return void
+	 */
+	protected function cleanDirectory($styleName)
+	{
+		$filePath = $this->path($styleName);
+
+		if (!$this->attachedFile->keep_old_files) {
+			$fileDirectory = dirname($filePath);
+			$this->emptyDirectory($fileDirectory);
+		}
+	}
+
+	/**
+	 * Delete all objects in an s3 bucket that match a given prefix (directory).
+	 * 
+	 * @param  string $prefix
+	 * @return void
+	 */
+	protected function emptyDirectory($prefix)
+	{
+		$this->s3Client->deleteMatchingObjects($this->attachedFile->bucket, $prefix);
 	}
 }

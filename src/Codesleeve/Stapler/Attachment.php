@@ -217,10 +217,10 @@ class Attachment
 	{
 		if ($style->value && $this->uploadedFile->isImage()) {
 			$tmpFilePath = $this->processStyle($style);
-			$this->move($tmpFilePath, $style, $this->override_file_permissions);
+			$this->move($tmpFilePath, $style);
 		}
 		else {
-			$this->move($this->uploadedFile, $style, $this->override_file_permissions);
+			$this->move($this->uploadedFile, $style);
 		}
 	}
 

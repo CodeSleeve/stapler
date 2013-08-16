@@ -40,8 +40,7 @@ interface StorageInterface
 	 *
 	 * @param  UploadedFile $file 
 	 * @param  string $style
-	 * @param  mixed $overrideFilePermissions
 	 * @return void 
 	 */
-	public function move($file, $style, $overrideFilePermissions);
+	public function move($file, $style);
 }

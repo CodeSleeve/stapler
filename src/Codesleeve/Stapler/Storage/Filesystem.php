@@ -76,17 +76,16 @@ class Filesystem implements StorageInterface
 	 *
 	 * @param  UploadedFile $file 
 	 * @param  string $style
-	 * @param  mixed $overrideFilePermissions
 	 * @return void 
 	 */
-	public function move($file, $style, $overrideFilePermissions)
+	public function move($file, $style)
 	{
- 		$this->buildDirectory($style->name, $this);
-		$this->cleanDirectory($style->name, $this);
+ 		$this->buildDirectory($style->name);
+		$this->cleanDirectory($style->name);
 
 		$filePath = $this->path($style->name);
  		$file instanceof UploadedFile ? $this->moveUploadedFile($file, $filePath) : rename($file, $filePath);
-        $this->setPermissions($filePath, $overrideFilePermissions);
+        $this->setPermissions($filePath, $this->attachedFile->override_file_permissions);
 	}
 
 	/**
