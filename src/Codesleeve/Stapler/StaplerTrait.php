@@ -13,7 +13,7 @@ use App;
  * 
  * 
  * @package tabennett/stapler
- * @version 1.0 Alpha
+ * @version v1.0.0-Beta1
  * @author Travis Bennett <tandrewbennett@hotmail.com>
  * @link 	
  */
