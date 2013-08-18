@@ -21,6 +21,13 @@ class S3 implements StorageInterface
 	protected $s3Client;
 
 	/**
+	 * Boolean flag indicating if this attachment's bucket currently exists.
+	 * 
+	 * @var array
+	 */
+	protected $bucketExists = false;
+
+	/**
 	 * Constructor method
 	 * 
 	 * @param Codesleeve\Stapler\Attachment $attachedFile
@@ -44,7 +51,7 @@ class S3 implements StorageInterface
 	 */
 	public function url($styleName)
 	{
-		return $this->s3Client->getObjectUrl($this->attachedFile->bucket, $this->path($styleName));
+		return $this->s3Client->getObjectUrl($this->getBucket(), $this->path($styleName));
 	}
 
 	/**
@@ -76,7 +83,7 @@ class S3 implements StorageInterface
 	 */
 	public function remove()
 	{
-		$this->s3Client->deleteObjects(['Bucket' => $this->attachedFile->bucket, 'Objects' => $this->getKeys()]);
+		$this->s3Client->deleteObjects(['Bucket' => $this->getBucket(), 'Objects' => $this->getKeys()]);
 	}
 
 	/**
@@ -90,12 +97,12 @@ class S3 implements StorageInterface
 	 */
 	public function move($file, $style)
 	{
-		$this->cleanDirectory($style->name, $this);
+		$this->cleanDirectory($style->name);
 
 		$filePath = $this->path($style->name);
  		$file = $file instanceof UploadedFile ? $file->getRealPath() : $file;
 
- 		$this->s3Client->putObject(['Bucket' => $this->attachedFile->bucket, 'Key' => $filePath, 'SourceFile' => $file, 'ACL' => $this->attachedFile->ACL]);
+ 		$this->s3Client->putObject(['Bucket' => $this->getBucket(), 'Key' => $filePath, 'SourceFile' => $file, 'ACL' => $this->attachedFile->ACL]);
 	}
 
 	/**
@@ -139,6 +146,37 @@ class S3 implements StorageInterface
 	 */
 	protected function emptyDirectory($prefix)
 	{
-		$this->s3Client->deleteMatchingObjects($this->attachedFile->bucket, $prefix);
+		$this->s3Client->deleteMatchingObjects($this->getBucket(), $prefix);
+	}
+
+	/**
+	 * This is a wrapper method for returning the name of an attachment's bucket.
+	 * If the bucket doesn't exist we'll build it first before returning it's name.
+	 * 
+	 * @return string
+	 */
+	protected function getBucket()
+	{
+		$bucketName = $this->attachedFile->bucket;
+		if (!$this->bucketExists) {
+			$this->buildBucket($bucketName);
+		}
+
+		return $bucketName;
+	}
+
+	/**
+	 * Attempt to build a bucket (if it doesn't already exist).
+	 * 
+	 * @param  string $bucketName
+	 * @return void
+	 */
+	public function buildBucket($bucketName)
+	{
+		if (!$this->s3Client->doesBucketExist($bucketName, true)) {
+			$this->s3Client->createBucket(['ACL' => $this->attachedFile->ACL, 'Bucket' => $bucketName, 'LocationConstraint' => $this->attachedFile->region]);
+		}
+
+		$this->bucketExists = true;
 	}
 }
