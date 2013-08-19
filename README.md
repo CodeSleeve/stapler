@@ -103,14 +103,21 @@ $user->save();
 
 ## Overview
 
-Stapler works by attaching file uploads to records stored within a database table (model).  Configuration is available on both a per model basis only or globally through the config settings.  Stapler is very flexible about how it processes configuration; global configuration options can be overriden on a per attachment basis so tha you can easily cascade settings you would like to have on all attachments while still having the freedom to customize individual attachment configuration.  
-
-A model can have multiple attachments defined (avatar, photo, some_random_attachment, etc) and in turn each attachment can have multiple sizes (styles) defined.  When an image or file is uploaded, Stapler will handle all the file processing (moving, resizing, etc) and provide objects/methods for workingw ith the uploaded assets.  To accomplish this, four fields (named after the attachemnt) are created (via stapler:fasten) in the corresponding table for any model containing a file attachment (these should be included in the model's fillable array).  For example, an attachment named 'avatar' the following fields would be created:
+Stapler works by attaching file uploads to records stored within a database table (model).  A model can have multiple attachments defined (avatar, photo, some_random_attachment, etc) and in turn each attachment can have multiple sizes (styles) defined.  When an image or file is uploaded, Stapler will handle all the file processing (moving, resizing, etc) and provide an attachment object (as a model property) with methods for workingw ith the uploaded assets.  To accomplish this, four fields (named after the attachemnt) are created (via stapler:fasten) in the corresponding table for any model containing a file attachment (these should be included in the model's fillable array).  For example, an attachment named 'avatar' the following fields would be created:
 
 *   avatar_file_name
 *   avatar_file_size
 *   avatar_content_type
 *   avatar_updated_at
+
+## Configuration
+
+Configuration is available on both a per attachment basis or globally through the config settings.  Stapler is very flexible about how it processes configuration; global configuration options can be overriden on a per attachment basis so tha you can easily cascade settings you would like to have on all attachments while still having the freedom to customize an individual attachment's configuration.  To get started, the first thing you'll probably want to do is publish the default configuration options to your app/config directory. 
+
+ ```php
+  php artisan config:publish codesleeve/stapler
+``` 
+Having done this, you should now be able to configure Stapler however you see fit wihout fear of future updates overriding your configuration files.
 
 ## Interpolations
 
@@ -152,7 +159,7 @@ Default values:
     
 ## S3 Storage
 
-As your web application grows, you may find yourself in need of more robust file storage than what's provided by the local filesystem (e.g you're using multiple server instances and need a shared location for storing/accessing uploaded file assets).  Stapler provides a simple mechanism for easily storing and retreiving file objects with Amazon Simple Storage Service (Amazon S3).  In fact, aside from a few extra configuration settings, there's really no difference between s3 storage and filesystem storage when interacting with your attachments.   
+As your web application grows, you may find yourself in need of more robust file storage than what's provided by the local filesystem (e.g you're using multiple server instances and need a shared location for storing/accessing uploaded file assets).  Stapler provides a simple mechanism for easily storing and retreiving file objects with Amazon Simple Storage Service (Amazon S3).  In fact, aside from a few extra configuration settings, there's really no difference between s3 storage and filesystem storage when interacting with your attachments.  To get started with s3 storage you'll first need to change the storage setting in config/stapler.php from 'filesystem' to 's3' (keep in mind, this can be done per attachment if you want to use s3 for a specific attachment only).  After that's done, crack open config/s3.php for a list of s3 storage settings:
 
 *   **path**: This is the key under the bucket in which the file will be stored. The URL will be constructed from the bucket and the path. This is what you will want to interpolate. Keys should be unique, like filenames, and despite the fact that S3 (strictly speaking) does not support directories, you can still use a / to separate parts of your file name.
 *   **default_url**: The default file returned when no file upload is present for a record.  As with filesystem storage, this should be an image on your local filesystem.
