@@ -12,7 +12,11 @@ Stapler was created by Travis Bennett.
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Quick Start](#quickstart)
-- [Configuration](#configuration)
+- [Overview](#overview)
+- [Interpolations](#interpolations)
+- [Filesystem Storage](#filesystemstorage)
+- [S3 Storage](#s3storage)
+- [Image Processing](#imageprocessing)
 - [Examples](#examples)
 
 ## Requirements
@@ -97,16 +101,20 @@ $user->avatar = STAPLER_NULL;
 $user->save();
 ```
 
-## Configuration
+## Overview
 
-Stapler works by attaching file uploads to records stored within a database table (model).  Configuration is (currently) available on a per model basis only.  A model can have multiple attachments defined (avatar, photo, some_random_attachment, etc) and in turn each attachment can have multiple sizes (styles) defined.  When an image or file is uploaded, Stapler will handle all the file processing (moving, resizing, etc) and provide helper methods for retreiving the uploaded assets.  To accomplish this, four fields (named after the attachemnt) are created (via stapler:fasten) in the corresponding table for any model containing a file attachment (these should be included in the model's fillable array).  For example, an attachment named 'avatar' the following fields would be created:
+Stapler works by attaching file uploads to records stored within a database table (model).  Configuration is available on both a per model basis only or globally through the config settings.  Stapler is very flexible about how it processes configuration; global configuration options can be overriden on a per attachment basis so tha you can easily cascade settings you would like to have on all attachments while still having the freedom to customize individual attachment configuration.  
+
+A model can have multiple attachments defined (avatar, photo, some_random_attachment, etc) and in turn each attachment can have multiple sizes (styles) defined.  When an image or file is uploaded, Stapler will handle all the file processing (moving, resizing, etc) and provide objects/methods for workingw ith the uploaded assets.  To accomplish this, four fields (named after the attachemnt) are created (via stapler:fasten) in the corresponding table for any model containing a file attachment (these should be included in the model's fillable array).  For example, an attachment named 'avatar' the following fields would be created:
 
 *   avatar_file_name
 *   avatar_file_size
 *   avatar_content_type
 *   avatar_updated_at
 
-Stapler can be configured to store files in a variety of ways.  This is done by defining a url string which points to the uploaded file asset.  This is done via string interpolations.  Currently, the following interpolations are available for use:
+## Interpolations
+
+With Stapler, uploaded files are accessed by defining path, url, and default_url strings which point to you uploaded file assets.  This is done via string interpolations.  Currently, the following interpolations are available for use:
 
 *   **:attachment** - The name of the file attachment as declared in the hasAttachedFile function, e.g 'avatar'.
 *   **:class**  - The classname of the model contaning the file attachment, e.g User.  Stapler can handle namespacing of classes.
@@ -114,35 +122,66 @@ Stapler can be configured to store files in a variety of ways.  This is done by 
 *   **:filename** - The name of the uploaded file, e.g 'some_file.jpg'
 *   **:id** - The id of the corresponding database record for the uploaded file.
 *   **:id_partition** - The partitioned id of the corresponding database record for the uploaded file, e.g an id = 1 is interpolated as 000/000/001.  This is the default and recommended setting for Stapler.  Partioned id's help overcome the 32k subfolder problem that occurs in nix-based systems using the EXT3 file system.
+*   **:hash** - An sha256 hash of the corresponding database record id.
 *   **:laravel_root** - The path to the root of the laravel project.
 *   **:style** - The resizing style of the file (images only), e.g 'thumbnail' or 'orginal'.
-*   **:url** - The resizing style of the file (images only), e.g 'thumbnail' or 'orginal'.
+*   **:url** - The url string pointing to your uploaded file.  This interpolation is actually an interpolation itself.  It can be composed of any of the above interpolations (except itself).  
 
-These interpolation can then be used to define a path, url, and default_url for the location of your uploaded files.
-In a minimal configuration, the following settings are enabled by default:
+## Filesystem Storage
 
+Filesystem (local disk) is the default storage option for stapler.  When using it, the following configuration settings are available:
+
+*   **path**: Similar to the url, the path option is the location where your files will be stored at on disk.  It should be noted that the path option should not conflict with the url option.  Stapler provides sensible defaults that take care of this for you.
+*   **url**: The url (relative to your project document root) where files will be stored.  It is composed of 'interpolations' that will be replaced their corresponding values during runtime.  It's unique in that it functions as both a configuration option and an interpolation.
+*   **default_url**: The default file returned when no file upload is present for a record.
+*   **default_style**: The default style returned from the Stapler file location helper methods.  An unaltered version of uploaded file
+    is always stored within the 'original' style, however the default_style can be set to point to any of the defined syles within the styles array.
+*   **styles**: An array of image sizes defined for the file attachment.  Stapler will attempt to use to format the file upload
+    into the defined style.
+*   **override_file_permissions**: Override the default file permissions used by stapler when creating a new file in the file system.  Leaving this value as null will result in stapler chmod'ing files to 0666.  Set it to a specific octal value and stapler will chmod accordingly.  Set it to false to prevent chmod from occuring (useful for non unix-based environments).
+*   **keep_old_files**: Set this to true in order to prevent older file uploads from being deleted from the file system.
+
+Default values:
 *   **path**: ':laravel_root/public:url',
 *   **url**: '/system/:class/:attachment/:id_partition/:style/:filename',
 *   **default_url**: '/:attachment/:style/missing.png',
 *   **default_style**: 'original',
 *   **styles**: [],
+*   **override_file_permissions**: null,
 *   **keep_old_files**: false
+    
+## S3 Storage
 
-*   **path**: Similar to the url, the path option is the location where your files will be stored at on disk.  It should be noted that the path option should not conflict with the url option.  Stapler provides sensible defaults that take care of this for you.
-*   **url**: The file system path to the file upload, relative to the public folder (document root) of the project.
-*   **default_url**: The default file returned when no file upload is present for a record.
+As your web application grows, you may find yourself in need of more robust file storage than what's provided by the local filesystem (e.g you're using multiple server instances and need a shared location for storing/accessing uploaded file assets).  Stapler provides a simple mechanism for easily storing and retreiving file objects with Amazon Simple Storage Service (Amazon S3).  In fact, aside from a few extra configuration settings, there's really no difference between s3 storage and filesystem storage when interacting with your attachments.   
+
+*   **path**: This is the key under the bucket in which the file will be stored. The URL will be constructed from the bucket and the path. This is what you will want to interpolate. Keys should be unique, like filenames, and despite the fact that S3 (strictly speaking) does not support directories, you can still use a / to separate parts of your file name.
+*   **default_url**: The default file returned when no file upload is present for a record.  As with filesystem storage, this should be an image on your local filesystem.
 *   **default_style**: The default style returned from the Stapler file location helper methods.  An unaltered version of uploaded file
     is always stored within the 'original' style, however the default_style can be set to point to any of the defined syles within the styles array.
-*   **styles**: An array of image sizes defined for the file attachment.  Stapler will attempt to use the Resizer bundle to format the file upload
-    into the defined style.  To enable image cropping, insert a # symbol after the resizing options.  For example:
+*   **styles**: An array of image sizes defined for the file attachment.  Stapler will attempt to use to format the file upload
+    into the defined style.
+*   **key**: This is an alphanumeric text string that uniquely identifies the user who owns the account. No two accounts can have the same AWS Access Key.
+*   **secret**: This key plays the role of a  password . It's called secret because it is assumed to be known by the owner only.  A Password with Access Key forms a secure information set that confirms the user's identity. You are advised to keep your Secret Key in a safe place.
+*   **bucket**: The bucket where you wish to store your objects.  Every object in Amazon S3 is stored in a bucket.  If the specified bucket doesn't exist Stapler will attempt to create it.  The bucket name will not be interpolated. You can define the bucket as a closure if you want to determine it's name at runtime. Stapler will call that closure with attachment as the only argument.
+*   **ACL**: This is a string/array that should be one of the canned access policies that S3 provides (private, public-read, public-read-write, authenticated-read, bucket-owner-read, bucket-owner-full-control). The default for Stapler is public-read.  An associative array (style => permission) may be passed to specify permissions on a per style basis.
+*   **scheme**: The protocol for the URLs generated to your S3 assets. Can be either 'http' or 'https'.  Defaults to 'http' when your ACL is 'public-read' (the default) and 'https' when your ACL is anything else.
+*   **region**: The region name of your bucket (e.g. 'us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1').  Determines the base url where your objects are stored at (e.g a region of us-west-2 has a base url of s3-us-west-2.amazonaws.com).
+*   **keep_old_files**: Set this to true in order to prevent older file uploads from being deleted from the bucket.
 
-```php
-'styles' => [
-    'thumbnail' => '100x100#'
-]
-```
+Default values:
+*   **path**: ':attachment/:id/:style/:filename',
+*   **default_url**: '/:attachment/:style/missing.png',
+*   **default_style**: 'original',
+*   **styles**: [],
+*   **key**: ''
+*   **secret**: ''
+*   **bucket**: ''
+*   **ACL**: 'public-read'
+*   **scheme**: 'http'
+*   **region**: 'us-west-2'
+*   **keep_old_files**: false
 
-will create a copy of the file upload, resized and cropped to 100x100.
+## Image Processing
 
 Currently, this verion of Stapler relies on a modified version of the Laravel3 Resizer bundle (as mentioned before, this is going to swapped out for one of the packagist image processing packages soon), which in turn makes use of the PHP GD library for image processing.  However, because Stapler is inspired by Rails paperclip plugin (which makes use of ImageMagick for image processing) the following ImageMagick processing directives will be recognized when defining Stapler styles:
 
@@ -152,7 +191,6 @@ Currently, this verion of Stapler relies on a modified version of the Laravel3 R
 *   **widthxheight#**: Resize then crop.
 *   **widthxheight!**: Resize by exacty width and height.  Width and height emphatically given, original aspect ratio will be ignored.
 *   **widthxheight**: Auto determine both width and height when resizing.  This will resize as close as possible to the given dimensions while still preserving the original aspect ratio.
- 
 
 ## Examples
 
