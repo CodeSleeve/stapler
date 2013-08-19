@@ -9,12 +9,18 @@ somewhat familiar with how this bundle works.
 
 Stapler was created by Travis Bennett.
 
-##Requirements
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Quick Start](#quickstart)
+- [Configuration](#configuration)
+- [Examples](#examples)
+
+## Requirements
 
 Stapler currently requires php >= 5.4 (Stapler is implemented via the use of traits).
 
-## Installing The Package
-Stapler is distributed as a packagist package, which is how it should be used in your app.
+## Installation
+Stapler is distributed as a composer package, which is how it should be used in your app.
 
 Install the package using Composer.  Edit your project's `composer.json` file to require `codesleeve/stapler`.
 
@@ -80,9 +86,9 @@ public function store()
 
 In your show view:
 ```php
-<img src="<?= $user->avatar_url() ?>" >
-<img src="<?= $user->avatar_url('medium') ?>" >
-<img src="<?= $user->avatar_url('thumb') ?>" >
+<img src="<?= $user->avatar->url() ?>" >
+<img src="<?= $user->avatar->url('medium') ?>" >
+<img src="<?= $user->avatar->url('thumb') ?>" >
 ```
 
 To detach (reset) a file, simply set the attribute to the constant STAPLER_NULL:
@@ -93,40 +99,36 @@ $user->save();
 
 ## Configuration
 
-Stapler works by attaching file uploads to records stored within a database table (model).  Configuration is (currently) available on a per model 
-basis only.  Each model can have multiple attachments defined (avatar, photo, some_random_attachment, etc) and in turn each attachment can have 
-multiple sizes (styles) defined.  When an image or file is uploaded, Stapler will handle all the file processing (moving, resizing, etc) and 
-provide helper methods for retreiving the uploaded assets.  To accomplish this, four fields (named after the attachemnt) are created (via stapler:fasten) 
-in the corresponding table for any model containing a file attachment (these should be included in the model's fillable array).  For example, an attachment named 'avatar' the following fields would be created:
+Stapler works by attaching file uploads to records stored within a database table (model).  Configuration is (currently) available on a per model basis only.  A model can have multiple attachments defined (avatar, photo, some_random_attachment, etc) and in turn each attachment can have multiple sizes (styles) defined.  When an image or file is uploaded, Stapler will handle all the file processing (moving, resizing, etc) and provide helper methods for retreiving the uploaded assets.  To accomplish this, four fields (named after the attachemnt) are created (via stapler:fasten) in the corresponding table for any model containing a file attachment (these should be included in the model's fillable array).  For example, an attachment named 'avatar' the following fields would be created:
 
 *   avatar_file_name
 *   avatar_file_size
 *   avatar_content_type
-*   avatar_uploaded_at
+*   avatar_updated_at
 
-Stapler can be configured to store files in a variety of ways.  This is done by defining a url string which points to the uploaded file asset.
-This is done via string interpolations.  Currently, the following interpolations are available for use:
+Stapler can be configured to store files in a variety of ways.  This is done by defining a url string which points to the uploaded file asset.  This is done via string interpolations.  Currently, the following interpolations are available for use:
 
 *   **:attachment** - The name of the file attachment as declared in the hasAttachedFile function, e.g 'avatar'.
 *   **:class**  - The classname of the model contaning the file attachment, e.g User.  Stapler can handle namespacing of classes.
 *   **:extension** - The file extension type of the uploaded file, e.g '.jpg'
 *   **:filename** - The name of the uploaded file, e.g 'some_file.jpg'
 *   **:id** - The id of the corresponding database record for the uploaded file.
-*   **:id_partition** - The partitioned id of the corresponding database record for the uploaded file, e.g an id = 1 is interpolated as 000/000/001.
-    This is the default and recommended setting for Stapler.  Partioned id's help overcome the 32k subfolder problem that occurs in nix-based 
-    systems using the EXT3 file system.
+*   **:id_partition** - The partitioned id of the corresponding database record for the uploaded file, e.g an id = 1 is interpolated as 000/000/001.  This is the default and recommended setting for Stapler.  Partioned id's help overcome the 32k subfolder problem that occurs in nix-based systems using the EXT3 file system.
 *   **:laravel_root** - The path to the root of the laravel project.
 *   **:style** - The resizing style of the file (images only), e.g 'thumbnail' or 'orginal'.
+*   **:url** - The resizing style of the file (images only), e.g 'thumbnail' or 'orginal'.
 
-These interpolation can then be used to define a url and default_url for the location of your uploaded files.
+These interpolation can then be used to define a path, url, and default_url for the location of your uploaded files.
 In a minimal configuration, the following settings are enabled by default:
 
+*   **path**: ':laravel_root/public:url',
 *   **url**: '/system/:class/:attachment/:id_partition/:style/:filename',
 *   **default_url**: '/:attachment/:style/missing.png',
 *   **default_style**: 'original',
 *   **styles**: [],
 *   **keep_old_files**: false
 
+*   **path**: Similar to the url, the path option is the location where your files will be stored at on disk.  It should be noted that the path option should not conflict with the url option.  Stapler provides sensible defaults that take care of this for you.
 *   **url**: The file system path to the file upload, relative to the public folder (document root) of the project.
 *   **default_url**: The default file returned when no file upload is present for a record.
 *   **default_style**: The default style returned from the Stapler file location helper methods.  An unaltered version of uploaded file
@@ -142,9 +144,7 @@ In a minimal configuration, the following settings are enabled by default:
 
 will create a copy of the file upload, resized and cropped to 100x100.
 
-Currently, this verions of Stapler relies on a modified version of the Laravel3 Resizer bundle (as mentioned before, this is going to swapped out for one of the packagist image processing packages soon), which in turn makes use of the PHP GD library for image processing.  However, because Stapler
-is inspired by Rails paperclip plugin (which makes use of ImageMagick for image processing) the following ImageMagick processing directives will be 
-recognized when defining Stapler styles:
+Currently, this verion of Stapler relies on a modified version of the Laravel3 Resizer bundle (as mentioned before, this is going to swapped out for one of the packagist image processing packages soon), which in turn makes use of the PHP GD library for image processing.  However, because Stapler is inspired by Rails paperclip plugin (which makes use of ImageMagick for image processing) the following ImageMagick processing directives will be recognized when defining Stapler styles:
 
 *   **width**: A style that defines a width only (landscape).  Height will be automagically selected to preserve aspect ratio.  This works well for resizing
     images for display on mobile devices, etc.
@@ -173,8 +173,7 @@ public function __construct($attributes = array(), $exists = false){
 }
 ```
 
-Create an attachment named 'picture', with both thumbnail (100x100) and large (300x300) styles, using custom url and default_url configurations, with
-the keep_old_files flag set to true (so that older file uploads aren't deleted from the file system) and image cropping turned on.
+Create an attachment named 'picture', with both thumbnail (100x100) and large (300x300) styles, using custom url and default_url configurations, with the keep_old_files flag set to true (so that older file uploads aren't deleted from the file system) and image cropping turned on.
 
 ```php
 public function __construct($attributes = array(), $exists = false){
@@ -246,27 +245,35 @@ public function store()
 }
 ```
 
-Displaying uploaded files is also easy.  Stapler provides convenience methods for retrieving url and path locations to uploaded files.  As an example,
-for an attachment named 'photo', the static methods photo_path() and photo_url() would be available on the model to which the file was attached.
-Assuming an attachment named photo that's attached to a User model, consider the following:
+Displaying uploaded files is also easy.  When working with a model instance, each attachment can be accessed as a property on the model.  An attachment object provides methods for seamlessly accessing the properties, paths, and urls of the underlying uploaded file object.  As an example, for an attachment named 'photo', the path(), url(), createdAt(), contentType(), size(), and originalFilename() methods would be available on the model to which the file was attached.  Assuming an attachment named photo that's attached to a User model, consider the following:
 
 Display a resized thumbnail style image belonging to a user record:
 ```php
-<img src="<?= $user->photo_url('thumbnail') ?>" >
+<img src="<?= $user->photo->url('thumbnail') ?>" >
 ```
 
 Display the original image style (unmodified image):
 ```php
-<img src="<?= $user->photo_url('original') ?>" >
+<img src="<?= $user->photo->url('original') ?>" >
 ```
 
 This also displays the unmodified original image (unless the :default_url interpolation has been set to a different style):
 ```php
-<img src="<?= $user->photo_url() ?>" >
+<img src="<?= $user->photo->url() ?>" >
 ```
 
-We can also retrieve the file path of an uploaded file.
+We can also retrieve the file path, size, original filename, etc of an uploaded file.
 This returns the physical file system path to the thumbnail style image:
 ```php
-$user->photo_path('thumbnail');
+$user->photo->path('thumbnail');
+```
+
+This returns the original file size of the attachment's uploaded file:
+```php
+$user->photo->size();
+```
+
+This returns the original filename of the attachment's uploaded file:
+```php
+$user->photo->originalFilename();
 ```

@@ -1,6 +1,6 @@
 <?php namespace Codesleeve\Stapler;
 
-use Illuminate\Support\Str;
+use Str;
 
 class Interpolator
 {
@@ -8,7 +8,7 @@ class Interpolator
 	 * Interpolate a string.
 	 *
 	 * @param  string $string
-	 * @param string $styleName
+	 * @param  string $styleName
 	 * @return string
 	*/
 	public function interpolate($string, $attachment, $styleName = '')
@@ -33,15 +33,16 @@ class Interpolator
 	protected function interpolations() 
 	{
 		return [
-			':url' => 'url',
-			':attachment' => 'attachment',
-			':basename' => 'basename',
-			':class' => 'getClass',
-			':extension' => 'extension',
 			':filename' => 'filename',
-			':id' => 'id',
-			':id_partition' => 'idPartition',
+			':url' => 'url',
 			':laravel_root' => 'laravelRoot',
+			':class' => 'getClass',
+			':basename' => 'basename',
+			':extension' => 'extension',
+			':id' => 'id',
+			':hash' => 'hash',
+			':id_partition' => 'idPartition',
+			':attachment' => 'attachment',
 			':style' => 'style'
 		];
 	}
@@ -49,6 +50,7 @@ class Interpolator
 	/**
 	 * Returns the file name.
 	 *
+	 * @param Attachment $attachment
 	 * @param string $styleName
 	 * @return string
 	*/
@@ -60,6 +62,7 @@ class Interpolator
 	/**
 	 * Generates the url to a file upload.
 	 *
+	 * @param Attachment $attachment
 	 * @param string $styleName
 	 * @return string
 	*/
@@ -69,19 +72,9 @@ class Interpolator
 	}
 
 	/**
-	 * Returns an integer timestamp from the updated_at column of the corresponding attachment model.
-	 *
-	 * @param string $styleName
-	 * @return string
-	*/
-	protected function updatedAt($attachment, $styleName = '')
-	{
-		# code...
-	}
-
-	/**
 	 * Returns the root of the Laravel project.
 	 *
+	 * @param Attachment $attachment
 	 * @param string $styleName
 	 * @return string
 	*/
@@ -94,6 +87,7 @@ class Interpolator
 	 * Returns the current class name, taking into account namespaces, e.g
 	 * 'Swingline\Stapler' will become Swingline/Stapler.
 	 *
+	 * @param Attachment $attachment
 	 * @param string $styleName
 	 * @return string
 	*/
@@ -105,6 +99,7 @@ class Interpolator
     /**
 	 * Returns the basename portion of the attached file, e.g 'file' for file.jpg.
 	 *
+	 * @param Attachment $attachment
 	 * @param string $styleName
 	 * @return string
 	*/
@@ -116,6 +111,7 @@ class Interpolator
     /**
 	 * Returns the extension of the attached file, e.g 'jpg' for file.jpg.
 	 *
+	 * @param Attachment $attachment
 	 * @param string $styleName
 	 * @return string
 	*/
@@ -127,6 +123,7 @@ class Interpolator
 	/**
 	 * Returns the id of the current object instance.
 	 *
+	 * @param Attachment $attachment
 	 * @param string $styleName
 	 * @return string
 	*/
@@ -136,31 +133,22 @@ class Interpolator
     }
 
 	/**
-	 * Returns the fingerprint of the instance
-	 * 
-	 * @param  string $styleName 
-	 * @return void
-	 */
-	protected function fingerprint($attachment, $styleName = '')
-	{
-		# code...
-	}
-
-	/**
-	 * Return the attachment hash.
-	 * 
+	 * Return a Bcrypt hash of the attachment's corresponding instance id.
+	 *
+	 * @param Attachment $attachment
 	 * @param  string $styleName 
 	 * @return void
 	 */
 	protected function hash($attachment, $styleName = '')
 	{
-		# code...
+		return hash('sha256', $this->id($attachment, $styleName));
 	}
 
 	/**
 	* Generates the id partition of a record, e.g
 	* return /000/001/234 for an id of 1234.
 	*
+	* @param Attachment $attachment
 	* @param string $styleName
 	* @return mixed
 	*/
@@ -186,6 +174,7 @@ class Interpolator
 	 * Returns the pluralized form of the attachment name. e.g.
      * "avatars" for an attachment of :avatar.
 	 *
+	 * @param Attachment $attachment
 	 * @param string $styleName
 	 * @return string
 	*/
@@ -197,6 +186,7 @@ class Interpolator
 	/**
 	 * Returns the style, or the default style if an empty style is supplied.
 	 *
+	 * @param Attachment $attachment
 	 * @param string $styleName
 	 * @return string
 	*/
