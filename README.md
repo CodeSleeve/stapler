@@ -28,7 +28,7 @@ Stapler is distributed as a composer package, which is how it should be used in 
 
 Install the package using Composer.  Edit your project's `composer.json` file to require `codesleeve/stapler`.
 
-```php
+```js
   "require": {
     "laravel/framework": "4.0.*",
     "codesleeve/stapler": "dev-master"
@@ -159,7 +159,17 @@ Default values:
     
 ## S3 Storage
 
-As your web application grows, you may find yourself in need of more robust file storage than what's provided by the local filesystem (e.g you're using multiple server instances and need a shared location for storing/accessing uploaded file assets).  Stapler provides a simple mechanism for easily storing and retreiving file objects with Amazon Simple Storage Service (Amazon S3).  In fact, aside from a few extra configuration settings, there's really no difference between s3 storage and filesystem storage when interacting with your attachments.  To get started with s3 storage you'll first need to change the storage setting in config/stapler.php from 'filesystem' to 's3' (keep in mind, this can be done per attachment if you want to use s3 for a specific attachment only).  After that's done, crack open config/s3.php for a list of s3 storage settings:
+As your web application grows, you may find yourself in need of more robust file storage than what's provided by the local filesystem (e.g you're using multiple server instances and need a shared location for storing/accessing uploaded file assets).  Stapler provides a simple mechanism for easily storing and retreiving file objects with Amazon Simple Storage Service (Amazon S3).  In fact, aside from a few extra configuration settings, there's really no difference between s3 storage and filesystem storage when interacting with your attachments.  To get started with s3 storage you'll first need to add the AWS SDK to your composer.json file:
+
+```js
+  "require": {
+    "laravel/framework": "4.0.*",
+    "codesleeve/stapler": "dev-master",
+    "aws/aws-sdk-php": "2.4.*@dev"
+  }
+```
+
+Next, change the storage setting in config/stapler.php from 'filesystem' to 's3' (keep in mind, this can be done per attachment if you want to use s3 for a specific attachment only).  After that's done, crack open config/s3.php for a list of s3 storage settings:
 
 *   **path**: This is the key under the bucket in which the file will be stored. The URL will be constructed from the bucket and the path. This is what you will want to interpolate. Keys should be unique, like filenames, and despite the fact that S3 (strictly speaking) does not support directories, you can still use a / to separate parts of your file name.
 *   **default_url**: The default file returned when no file upload is present for a record.  As with filesystem storage, this should be an image on your local filesystem.
