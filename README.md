@@ -14,9 +14,9 @@ Stapler was created by Travis Bennett.
 - [Quick Start](#quickstart)
 - [Overview](#overview)
 - [Interpolations](#interpolations)
-- [Filesystem Storage](#filesystem storage)
-- [S3 Storage](#s3 storage)
-- [Image Processing](#image processing)
+- [Filesystem Storage](#filesystem-storage)
+- [S3 Storage](#s3-storage)
+- [Image Processing](#image-processing)
 - [Examples](#examples)
 
 ## Requirements
@@ -134,7 +134,7 @@ With Stapler, uploaded files are accessed by defining path, url, and default_url
 *   **:style** - The resizing style of the file (images only), e.g 'thumbnail' or 'orginal'.
 *   **:url** - The url string pointing to your uploaded file.  This interpolation is actually an interpolation itself.  It can be composed of any of the above interpolations (except itself).  
 
-## Filesystem Storage
+## Filesystem-Storage
 
 Filesystem (local disk) is the default storage option for stapler.  When using it, the following configuration settings are available:
 
@@ -157,7 +157,7 @@ Default values:
 *   **override_file_permissions**: null,
 *   **keep_old_files**: false
     
-## S3 Storage
+## S3-Storage
 
 As your web application grows, you may find yourself in need of more robust file storage than what's provided by the local filesystem (e.g you're using multiple server instances and need a shared location for storing/accessing uploaded file assets).  Stapler provides a simple mechanism for easily storing and retreiving file objects with Amazon Simple Storage Service (Amazon S3).  In fact, aside from a few extra configuration settings, there's really no difference between s3 storage and filesystem storage when interacting with your attachments.  To get started with s3 storage you'll first need to add the AWS SDK to your composer.json file:
 
@@ -198,7 +198,7 @@ Default values:
 *   **region**: 'us-west-2'
 *   **keep_old_files**: false
 
-## Image Processing
+## Image-Processing
 
 Currently, this verion of Stapler relies on a modified version of the Laravel3 Resizer bundle (as mentioned before, this is going to swapped out for one of the packagist image processing packages soon), which in turn makes use of the PHP GD library for image processing.  However, because Stapler is inspired by Rails paperclip plugin (which makes use of ImageMagick for image processing) the following ImageMagick processing directives will be recognized when defining Stapler styles:
 
