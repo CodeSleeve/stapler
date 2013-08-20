@@ -236,6 +236,27 @@ public function __construct($attributes = array(), $exists = false){
 }
 ```
 
+To store this on s3, you'll need to set a few s3 specific configuraiton options (the url interpolation will no longer be necessary when using s3 storage): 
+
+```php
+public function __construct($attributes = array(), $exists = false){
+    parent::__construct($attributes, $exists);
+
+    $this->hasAttachedFile('picture', [
+        'styles' => [
+            'thumbnail' => '100x100#',
+            'thumbnail' => '300x300#'
+        ],
+        'default_url' => '/:attachment/:style/missing.jpg',
+        'storage' => 's3',
+        'key' => 'yourPublicKey',
+        'secret' => 'yourSecreteKey',
+        'bucket' => 'your.s3.bucket',
+        'keep_old_files' => true
+    ]);
+}
+```
+
 Stapler makes it easy to manage multiple file uploads as well.  Here's an example of how this might work:
 
 In models/user.php:
