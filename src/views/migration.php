@@ -17,7 +17,7 @@ class <?= $className ?> extends Migration {
 			$table->string("<?php echo $attachment ?>_file_name")->nullable();
 			$table->integer("<?php echo $attachment ?>_file_size")->nullable();
 			$table->string("<?php echo $attachment ?>_content_type")->nullable();
-			$table->timestamp("<?php echo $attachment ?>_uploaded_at")->nullable();
+			$table->timestamp("<?php echo $attachment ?>_updated_at")->nullable();
 
 		});
 
@@ -35,7 +35,7 @@ class <?= $className ?> extends Migration {
 			$table->dropColumn("<?php echo $attachment ?>_file_name");
 			$table->dropColumn("<?php echo $attachment ?>_file_size");
 			$table->dropColumn("<?php echo $attachment ?>_content_type");
-			$table->dropColumn("<?php echo $attachment ?>_uploaded_at");
+			$table->dropColumn("<?php echo $attachment ?>_updated_at");
 
 		});
 	}

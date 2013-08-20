@@ -1,12 +1,69 @@
 <?php
 
 return [
-	'options' => [
-		'url' => '/system/:class/:attachment/:id_partition/:style/:filename',
-		'default_url' => '/:attachment/:style/missing.png',
-		'default_style' => 'original',
-		'styles' => [],
-		'keep_old_files' => false,
-		'mode' => 0777
-	]
+	
+	/*
+	|--------------------------------------------------------------------------
+	| Stapler Storage Driver
+	|--------------------------------------------------------------------------
+	|
+	| The default mechanism for handling file storage.  Currently Stapler supports
+	| both file system and Amazon S3 as options.
+	|
+	*/
+	
+	'storage' => 'filesystem',
+
+
+	/*
+	|--------------------------------------------------------------------------
+	| Stapler Default Url
+	|--------------------------------------------------------------------------
+	|
+	| The url (relative to your project document root) containing a default image
+	| that will be used for attachments that don't currently have an uploaded image
+	| attached to them.
+	|
+	*/
+
+	'default_url' => '/:attachment/:style/missing.png',
+
+	/*
+	|--------------------------------------------------------------------------
+	| Stapler Default Style
+	|--------------------------------------------------------------------------
+	|
+	| The default style returned from the Stapler file location helper methods. 
+	| An unaltered version of uploaded file is always stored within the 'original' 
+	| style, however the default_style can be set to point to any of the defined 
+	| syles within the styles array.
+	|
+	*/
+
+	'default_style' => 'original',
+
+	/*
+	|--------------------------------------------------------------------------
+	| Stapler Styles
+	|--------------------------------------------------------------------------
+	|
+	| An array of image sizes defined for the file attachment. 
+	| Stapler will attempt to format the file upload into the defined style.
+	|
+	*/
+
+	'styles' => [],
+
+	/*
+	|--------------------------------------------------------------------------
+	| Keep Old Files Flag
+	|--------------------------------------------------------------------------
+	|
+	| Set this to true in order to prevent older file uploads from being deleted
+	| from the file system.
+	|
+	*/
+
+	'keep_old_files' => false,
+
 ];

@@ -2,24 +2,45 @@
 
 use App;
 
-class Attachment extends Interpolator
+class Attachment
 {
 	/**
-	 * The name of the attachment
+	 * The model the attachment belongs to.
 	 * 
 	 * @var string
 	 */
-	protected $name;
+	public $instance;
 
 	/**
-	 * The attachment options
+	 * The name of the attachment.
+	 * 
+	 * @var string
+	 */
+	public $name;
+
+	/**
+	 * An instance of the underlying storage driver that is being used.
+	 * 
+	 * @var mixed.
+	 */
+	protected $storageDriver;
+
+	/**
+	 * The attachment options.
 	 * 
 	 * @var array
 	 */
 	protected $options;
 
 	/**
-	 * The uploaded file object for the attachment
+	 * An instance of the interpolator class for processing interpolations.
+	 * 
+	 * @var Codesleeve\Stapler\Interpolator
+	 */
+	protected $interpolator;
+
+	/**
+	 * The uploaded file object for the attachment.
 	 * 
 	 * @var Codesleeve\Stapler\UploadedFile
 	 */
@@ -30,11 +51,12 @@ class Attachment extends Interpolator
 	 * 
 	 * @param array $foo
 	 */
-	function __construct($name, $options = []) 
+	function __construct($name, $options = [], $interpolator) 
 	{
 		$this->name = $name;
-		$this->validateOptions($options);
 		$this->options = $options;
+		$this->interpolator = $interpolator;
+		$this->storageDriver = App::make($this->storage, $this);
 	}
 
 	/**
@@ -52,31 +74,21 @@ class Attachment extends Interpolator
      * Handle the dynamic retrieval of attachment options.
      * Style options will be converted into a php stcClass.
      * 
-     * @param  string $name
+     * @param  string $optionName
      * @return mixed
      */
-    public function __get($name)
+    public function __get($optionName)
     {
-		if (array_key_exists($name, $this->options)) 
+		if (array_key_exists($optionName, $this->options)) 
 		{
-		    if ($name == 'styles') {
-		    	return $this->convertToObject($this->options[$name]);
+		    if ($optionName == 'styles') {
+		    	return $this->convertToObject($this->options[$optionName]);
 		    }
 
-		    return $this->options[$name];
+		    return $this->options[$optionName];
 		}
 
 		return null;
-    }
-
-    /**
-     * Accessor for the name property
-     * 
-     * @return string
-     */
-    public function getName()
-    {
-    	return $this->name;
     }
 
     /**
@@ -100,178 +112,71 @@ class Attachment extends Interpolator
 		return $this->uploadedFile;
 	}
 
-    /**
-	 * Returns a file upload resource location (path or url).
-	 *
-	 * @param string $type
-	 * @param string $styleName
-	 * @return string
-	*/
-	public function returnResource($type, $styleName = '')
+	public function setInterpolator($value)
 	{
-		if ($type == 'path') {
-			return $this->returnPath($styleName);
-		}
-		elseif ($type == 'url') {
-			return $this->returnUrl($styleName);
-		}
-
-		return '';
+		$this->interpolator = $value;
 	}
 
 	/**
-	 * Returns the path to a file upload resource location.
+	 * Accessor method for the uploadedFile property.
 	 * 
-	 * @param string $styleName
-	 * @return string
+	 * @return Symfony\Component\HttpFoundation\File\UploadedFile
 	 */
-	protected function returnPath($styleName)
+	public function getInterpolator()
 	{
-		$resource = $this->path($styleName);
-
-		if (file_exists($resource)) {
-			return $resource;
-		}
-		else {
-			return $this->defaultPath($styleName);
-		}
-	}
-
-	/**
-	 * Returns the url to a file upload resource location.
-	 * 
-	 * @param string $styleName
-	 * @return string
-	 */
-	protected function returnUrl($styleName)
-	{
-		$resource = $this->absoluteUrl($styleName);
-		
-		if (file_exists($resource)) {
-			return $this->url($styleName);
-		}
-		else {
-			return $this->defaultUrl($styleName);
-		}
-	}
-
-	/**
-	 * Generates the file system path to an uploaded file.  This is used for saving files, etc.
-	 *
-	 * @param string $styleName
-	 * @return string
-	*/
-	public function path($styleName = '')
-	{
-		return $this->publicPath() . $this->url($styleName);
-	}
-
-	/**
-	 * Generates the default path if no file attachment is present.
-	 *
-	 * @param string $styleName
-	 * @return string
-	*/
-	protected function defaultPath($styleName = '')
-	{
-		return $this->publicPath() . $this->defaultUrl($styleName);
-	}
-
-	/**
-	 * Generates the absolute url to an uploaded file.
-	 * 
-	 * @param string $styleName     
-	 * @return string             
-	 */
-	protected function absoluteUrl($styleName = '')
-	{
-		return realpath($this->publicPath() . $this->url($styleName));
-	}
-
-	/**
-	 * Generates the url to a file upload.
-	 *
-	 * @param string $styleName
-	 * @return string
-	*/
-	protected function url($styleName = '')
-	{
-		return $this->interpolateString($this->url, $styleName);
-	}
-
-	/**
-	 * Generates the default url if no file attachment is present.
-	 *
-	 * @param string $styleName
-	 * @return string
-	*/
-	protected function defaultUrl($styleName = '')
-	{
-		if ($url = $this->default_url) {
-			return $this->interpolateString($url, $styleName);
-		}
-		
-		return '';
-	}
-
-	/**
-	 * Wrapper for laravel's base_path function.
-	 * 
-	 * @return mixed        
-	 */
-	protected function basePath()
-	{
-		return $this->realPath(base_path());
-	}
-
-	/**
-	 * Wrapper for laravel's native public_path function.
-	 * 
-	 * @return mixed        
-	 */
-	protected function publicPath()
-	{
-		return $this->realPath(public_path());
-	}
-
-	/**
-	 * Wrapper for php's native realpath function.
-	 * 
-	 * @param  string $value 
-	 * @return mixed        
-	 */
-	protected function realPath($value)
-	{
-		return realpath($value);
-	}
-
-	/**
-	 * Validate the attachment options for an attachment type.
-	 * A url is required to have either an :id or an :id_partition interpolation.
-	 * 
-	 * @param  array $options
-	 * @return void
-	 */
-	protected function validateOptions($options)
-	{
-		if (preg_match("/:id\b/", $options['url']) !== 1 && preg_match("/:id_partition\b/", $options['url']) !== 1) {
-			throw new Exceptions\InvalidUrlOptionException('Invalid file url: an :id or :id_partition is required.', 1);
-		}
+		return $this->interpolator;
 	}
 
 	/**
 	 * Bootstrap the attachment.  
 	 * This provides a mechanism for the attachment to access properties of the
-	 * corresponding model it's attached to.
+	 * corresponding model instance it's attached to.
 	 * 
-	 * @param  Model $model      
+	 * @param  Model $instance      
 	 * @return void             
 	 */
-	public function bootstrap($model)
+	public function bootstrap($instance)
 	{
-		$this->modelName = get_class($model);
-		$this->recordId = $model->getKey();
- 		$this->attributes = $model->getAttachmentAttributes($this->name);
+		$this->instance = $instance;
+	}
+
+	/**
+	 * Utility function to return the string offset of the directory
+	 * portion of a file path with an :id or :idPartition interpolation.
+	 *
+	 * <code>
+	 *		// Returns an offset of '27'.
+	 *      $directory = '/some_directory/000/000/001/some_file.jpg'
+	 *		return $this->getOffset($directory, $attachment);
+	 * </code>
+	 *
+	 * @param string $string
+	 * @param string $styleName
+	 * @return string
+	 */
+	public function getOffset($string, $styleName = '') 
+	{
+		// Get the partition of the id
+		$idPartition = $this->idPartition($styleName);
+		$match = strpos($string, $idPartition);
+		
+		if ($match !== false)
+		{
+			// Id partitioning is being used, so we're looking for a
+			// directory that has the pattern /000/000/001 at the end,
+			// so we know we'll need to add 11 spaces to the string offset.
+			$offset = $match + 11;
+		}
+		else
+		{
+			// Id partitioning is not being used, so we're looking for
+			// a directory that has the pattern /1 at the end, so we'll
+			// need to add the length of the record id + 1 to the string offset.
+			$match = strpos($string, (string) $this->instance->getKey());
+			$offset = $match + strlen($this->instance->getKey());
+		}
+
+		return $offset;
 	}
 
 	/**
@@ -286,12 +191,10 @@ class Attachment extends Interpolator
 	public function __call($method, $parameters)
 	{
 		// Storage methods
-		$callable = ['reset', 'remove', 'findDirectory', 'buildDirectory', 'cleanDirectory', 'emptyDirectory', 'move', 'setPermissions'];
+		$callable = ['reset', 'remove', 'buildDirectory', 'cleanDirectory', 'move'];
 		
-		if (in_array($method, $callable))
-		{
-			$storage = App::make('Storage', $this);
-			return call_user_func_array([$storage, $method], $parameters);
+		if (in_array($method, $callable)) {
+			return call_user_func_array([$this->storageDriver, $method], $parameters);
 		}
 
 		// Utility methods
@@ -312,19 +215,129 @@ class Attachment extends Interpolator
 	 */
 	public function process($style)
 	{
-		$this->buildDirectory($style->name);
-		$this->cleanDirectory($style->name);
-
 		if ($style->value && $this->uploadedFile->isImage()) {
-			$this->processImage($style);
+			$tmpFilePath = $this->processStyle($style);
+			$this->move($tmpFilePath, $style);
 		}
 		else {
-			$this->move($this->uploadedFile, $this->path($style->name), $this->mode);
+			$this->move($this->uploadedFile, $style);
 		}
 	}
 
 	/**
-	 * processImage method 
+	 * Generates the url to a file upload.
+	 *
+	 * @param string $styleName
+	 * @return string
+	*/
+	public function url($styleName = '')
+	{
+		if ($this->originalFilename()) {
+			return $this->storageDriver->url($styleName, $this);
+		}
+		
+		return $this->defaultUrl($styleName);
+	}
+
+	/**
+	 * Generates the file system path to an uploaded file.  This is used for saving files, etc.
+	 *
+	 * @param string $styleName
+	 * @return string
+	*/
+	public function path($styleName = '')
+	{
+		if ($this->originalFilename()) {
+			return $this->storageDriver->path($styleName, $this);
+		}
+
+		return $this->defaultPath($styleName);
+	}
+
+	/**
+	 * Returns the creation time of the file as originally assigned to this attachment's model.
+	 * Lives in the <attachment>_created_at attribute of the model.
+	 * This attribute may conditionally exist on the model, it is not one of the four required fields.
+     * 
+	 * @return datetime
+	 */
+	public function createdAt()
+	{
+		return $this->instance->getAttribute("{$this->name}_created_at");
+	}
+
+	/**
+	 * Returns the last modified time of the file as originally assigned to this attachment's model.
+	 * Lives in the <attachment>_updated_at attribute of the model.
+     * 
+	 * @return datetime
+	 */
+	public function updatedAt()
+	{
+		return $this->instance->getAttribute("{$this->name}_updated_at");
+	}
+
+	/**
+	 * Returns the content type of the file as originally assigned to this attachment's model.
+	 * Lives in the <attachment>_content_type attribute of the model.
+     * 
+	 * @return string
+	 */
+	public function contentType()
+	{
+		return $this->instance->getAttribute("{$this->name}_content_type");
+	}
+
+	/**
+	 * Returns the size of the file as originally assigned to this attachment's model.
+	 * Lives in the <attachment>_file_size attribute of the model.
+     * 
+	 * @return integer
+	 */
+	public function size()
+	{
+		return $this->instance->getAttribute("{$this->name}_file_size");
+	}
+
+	/**
+	 * Returns the name of the file as originally assigned to this attachment's model.
+	 * Lives in the <attachment>_file_name attribute of the model.
+     * 
+	 * @return string
+	 */
+	public function originalFilename()
+	{
+		return $this->instance->getAttribute("{$this->name}_file_name");
+	}
+
+	/**
+	 * Generates the default url if no file attachment is present.
+	 *
+	 * @param string $styleName
+	 * @return string
+	*/
+	protected function defaultUrl($styleName = '')
+	{
+		if ($url = $this->default_url) {
+			return $this->getInterpolator()->interpolate($url, $this, $styleName);
+		}
+		
+		return '';
+	}
+
+	/**
+	 * Generates the default path if no file attachment is present.
+	 *
+	 * @param string $styleName
+	 * @return string
+	*/
+	protected function defaultPath($styleName = '')
+	{
+		return $this->publicPath() . $this->defaultUrl($styleName);
+	}
+
+	/**
+	 * processStyle method 
 	 * 
 	 * Parse the given style dimensions to extract out the file processing options,
 	 * perform any necessary image resizing for a given style.
@@ -332,9 +345,9 @@ class Attachment extends Interpolator
 	 * @param  stdClass $style
 	 * @return boolean
 	 */
-	public function processImage($style)
+	protected function processStyle($style)
 	{
-		$filePath = $this->path($style->name);
+		$filePath = tempnam(sys_get_temp_dir(), 'STP');
 		$resizer = App::make('Resizer', $this->uploadedFile);
 
 		if (strpos($style->value, 'x') === false) 
@@ -342,9 +355,8 @@ class Attachment extends Interpolator
 			// Width given, height automagically selected to preserve aspect ratio (landscape).
 			$width = $style->value;
 			$resizer->resize($width, null, 'landscape')->save($filePath);
-			$this->setPermissions($filePath, $this->mode);
 
-			return;
+			return $filePath;
 		}
 		
 		$dimensions = explode('x', $style->value);
@@ -355,9 +367,8 @@ class Attachment extends Interpolator
 		{
 			// Height given, width automagically selected to preserve aspect ratio (portrait).
 			$resizer->resize(null, $height, 'portrait')->save($filePath);
-			$this->setPermissions($filePath, $this->mode);
 
-			return;
+			return $filePath;
 		}
 		
 		$resizing_option = substr($height, -1, 1);
@@ -380,6 +391,16 @@ class Attachment extends Interpolator
 				break;
 		}
 
-		$this->setPermissions($filePath, $this->mode);
+		return $filePath;
+	}
+
+	/**
+	 * Wrapper for laravel's native public_path function.
+	 * 
+	 * @return mixed        
+	 */
+	protected function publicPath()
+	{
+		return realPath(public_path());
 	}
 }

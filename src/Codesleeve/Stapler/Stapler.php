@@ -18,7 +18,7 @@ use App;
  * @link 	
  */
 
-trait StaplerTrait
+trait Stapler
 {
 	/**
 	 * All of the model's current file attachments.
@@ -35,6 +35,21 @@ trait StaplerTrait
 	protected $staplerUploads = [];
 
 	/**
+     * Handle the dynamic retrieval of attachment objects.
+     * 
+     * @param  string $property
+     * @return mixed
+     */
+    public function __get($property)
+    {
+		if (array_key_exists($property, $this->attachedFiles)) {
+		    return $this->getAttachedFile($this->attachedFiles[$property]);
+		}
+
+		return parent::__get($property);
+    }
+
+	/**
 	 * Add a new file attachment type to the list of available attachments.
 	 * This function acts as a quasi constructor for this trait.
 	 *
@@ -42,7 +57,7 @@ trait StaplerTrait
 	 * @param array $options
 	 * @return void
 	*/
-	protected function hasAttachedFile($name, $options = [])
+	public function hasAttachedFile($name, $options = [])
 	{
 		// Register the attachment with stapler and setup event listeners.
 		$this->registerAttachment($name, $options);
@@ -61,7 +76,7 @@ trait StaplerTrait
 		// containing a file then we'll fill the model attributes for that attachment type.
 		foreach($model->attachedFiles as $attachedFile) 
 		{
-			$attachmentName = $attachedFile->getName();
+			$attachmentName = $attachedFile->name;
 
 			if (array_key_exists($attachmentName, $model->attributes))
 			{
@@ -73,7 +88,7 @@ trait StaplerTrait
 						"{$attachmentName}_file_name" => '',
 						"{$attachmentName}_file_size" => '',
 						"{$attachmentName}_content_type" => '',
-						"{$attachmentName}_uploaded_at" => ''
+						"{$attachmentName}_updated_at" => ''
 					];
 
 					$model->fill($attributes, true);
@@ -82,14 +97,14 @@ trait StaplerTrait
 				elseif ($uploadedFile) 
 				{
 					if (!$uploadedFile->isValid()) {
-						throw new Exceptions\FileException('File upload hijacking detected!');
+						throw new Exceptions\FileException($uploadedFile->getErrorMessage($uploadedFile->getError()));
 					}
 
 					$attributes = [
 						"{$attachmentName}_file_name" => $uploadedFile->getClientOriginalName(),
 						"{$attachmentName}_file_size" => $uploadedFile->getClientSize(),
 						"{$attachmentName}_content_type" => $uploadedFile->getMimeType(),
-						"{$attachmentName}_uploaded_at" => date('Y-m-d H:i:s')
+						"{$attachmentName}_updated_at" => date('Y-m-d H:i:s')
 					];
 
 					$model->fill($attributes, true);
@@ -119,7 +134,7 @@ trait StaplerTrait
 			if ($uploadedFile) 
 			{
 				if ($uploadedFile == STAPLER_NULL) {
-					$attachedFile->reset();
+					$attachedFile->reset($attachedFile);
 					
 					continue;
 				}
@@ -146,61 +161,24 @@ trait StaplerTrait
 	}
 
 	/**
-	 * Handle dynamic method calls on the model.
-	 *
-	 * This allows for the creation of our file url/path convenience methods
-	 * on the model: {attachment}_file path and {attachment}_file url.  If 
-	 * the format of the called function doesn't match these functions we'll 
-	 * hand control back over to the __call function of the parent model class.
-	 *
-	 * @param  string  $method
-	 * @param  array   $parameters
-	 * @return mixed
+	 * Pass through method to ensure that all attachedFile objects returned
+	 * from the __get() method are bootstrapped before they're accessed.
+	 * 
+	 * @param  Attachment $attachedFile
+	 * @return Attachemnt 
 	 */
-	public function __call($method, $parameters = null)
+	protected function getAttachedFile($attachedFile)
 	{
-		foreach ($this->attachedFiles as $attachedFile)
-		{
-			$attachmentName = $attachedFile->getName();
-
-			if (starts_with($method, "{$attachmentName}_"))
-			{
-				// Bootstrap the attachment.
-				if (!$attachedFile->getRecordId) {
-					$attachedFile->bootstrap($this);
-				}
-				
-				$pieces = explode('_', $method);
-				switch ($pieces[1]) {
-					case 'path':
-						if ($parameters){
-							return $attachedFile->returnResource('path', $parameters[0]);
-						}
-						
-						return $attachedFile->returnResource('path');
-						
-						break;
-					
-					case 'url':
-						if ($parameters){
-							return $attachedFile->returnResource('url', $parameters[0]);
-						}
-						
-						return $attachedFile->returnResource('url');
-						
-						break;
-
-					default:
-						break;
-				}
-			}
+		if (!$attachedFile->instance) {
+			$attachedFile->bootstrap($this);
 		}
 
-		return parent::__call($method, $parameters);
+		return $attachedFile;
 	}
 
 	/**
-	 * Register an attachment type
+	 * Register an attachment type.
+	 * and add the attachment to the list of attachments to be processed during saving.
 	 *
 	 * @param  string $name
 	 * @param  array $options
@@ -208,61 +186,97 @@ trait StaplerTrait
 	 */
 	protected function registerAttachment($name, $options)
 	{
-		// Merge user defined options with the stapler defaults
-		$defaultOptions = Config::get('stapler::stapler.options');
-		$options = array_merge($defaultOptions, (array) $options);
-		$options['styles'] = array_merge( (array) $options['styles'], ['original' => '']);
-		
-		// Add the attachment to the list of attachments to be processed during saving.
-		$this->attachedFiles[] = App::make('Attachment', ['name' => $name, 'options' => $options]);
+		$options = $this->mergeOptions($options);
+		$this->validateOptions($options);
+		$interpolator = App::make('Interpolator');
+		$this->attachedFiles[$name] = App::make('Attachment', ['name' => $name, 'options' => $options, 'interpolator' => $interpolator]);
 	}
 
 	/**
-	 * registerEvents method
+	 * Merge configuration options.
+	 * Here we'll merge user defined options with the stapler defaults in a cascading manner.
+	 * We start with overall stapler options.  Next we merge in storage driver specific options.
+	 * Finally we'll merge in attachment specific options on top of that.
+	 *
+	 * @param  array $options
+	 * @return array
+	 */
+	public function mergeOptions($options)
+	{
+		$defaultOptions = Config::get('stapler::stapler');
+		$options = array_merge($defaultOptions, (array) $options);
+		$storage = $options['storage'];
+		$options = array_merge(Config::get("stapler::{$storage}"), $options);
+		$options['styles'] = array_merge( (array) $options['styles'], ['original' => '']);
+
+		return $options;
+	}
+
+	/**
+	 * Validate the attachment options for an attachment type.
+	 * A url is required to have either an :id or an :id_partition interpolation.
+	 * 
+	 * @param  array $options
+	 * @return void
+	 */
+	protected function validateOptions($options)
+	{
+		$options['storage'] == 'filesystem' ? $this->validateFilesystemOptions($options) : $this->validateS3Options($options);
+	}
+
+	/**
+	 * Validate the attachment optioins for an attachment type when the storage
+	 * driver is set to 'filesystem'.
+	 * 
+	 * @param  array $options 
+	 * @return void
+	 */
+	protected function validateFilesystemOptions($options)
+	{
+		if (preg_match("/:id\b/", $options['url']) !== 1 && preg_match("/:id_partition\b/", $options['url']) !== 1 && preg_match("/:hash\b/", $options['url']) !== 1) {
+			throw new Exceptions\InvalidUrlOptionException('Invalid Url: an id, id_partition, or hash interpolation is required.', 1);
+		}
+	}
+
+	/**
+	 * Validate the attachment optioins for an attachment type when the storage
+	 * driver is set to 's3'.
+	 * 
+	 * @param  array $options 
+	 * @return void
+	 */
+	protected function validateS3Options($options)
+	{
+		if (!$options['bucket']) {
+			throw new Exceptions\InvalidUrlOptionException('Invalid Path: a bucket interpolation is required for s3 storage.', 1);
+		}
+	}
+
+	/**
+	 * Register beforeSave, afterSave, and after Delete event handlers.
 	 * 
 	 * @return void 
 	 */
-	public function registerEvents()
+	protected function registerEvents()
 	{
 		$currentClass = get_class();
 		$beforeSave = "eloquent.saving: $currentClass";
 		$afterSave = "eloquent.saved: $currentClass";
 		$afterDelete = "eloquent.deleted: $currentClass";
-
-        if (!Event::hasListeners($beforeSave))
-        {
+        
+		// To register the event listeners we'll call the Event::Listen method directly,
+		// however it's worth mentioning that we could have alternatively used the new
+		// L4 syntax: e.g $this->saving("$currentClass@beforeSave"),  $this->saved("$currentClass@afterSave"), etc.
+        if (!Event::hasListeners($beforeSave)) {
         	Event::listen($beforeSave, "$currentClass@beforeSave");
-        	//$this->saving("$currentClass@beforeSave");
         }
  
-        if (!Event::hasListeners($afterSave))
-        {
+        if (!Event::hasListeners($afterSave)) {
         	Event::listen($afterSave, "$currentClass@afterSave");
-        	//$this->saved("$currentClass@afterSave");
         }
 
-        if (!Event::hasListeners($afterDelete))
-        {
+        if (!Event::hasListeners($afterDelete)) {
         	Event::listen($afterDelete, "$currentClass@afterDelete");
-        	//$this->deleted("$currentClass@afterDelete");
         }
-	}
-
-	/**
-	 * Accessor method to return the attributes for a given attachment type.
-	 * 
-	 * @param  string $attachmentName 
-	 * @return array 
-	 */
-	public function getAttachmentAttributes($attachmentName)
-	{
-		$attributes = [
-			'fileName' => $this->getAttribute("{$attachmentName}_file_name"),
-			'fileSize' => $this->getAttribute("{$attachmentName}_file_size"),
-			'contentType' => $this->getAttribute("{$attachmentName}_content_type"),
-			'uploadedAt' => $this->getAttribute("{$attachmentName}_uploaded_at")
-		];
-
-		return $attributes;
 	}
 }

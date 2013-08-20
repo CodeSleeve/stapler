@@ -39,10 +39,7 @@ class FastenCommand extends Command {
 	public function fire()
 	{
 		try {
-			# see if this throws an error or not
 			DB::table($this->argument('table'))->first();
-
-			# create the migration file since we found the table in database
 			$this->createMigration();
 
 		} catch(Exception $e) {
@@ -89,12 +86,13 @@ class FastenCommand extends Command {
 		$fileName  = $path . '/' . $prefix . '_add_' . $data['attachment'] . '_fields_to_' . $data['table'] . '_table.php';
 		$data['className'] = 'Add' . ucfirst($data['attachment']) . 'FieldsTo' . ucfirst($data['table']) . 'Table';
 
-		# generate the migration file
+		// Save the new migration to disk using the stapler migration view.
 		$migration = View::make('stapler::migration', $data)->render();
-
-		# save the migration file
 		File::put($fileName, $migration);
-		$this->info("created migration: $fileName");
+		
+		// Dump the autoloader and print a created migration message to the console.
+		$this->call('dump-autoload');
+		$this->info("Created migration: $fileName");
 	}
 
 }
