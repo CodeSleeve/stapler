@@ -141,13 +141,16 @@ class StaplerServiceProvider extends ServiceProvider {
 	{
 		$this->app->bind('UploadedFile', function($app, $uploadedFile)
         {
-            $path = $uploadedFile->getPathname();
-            $originalName = $uploadedFile->getClientOriginalName();
-            $mimeType = $uploadedFile->getClientMimeType();
-            $size = $uploadedFile->getClientSize();
-            $error = $uploadedFile->getError();
+		  if ($uploadedFile !== STAPLER_NULL)
+		  {
+			$path = $uploadedFile->getPathname();
+			$originalName = $uploadedFile->getClientOriginalName();
+			$mimeType = $uploadedFile->getClientMimeType();
+			$size = $uploadedFile->getClientSize();
+			$error = $uploadedFile->getError();
             
-            return new UploadedFile($path, $originalName, $mimeType, $size, $error);
+			return new UploadedFile($path, $originalName, $mimeType, $size, $error);
+		  }
         });
 	}
 
