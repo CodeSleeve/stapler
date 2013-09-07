@@ -20,18 +20,12 @@ interface StorageInterface
 	public function path($styleName);
 
     /**
-	 * Reset an attached file
-	 *
-	 * @return void
-	 */
-    public function reset();
-
-    /**
 	 * Remove an attached file.
-	 * 
+	 *
+	 * @param array $filePaths
 	 * @return void
 	 */
-    public function remove();
+    public function remove($filePaths);
 
     /**
 	 * Move an uploaded file to it's intended destination.
@@ -39,8 +33,8 @@ interface StorageInterface
 	 * a resized image file on disk.
 	 *
 	 * @param  UploadedFile $file 
-	 * @param  string $style
+	 * @param  string $filePath
 	 * @return void 
 	 */
-	public function move($file, $style);
+	public function move($file, $filePath);
 }

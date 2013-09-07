@@ -47,6 +47,20 @@ class Attachment
 	protected $uploadedFile;
 
 	/**
+	 * The uploaded/resized files that have been queued up for deletion.
+	 * 
+	 * @var array
+	 */
+	protected $queuedForDeletion = [];
+
+	/**
+	 * The uploaded/resized files that have been queued up for deletion.
+	 * 
+	 * @var array
+	 */
+	protected $queuedForWrite = [];
+
+	/**
 	 * Constructor method
 	 * 
 	 * @param array $foo
@@ -99,7 +113,18 @@ class Attachment
 	 */
 	public function setUploadedFile($uploadedFile)
 	{
+		$this->clear();
+
+		if ($uploadedFile == STAPLER_NULL) {
+			return;
+		}
+		
 		$this->uploadedFile = APP::make('UploadedFile', $uploadedFile);
+		$this->instanceWrite('file_name', $this->uploadedFile->getClientOriginalName());
+		$this->instanceWrite('file_size', $this->uploadedFile->getClientSize());
+		$this->instanceWrite('content_type', $this->uploadedFile->getMimeType());
+		$this->instanceWrite('updated_at', date('Y-m-d H:i:s'));
+		$this->queueAllForWrite();
 	}
 
 	/**
@@ -141,45 +166,6 @@ class Attachment
 	}
 
 	/**
-	 * Utility function to return the string offset of the directory
-	 * portion of a file path with an :id or :idPartition interpolation.
-	 *
-	 * <code>
-	 *		// Returns an offset of '27'.
-	 *      $directory = '/some_directory/000/000/001/some_file.jpg'
-	 *		return $this->getOffset($directory, $attachment);
-	 * </code>
-	 *
-	 * @param string $string
-	 * @param string $styleName
-	 * @return string
-	 */
-	public function getOffset($string, $styleName = '') 
-	{
-		// Get the partition of the id
-		$idPartition = $this->idPartition($styleName);
-		$match = strpos($string, $idPartition);
-		
-		if ($match !== false)
-		{
-			// Id partitioning is being used, so we're looking for a
-			// directory that has the pattern /000/000/001 at the end,
-			// so we know we'll need to add 11 spaces to the string offset.
-			$offset = $match + 11;
-		}
-		else
-		{
-			// Id partitioning is not being used, so we're looking for
-			// a directory that has the pattern /1 at the end, so we'll
-			// need to add the length of the record id + 1 to the string offset.
-			$match = strpos($string, (string) $this->instance->getKey());
-			$offset = $match + strlen($this->instance->getKey());
-		}
-
-		return $offset;
-	}
-
-	/**
 	 * Handle dynamic method calls on the attachment.
 	 * This allows us to call methods on the underlying 
 	 * storage or utility objects directly via the attachment.
@@ -204,23 +190,6 @@ class Attachment
 		{
 			$utility = App::make('Utility', $this);
 			return call_user_func_array([$utility, $method], $parameters);
-		}
-	}
-
-	/**
-	 * Process an attachment (i.e build out file directories, resize images, move uploaded files, etc)
-	 *
-	 * @param  stdClass $style
-	 * @return void
-	 */
-	public function process($style)
-	{
-		if ($style->value && $this->uploadedFile->isImage()) {
-			$tmpFilePath = $this->processStyle($style);
-			$this->move($tmpFilePath, $style);
-		}
-		else {
-			$this->move($this->uploadedFile, $style);
 		}
 	}
 
@@ -308,6 +277,99 @@ class Attachment
 	public function originalFilename()
 	{
 		return $this->instance->getAttribute("{$this->name}_file_name");
+	}
+
+	/**
+	 * Clears out the attachment, has the same effect as previously assigning
+	 * STAPLER_NULL to the attachment.  Does not save the associated model.
+	 * 
+	 * @param  array $stylesToClear 
+	 * @return void                   
+	 */
+	public function clear($stylesToClear = [])
+	{
+		if ($stylesToClear) {
+			$this->queueSomeForDeletion($stylesToClear);
+		}
+		else {
+			$this->queueAllForDeletion();
+		}
+	}
+
+	/**
+	 * Process the write queue.
+	 *
+	 * @param  Eloquent $instance
+	 * @return void
+	*/
+	public function afterSave($instance) 
+	{
+		$this->bootstrap($instance);
+
+		if (!$this->keep_old_files) {
+			$this->flushDeletes();
+		}
+
+		$this->flushWrites();
+	}
+
+	/**
+	 * Queue up this attachments files for deletion.
+	 *
+	 * @param  Eloquent $instance
+	 * @return void
+	 */
+	public function beforeDelete($instance)
+	{
+		$this->bootstrap($instance);
+		$this->queueAllForDeletion();
+	}
+
+	/**
+	 * Process the delete queue.
+	 *
+	 * @param  Eloquent $instance
+	 * @return void
+	*/
+	public function afterDelete($instance) 
+	{
+		$this->bootstrap($instance);
+		$this->flushDeletes();
+	}
+
+	/**
+	 * Process the queuedForWrite que.
+	 * 
+	 * @return void
+	 */
+	protected function flushWrites()
+	{
+		foreach ($this->queuedForWrite as $style) 
+		{
+			if ($style->value && $this->uploadedFile->isImage()) {
+				$file = $this->processStyle($style);
+			}
+			else {
+				$file = $this->uploadedFile->getRealPath();
+				
+			}
+
+			$filePath = $this->path($style->name);
+			$this->move($file, $filePath);
+		}
+
+		$this->queuedForWrite = [];
+	}
+
+	/**
+	 * Process the queuedForDeletion que.
+	 * 
+	 * @return void
+	 */
+	protected function flushDeletes()
+	{
+		$this->remove($this->queuedForDeletion);
+		$this->queuedForDeletion = [];
 	}
 
 	/**
@@ -403,4 +465,73 @@ class Attachment
 	{
 		return realPath(public_path());
 	}
+
+	/**
+	 * Fill the queuedForWrite que with all of this attachment's styles.
+	 * 
+	 * @return void
+	 */
+	protected function queueAllForWrite()
+	{
+		$this->queuedForWrite = $this->styles;
+	}
+
+	/**
+	 * Add a subset (filtered via style) of the uploaded files for this attachment
+	 * to the queuedForDeletion queue.
+	 * 
+	 * @param  array $stylesToClear 
+	 * @return void               
+	 */
+	protected function queueSomeForDeletion($stylesToClear)
+	{
+		$filePaths = array_map(function($styleToClear) 
+		{
+			if (array_key_exists($styleToClear, $this->options['styles'])){
+				return $this->path($styleToClear);
+			} 
+		}, $stylesToClear);
+
+		array_merge($this->queuedForDeletion, $filePaths);
+    }
+
+    /**
+     * Add all uploaded files (across all image styles) to the queuedForDeletion queue.
+     * 
+     * @return void
+     */
+    protected function queueAllForDeletion()
+    {
+		if (!$this->originalFilename()) {
+			return;
+		}
+
+		if (!$this->preserve_files) 
+		{
+			$filePaths = array_map(function($style) 
+			{
+				return $this->path($style->name);
+			}, $this->styles);
+
+			$this->queuedForDeletion = array_merge($this->queuedForDeletion, $filePaths);
+		}
+
+		$this->instanceWrite('file_name', '');
+		$this->instanceWrite('file_size', '');
+		$this->instanceWrite('content_type', '');
+		$this->instanceWrite('updated_at', '');
+    }
+
+    /**
+     * Set an attachment attribute on the underlying model instance.
+     * 
+     * @param  string $property 
+     * @param  mixed $value    
+     * @return void        
+     */
+    protected function instanceWrite($property, $value)
+    {
+    	$fieldName = "{$this->name}_{$property}";
+    	$this->instance->setAttribute($fieldName, $value);
+    }
 }

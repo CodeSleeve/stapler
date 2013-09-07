@@ -7,11 +7,11 @@ use Config;
 class Filesystem implements StorageInterface
 {
 	/**
-	 * The currenty attachedFile object being processed.
+	 * The current attachedFile object being processed.
 	 * 
 	 * @var Codesleeve\Stapler\Attachment
 	 */
-	protected $attachedFile;
+	public $attachedFile;
 
 	/**
 	 * Constructor method
@@ -46,25 +46,15 @@ class Filesystem implements StorageInterface
 	}
 
 	/**
-	 * Reset an attached file
-	 *
-	 * @return void
-	 */
-	public function reset()
-	{
-		$directory = $this->findDirectory();
-		$this->emptyDirectory($directory);
-	}
-
-	/**
 	 * Remove an attached file.
 	 *
+	 * @param array $filePaths
 	 * @return void
 	 */
-	public function remove()
+	public function remove($filePaths)
 	{
-		if ($this->attachedFile->originalFilename()) {
-			$directory = $this->findDirectory($this->attachedFile);
+		foreach ($filePaths as $filePath) {
+			$directory = dirname($filePath);
 			$this->emptyDirectory($directory, true);
 		}
 	}
@@ -75,65 +65,30 @@ class Filesystem implements StorageInterface
 	 * a resized image file on disk.
 	 *
 	 * @param  UploadedFile $file 
-	 * @param  string $style
+	 * @param  string $filePath
 	 * @return void 
 	 */
-	public function move($file, $style)
+	public function move($file, $filePath)
 	{
- 		$this->buildDirectory($style->name);
-		$this->cleanDirectory($style->name);
-
-		$filePath = $this->path($style->name);
- 		$file instanceof UploadedFile ? $this->moveUploadedFile($file, $filePath) : rename($file, $filePath);
+ 		$this->buildDirectory($filePath);
+ 		$this->moveFile($file, $filePath);
         $this->setPermissions($filePath, $this->attachedFile->override_file_permissions);
-	}
-
-	/**
-	 * Utility function to return the base directory of the uploaded file for 
-	 * a file attachment.
-	 *
-	 * @return string               
-	 */
-	protected function findDirectory()
-	{
-		$filePath = $this->attachedFile->path();
-		$offset = $this->attachedFile->getOffset($filePath);
-		
-		return substr($filePath, 0, $offset);
 	}
 
 	/**
 	 * Determine if a style directory needs to be built and if so create it.
 	 *
-	 * @param  string $styleName
+	 * @param  string $filePath
 	 * @return void
 	 */
-	protected function buildDirectory($styleName)
+	protected function buildDirectory($filePath)
 	{
-		$filePath = $this->path($styleName);
 		$directory = dirname($filePath);
 		
 		if (!is_dir($directory)) {
 			mkdir($directory, 0777, true);
 		}
 	}
-
-	/**
-	 * Determine if a style directory needs to be cleaned (emptied) and if so empty it.
-	 *
-	 * @param  string $styleName
-	 * @return void
-	 */
-	protected function cleanDirectory($styleName)
-	{
-		$filePath = $this->path($styleName);
-
-		if (!$this->attachedFile->keep_old_files) {
-			$fileDirectory = dirname($filePath);
-			$this->emptyDirectory($fileDirectory);
-		}
-	}
-
 
 	/**
 	 * Set the file permissions of a file upload
@@ -155,15 +110,15 @@ class Filesystem implements StorageInterface
 	/**
 	 * Attempt to move and uploaded file to it's intended location on disk.
 	 * 
-	 * @param  UploadedFile $file   
+	 * @param  string $file   
 	 * @param  string $filePath
 	 * @return void           
 	 */
-	protected function moveUploadedFile($file, $filePath)
+	protected function moveFile($file, $filePath)
 	{
-		if (!move_uploaded_file($file->getPathname(), $filePath)) {
+		if (!rename($file, $filePath)) {
             $error = error_get_last();
-            throw new Exceptions\FileException(sprintf('Could not move the file "%s" to "%s" (%s)', $file->getPathname(), $filePath, strip_tags($error['message'])));
+            throw new Exceptions\FileException(sprintf('Could not move the file "%s" to "%s" (%s)', $file, $filePath, strip_tags($error['message'])));
         }
 	}
 
