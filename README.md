@@ -220,7 +220,7 @@ public function __construct($attributes = array(), $exists = false){
     $this->hasAttachedFile('picture', [
         'styles' => [
             'thumbnail' => '100x100',
-            'thumbnail' => '300x300'
+            'large' => '300x300'
         ],
         'url' => '/system/:attachment/:id_partition/:style/:filename',
         'default_url' => '/:attachment/:style/missing.jpg'
@@ -316,7 +316,7 @@ public function store()
     foreach($files as $file){
         $photo = new Photo();
         $photo->photo = $file;
-        $user->photos()->insert($photo);
+        $user->photos()->save($photo);
     }
 }
 ```
