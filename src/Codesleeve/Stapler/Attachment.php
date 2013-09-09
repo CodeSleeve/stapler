@@ -347,7 +347,9 @@ class Attachment
 		foreach ($this->queuedForWrite as $style) 
 		{
 			if ($style->value && $this->uploadedFile->isImage()) {
-				$file = $this->processStyle($style);
+				$imageProcessor = App::make($this->image_processing_library);
+				$resizer = new File\Image\Resizer($imageProcessor);
+				$file = $resizer->resize($this->uploadedFile, $style);
 			}
 			else {
 				$file = $this->uploadedFile->getRealPath();
@@ -396,64 +398,6 @@ class Attachment
 	protected function defaultPath($styleName = '')
 	{
 		return $this->publicPath() . $this->defaultUrl($styleName);
-	}
-
-	/**
-	 * processStyle method 
-	 * 
-	 * Parse the given style dimensions to extract out the file processing options,
-	 * perform any necessary image resizing for a given style.
-	 *
-	 * @param  stdClass $style
-	 * @return boolean
-	 */
-	protected function processStyle($style)
-	{
-		$filePath = tempnam(sys_get_temp_dir(), 'STP');
-		$resizer = App::make('Resizer', $this->uploadedFile);
-
-		if (strpos($style->value, 'x') === false) 
-		{
-			// Width given, height automagically selected to preserve aspect ratio (landscape).
-			$width = $style->value;
-			$resizer->resize($width, null, 'landscape')->save($filePath);
-
-			return $filePath;
-		}
-		
-		$dimensions = explode('x', $style->value);
-		$width = $dimensions[0];
-		$height = $dimensions[1];
-		
-		if (empty($width)) 
-		{
-			// Height given, width automagically selected to preserve aspect ratio (portrait).
-			$resizer->resize(null, $height, 'portrait')->save($filePath);
-
-			return $filePath;
-		}
-		
-		$resizing_option = substr($height, -1, 1);
-		switch ($resizing_option) {
-			case '#':
-				// Resize, then crop.
-				$height = rtrim($height, '#');
-				$resizer->resize($width, $height, 'crop')->save($filePath);
-				break;
-
-			case '!':
-				// Resize by exact width/height (does not preserve aspect ratio).
-				$height = rtrim($height, '!');
-				$resizer->resize($width, $height, 'exact')->save($filePath);
-				break;
-			
-			default:
-				// Let the script decide the best way to resize.
-				$resizer->resize($width, $height, 'auto')->save($filePath);
-				break;
-		}
-
-		return $filePath;
 	}
 
 	/**
