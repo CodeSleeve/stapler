@@ -34,8 +34,15 @@ class Resizer
 		$filePath = tempnam(sys_get_temp_dir(), 'STP') . '.' . $file->getClientOriginalName();
 		list($width, $height, $option) = $this->parseStyleDimensions($style);
 		$method = "resize" . ucfirst($option);
-		$this->$method($file, $width, $height)
-			->save($filePath);
+		
+		if ($method == 'resizeCustom') {
+			$this->resizeCustom($file, $style->value)
+				->save($filePath);
+		}
+		else {
+			$this->$method($file, $width, $height)
+				->save($filePath);
+		}
 		
 		return $filePath;
 	}
@@ -51,6 +58,10 @@ class Resizer
 	 */
 	protected function parseStyleDimensions($style)
 	{
+		if (is_callable($style->value)) {
+			return [null, null, 'custom'];
+		}
+
 		if (strpos($style->value, 'x') === false) 
 		{
 			// Width given, height automagically selected to preserve aspect ratio (landscape).
@@ -95,8 +106,9 @@ class Resizer
 	 * Resize an image as a landscape (width only)
 	 *
 	 * @param  UploadedFile $file
-	 * @param  stdClass $style
-	 * @return void
+	 * @param  string $width
+	 * @param  string $height
+	 * @return Imagine\Image
 	 */
 	protected function resizeLandscape($file, $width, $height)
 	{
@@ -115,8 +127,9 @@ class Resizer
 	 * Resize an image as a portrait (height only)
 	 *
 	 * @param  UploadedFile $file
-	 * @param  stdClass $style
-	 * @return void
+	 * @param  string $width
+	 * @param  string $height
+	 * @return Imagine\Image
 	 */
 	protected function resizePortrait($file, $width, $height)
 	{
@@ -135,8 +148,9 @@ class Resizer
 	 * Resize an image and then center crop it.
 	 *
 	 * @param  UploadedFile $file
-	 * @param  stdClass $style
-	 * @return void
+	 * @param  string $width
+	 * @param  string $height
+	 * @return Imagine\Image
 	 */
 	protected function resizeCrop($file, $width, $height)
 	{
@@ -155,8 +169,9 @@ class Resizer
 	 * Resize an image to an exact width and height.
 	 *
 	 * @param  UploadedFile $file
-	 * @param  stdClass $style
-	 * @return void
+	 * @param  string $width
+	 * @param  string $height
+	 * @return Imagine\Image
 	 */
 	protected function resizeExact($file, $width, $height)
 	{
@@ -170,8 +185,9 @@ class Resizer
 	 * width and height while still maintaining aspect ratio.
 	 *
 	 * @param  UploadedFile $file
-	 * @param  stdClass $style
-	 * @return void
+	 * @param  string $width
+	 * @param  string $height
+	 * @return Imagine\Image
 	 */
 	protected function resizeAuto($file, $width, $height)
 	{
@@ -188,6 +204,18 @@ class Resizer
 
 		// Image to be resizerd is a square
 		return $this->resizeExact($file, $width, $height);
+	}
+
+	/**
+	 * Resize an image using a user defined callback.
+	 *
+	 * @param  UploadedFile $file
+	 * @param  $callable
+	 * @return Imagine\Image
+	 */
+	protected function resizeCustom($file, $callable)
+	{
+		return call_user_func_array($callable, [$file, $this->imagine]);
 	}
 
 	/**
