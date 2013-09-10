@@ -1,0 +1,7 @@
+{
+  "provides": [
+    "Codesleeve\Stapler\StaplerServiceProvider",
+  ],
+  "aliases" : [
+  ]
+}
