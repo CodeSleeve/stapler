@@ -79,10 +79,11 @@ return [
 	| The region name of your bucket (e.g. 'us-east-1', 'us-west-1', 'us-west-2', 
 	| 'eu-west-1').  Determines the base url where your objects are stored at 
 	| (e.g a region of us-west-2 has a base url of s3-us-west-2.amazonaws.com).
+	| Defaults to empty (US Standard *).
 	|
 	*/
 
-	'region' => 'us-west-2',
+	'region' => '',
 
 	/*
 	|--------------------------------------------------------------------------

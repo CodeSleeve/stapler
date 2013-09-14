@@ -43,8 +43,11 @@ class StaplerServiceProvider extends ServiceProvider {
 		}
 		
 		$this->registerAttachment();
+		$this->registerValidator();
 		$this->registerInterpolator();
-		$this->registerResizer();
+		$this->registerGD();
+		$this->registerImagick();
+		$this->registerGmagick();
 		$this->registerFilesystemStorage();
 		$this->registerS3Storage();
 		$this->registerUtility();
@@ -68,6 +71,19 @@ class StaplerServiceProvider extends ServiceProvider {
 	}
 
 	/**
+	 * Register Codesleeve\Stapler\Validator with the container.
+	 * 
+	 * @return void
+	 */
+	protected function registerValidator()
+	{
+		$this->app->singleton('Validator', function($app)
+        {
+            return new Validator();
+        });
+	}
+
+	/**
 	 * Register Codesleeve\Stapler\Interpolator with the container.
 	 * 
 	 * @return void
@@ -81,15 +97,41 @@ class StaplerServiceProvider extends ServiceProvider {
 	}
 
 	/**
-	 * Register Codesleeve\Stapler\Resizer with the contaioner.
+	 * Register Imagine\Gd\Imagine with the container.
 	 * 
-	 * @return void 
+	 * @return void
 	 */
-	protected function registerResizer()
+	public function registerGD()
 	{
-		$this->app->bind('Resizer', function($app, $file)
+		$this->app->singleton('GD', function($app)
         {
-            return new Resizer($file);
+            return new \Imagine\Gd\Imagine();
+        });
+	}
+
+	/**
+	 * Register Imagine\Imagick\Imagine with the container.
+	 * 
+	 * @return void
+	 */
+	public function registerImagick()
+	{
+		$this->app->singleton('Imagick', function($app)
+        {
+            return new \Imagine\Imagick\Imagine();
+        });
+	}
+
+	/**
+	 * Register Imagine\Gmagick\Imagine with the container.
+	 * 
+	 * @return void
+	 */	
+	public function registerGmagick()
+	{
+		$this->app->singleton('Gmagick', function($app)
+        {
+            return new \Imagine\Gmagick\Imagine();
         });
 	}
 
@@ -141,6 +183,10 @@ class StaplerServiceProvider extends ServiceProvider {
 	{
 		$this->app->bind('UploadedFile', function($app, $uploadedFile)
         {
+            if (!$uploadedFile->isValid()) {
+				throw new Exceptions\FileException($uploadedFile->getErrorMessage($uploadedFile->getError()));
+			}
+
             $path = $uploadedFile->getPathname();
             $originalName = $uploadedFile->getClientOriginalName();
             $mimeType = $uploadedFile->getClientMimeType();
