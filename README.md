@@ -372,18 +372,17 @@ public function store()
 Displaying uploaded files is also easy.  When working with a model instance, each attachment can be accessed as a property on the model.  An attachment object provides methods for seamlessly accessing the properties, paths, and urls of the underlying uploaded file object.  As an example, for an attachment named 'photo', the path(), url(), createdAt(), contentType(), size(), and originalFilename() methods would be available on the model to which the file was attached.  Continuing our example from above, let's loop through a user's profile pictures display the uploaded files:
 
 ```php 
-<?php foreach ($user->profilePictures as $profilePicture): ?>
-```
-    <!-- Display a resized thumbnail style image belonging to a user record: !-->
-    <img src="```php<?= asset($profilePicture->url('thumbnail')) ?>```" >
+foreach ($user->profilePictures as $profilePicture)
+{
+    // Display a resized thumbnail style image belonging to a user record:
+    link_to_asset($profilePicture->url('thumbnail'));
 
-    <!-- Display the original image style (unmodified image): !-->
-    <img src="```php<?= asset($profilePicture->url('original')) ?>```" >
+    // Display the original image style (unmodified image):
+    link_to_asset($profilePicture->url('original'));
 
-    <!-- This also displays the unmodified original image (unless the :default_url interpolation has been set to a different style): !-->
-    <img src="```php<?= asset($profilePicture->url()) ?>```" >
-```php 
-<?php endforeach ?>
+    // This also displays the unmodified original image (unless the :default_style interpolation has been set to a different style):
+    link_to_asset($profilePicture->url());
+}
 ```
 
 We can also retrieve the file path, size, original filename, etc of an uploaded file:
