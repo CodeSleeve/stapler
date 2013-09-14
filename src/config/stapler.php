@@ -14,6 +14,18 @@ return [
 	
 	'storage' => 'filesystem',
 
+	/*
+	|--------------------------------------------------------------------------
+	| Stapler Image Processing Library
+	|--------------------------------------------------------------------------
+	|
+	| The default library used for image processing.  Can be one GD, Imagick, or
+	| Gmagick.
+	|
+	*/
+	
+	'image_processing_library' => 'GD',
+
 
 	/*
 	|--------------------------------------------------------------------------
@@ -60,10 +72,23 @@ return [
 	|--------------------------------------------------------------------------
 	|
 	| Set this to true in order to prevent older file uploads from being deleted
-	| from the file system.
+	| from storage when a record is updated with a new upload.
 	|
 	*/
 
 	'keep_old_files' => false,
+
+	/*
+	|--------------------------------------------------------------------------
+	| Preserve Files Flag
+	|--------------------------------------------------------------------------
+	|
+	| Set this to true in order to prevent file uploads from being deleted
+	| from the file system when an attachment is destroyed.  Essentially this 
+	| ensures the preservation of uploads event after their corresponding database
+	| records have been removed.
+	|
+	*/
+	'preserve_files' => false
 
 ];

@@ -7,11 +7,11 @@ use Config;
 class S3 implements StorageInterface
 {
 	/**
-	 * The currenty attachedFile object being processed.
+	 * The current attachedFile object being processed.
 	 * 
 	 * @var Codesleeve\Stapler\Attachment
 	 */
-	protected $attachedFile;
+	public $attachedFile;
 
 	/**
 	 * An AWS S3Client instance.
@@ -66,24 +66,16 @@ class S3 implements StorageInterface
 	}
 
 	/**
-	 * Reset an attached file
-	 *
-	 * @return void
-	 */
-	public function reset()
-	{
-		$this->remove();
-	}
-
-	/**
 	 * Remove an attached file.
 	 * 
-	 * @param  Codesleeve\Stapler\Attachment $attachedFile
+	 * @param  array $filePaths
 	 * @return void
 	 */
-	public function remove()
+	public function remove($filePaths)
 	{
-		$this->s3Client->deleteObjects(['Bucket' => $this->getBucket(), 'Objects' => $this->getKeys()]);
+		if ($filePaths) {
+			$this->s3Client->deleteObjects(['Bucket' => $this->getBucket(), 'Objects' => $this->getKeys($filePaths)]);
+		}
 	}
 
 	/**
@@ -92,61 +84,30 @@ class S3 implements StorageInterface
 	 * a resized image file on disk.
 	 *
 	 * @param  UploadedFile $file 
-	 * @param  string $style
+	 * @param  string $filePath
 	 * @return void 
 	 */
-	public function move($file, $style)
+	public function move($file, $filePath)
 	{
-		$this->cleanDirectory($style->name);
-
-		$filePath = $this->path($style->name);
- 		$file = $file instanceof UploadedFile ? $file->getRealPath() : $file;
-
  		$this->s3Client->putObject(['Bucket' => $this->getBucket(), 'Key' => $filePath, 'SourceFile' => $file, 'ACL' => $this->attachedFile->ACL]);
 	}
 
 	/**
 	 * Return an array of paths (bucket keys) for an attachment.
 	 * There will be one path for each of the attachmetn's styles.
-	 * 	
+	 *
+	 * @param  $filePaths
 	 * @return array
 	 */
-	protected function getKeys()
+	protected function getKeys($filePaths)
 	{
 		$keys = [];
 
-		foreach ($this->attachedFile->styles as $style) {
-			$keys[] = ['Key' => $this->path($style->name)];
+		foreach ($filePaths as $filePath) {
+			$keys[] = ['Key' => $filePath];
 		}
 
 		return $keys;
-	}
-
-	/**
-	 * Determine if objects under a style prefix (directory) need to be cleaned (removed).
-	 *
-	 * @param  string $styleName
-	 * @return void
-	 */
-	protected function cleanDirectory($styleName)
-	{
-		$filePath = $this->path($styleName);
-
-		if (!$this->attachedFile->keep_old_files) {
-			$fileDirectory = dirname($filePath);
-			$this->emptyDirectory($fileDirectory);
-		}
-	}
-
-	/**
-	 * Delete all objects in an s3 bucket that match a given prefix (directory).
-	 * 
-	 * @param  string $prefix
-	 * @return void
-	 */
-	protected function emptyDirectory($prefix)
-	{
-		$this->s3Client->deleteMatchingObjects($this->getBucket(), $prefix);
 	}
 
 	/**
