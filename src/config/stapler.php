@@ -83,7 +83,7 @@ return [
 	| Preserve Files Flag
 	|--------------------------------------------------------------------------
 	|
-	| Set this to true in order to prevent ile uploads from being deleted
+	| Set this to true in order to prevent file uploads from being deleted
 	| from the file system when an attachment is destroyed.  Essentially this 
 	| ensures the preservation of uploads event after their corresponding database
 	| records have been removed.
