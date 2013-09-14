@@ -1,20 +1,21 @@
 #Stapler
 Be warned: this package is still very much in development.  I'm currently in the middle of refacting it to be more decoupled, solid, etc.  The features that are currently available should be more than equivalent to the L3 version of Stapler.  In general I want to make Stapler as powerful and fully featured as its Paperclip counterpart.  That being said....
 
-Stapler can be used to generate file upload attachments for use with the wonderfully fabulous Laravel PHP Framework (>= 4.0), authored by Taylor Otwell.
-If you have used ruby on rails' paperclip plugin then you will be familiar with its syntax.  This package is inspired entirely from the work done by the guys at thoughtbot for the Rails Paperclip bundle: https://github.com/thoughtbot/paperclip.  While not an exact duplicate, if you've used Paperclip before then you should be somewhat familiar with how this package works.
+Stapler can be used to generate file upload attachments for use with the wonderfully fabulous Laravel PHP Framework (>= 4.0), authored by Taylor Otwell.  If you have used ruby on rails' paperclip plugin then you will be familiar with its syntax.  This package is inspired entirely from the work done by the guys at thoughtbot for the Rails Paperclip bundle: https://github.com/thoughtbot/paperclip.  While not an exact duplicate, if you've used Paperclip before then you should be somewhat familiar with how this package works.
 
 Stapler was created by Travis Bennett.
 
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [Quick Start](#quickstart)
-- [Overview](#overview)
-- [Interpolations](#interpolations)
-- [Filesystem Storage](#filesystem-storage)
-- [S3 Storage](#s3-storage)
-- [Image Processing](#image-processing)
-- [Examples](#examples)
+* [Requirements](#requirements)
+* [Installation](#installation)
+* [Quick Start](#quickstart)
+* [Overview](#overview)
+* [Configuration](#configuration)
+  * ['Stapler'](#stapler)
+  * ['Filesystem'](#filesystem-storage)
+  * ['S3'](#s3-storage)
+* [Interpolations](#interpolations)
+* [Image Processing](#image-processing)
+* [Examples](#examples)
 
 ## Requirements
 Stapler currently requires php >= 5.4 (Stapler is implemented via the use of traits).
@@ -125,7 +126,7 @@ Configuration is available on both a per attachment basis or globally through th
 ``` 
 Having done this, you should now be able to configure Stapler however you see fit wihout fear of future updates overriding your configuration files. 
 
-### Stapler Configuration
+### Stapler
 The following configuration settings apply to stapler in general.
 
 *   **storage**: The underlying storage driver to uploaded files.  Defaults to filesystem (local storage) but can also be set to 's3' for use with AWS S3.
@@ -147,7 +148,7 @@ Default values:
 *   **keep_old_files**: false
 *   **preserve_old_files**: false
 
-### Filesystem-Storage Configuration
+### Filesystem-Storage
 Filesystem (local disk) is the default storage option for stapler.  When using it, the following configuration settings are available:
 
 *   **url**: The url (relative to your project document root) where files will be stored.  It is composed of 'interpolations' that will be replaced their corresponding values during runtime.  It's unique in that it functions as both a configuration option and an interpolation.
@@ -159,7 +160,7 @@ Default values:
 *   **path**: ':laravel_root/public:url'
 *   **override_file_permissions**: null
     
-### S3-Storage Configuration
+### S3-Storage
 
 As your web application grows, you may find yourself in need of more robust file storage than what's provided by the local filesystem (e.g you're using multiple server instances and need a shared location for storing/accessing uploaded file assets).  Stapler provides a simple mechanism for easily storing and retreiving file objects with Amazon Simple Storage Service (Amazon S3).  In fact, aside from a few extra configuration settings, there's really no difference between s3 storage and filesystem storage when interacting with your attachments.  To get started with s3 storage you'll first need to add the AWS SDK to your composer.json file:
 
@@ -227,7 +228,7 @@ To create styles for an attachment, simply define them (you may use any style na
 ]
 ````
 
-For more customized image processing you may also pass a [callable](http://php.net/manual/en/language.types.callable.php) type as the value for a given style definition.  Stapler will automatically inject in the uploaded file object instance as well as the Imagine\Image\ImagineInterface object instance for you to work with.  When you're done with your processing, simply return an instance of Imagine\Image\ImageInterface from the callable.  Using a callable for a style definition provides an incredibly amount of flexibilty when it comes to image processing. As an example fo this, let's create a watermarked image using a closure (we'll do a smidge of image processing with Imagine):
+For more customized image processing you may also pass a [callable](http://php.net/manual/en/language.types.callable.php) type as the value for a given style definition.  Stapler will automatically inject in the uploaded file object instance as well as the Imagine\Image\ImagineInterface object instance for you to work with.  When you're done with your processing, simply return an instance of Imagine\Image\ImageInterface from the callable.  Using a callable for a style definition provides an incredibly amount of flexibilty when it comes to image processing. As an example of this, let's create a watermarked image using a closure (we'll do a smidge of image processing with Imagine):
 
  ````php
  'styles' => [
