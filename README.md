@@ -1,5 +1,5 @@
 #Stapler
-Be warned: this package is still very much in development.  I'm currently in the middle of refacting it to be more decoupled, solid, etc.  The features that are currently available should be equivalent to the L3 version of Stapler.  I'm also shopping around for an image processing package on Packagist (currently looking at both Intervention Image and Imagine).  In general I want to make Stapler as powerful and fully featured as its Paperclip counterpart.  That being said....
+Be warned: this package is still very much in development.  I'm currently in the middle of refacting it to be more decoupled, solid, etc.  The features that are currently available should be more than equivalent to the L3 version of Stapler.  In general I want to make Stapler as powerful and fully featured as its Paperclip counterpart.  That being said....
 
 Stapler can be used to generate file upload attachments for use with the wonderfully fabulous Laravel PHP Framework (>= 4.0), authored by Taylor Otwell.
 If you have used ruby on rails' paperclip plugin then you will be familiar with its syntax.  This package is inspired entirely from the work done by the guys at thoughtbot for the Rails Paperclip bundle: https://github.com/thoughtbot/paperclip.  While not an exact duplicate, if you've used Paperclip before then you should be somewhat familiar with how this package works.
@@ -389,5 +389,5 @@ We can also retrieve the file path, size, original filename, etc of an uploaded 
 ```php
 $profilePicture->path('thumbnail');
 $profilePicture->size();
-```
 $profilePicture->originalFilename();
+```
