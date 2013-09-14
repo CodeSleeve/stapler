@@ -137,6 +137,11 @@ class Attachment
 		return $this->uploadedFile;
 	}
 
+	/**
+	 * Mutator method for the interpolator property.
+	 * 
+	 * @param Interpolator $value 
+	 */
 	public function setInterpolator($value)
 	{
 		$this->interpolator = $value;
@@ -280,23 +285,6 @@ class Attachment
 	}
 
 	/**
-	 * Clears out the attachment, has the same effect as previously assigning
-	 * STAPLER_NULL to the attachment.  Does not save the associated model.
-	 * 
-	 * @param  array $stylesToClear 
-	 * @return void                   
-	 */
-	public function clear($stylesToClear = [])
-	{
-		if ($stylesToClear) {
-			$this->queueSomeForDeletion($stylesToClear);
-		}
-		else {
-			$this->queueAllForDeletion();
-		}
-	}
-
-	/**
 	 * Process the write queue.
 	 *
 	 * @param  Eloquent $instance
@@ -305,12 +293,7 @@ class Attachment
 	public function afterSave($instance) 
 	{
 		$this->bootstrap($instance);
-
-		if (!$this->keep_old_files) {
-			$this->flushDeletes();
-		}
-
-		$this->flushWrites();
+		$this->save();
 	}
 
 	/**
@@ -335,6 +318,51 @@ class Attachment
 	{
 		$this->bootstrap($instance);
 		$this->flushDeletes();
+	}
+
+	/**
+	 * Destroys the attachment.  Has the same effect as previously assigning
+	 * STAPLER_NULL to the attachment and then saving.
+	 * 
+	 * @param  array $stylesToClear 
+	 * @return void  
+	 */
+	public function destroy($stylesToClear = [])
+	{
+		$this->clear($stylesToClear);
+		$this->save();
+	}
+
+	/**
+	 * Clears out the attachment.  Has the same effect as previously assigning
+	 * STAPLER_NULL to the attachment.  Does not save the associated model.
+	 * 
+	 * @param  array $stylesToClear 
+	 * @return void                   
+	 */
+	public function clear($stylesToClear = [])
+	{
+		if ($stylesToClear) {
+			$this->queueSomeForDeletion($stylesToClear);
+		}
+		else {
+			$this->queueAllForDeletion();
+		}
+	}
+
+	/**
+	 * Removes the old file upload (if necessary).
+	 * Saves the new file upload.
+	 *  
+	 * @return void
+	 */
+	public function save()
+	{
+		if (!$this->keep_old_files) {
+			$this->flushDeletes();
+		}
+
+		$this->flushWrites();
 	}
 
 	/**

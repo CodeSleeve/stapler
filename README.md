@@ -16,6 +16,7 @@ Stapler was created by Travis Bennett.
 * [Interpolations](#interpolations)
 * [Image Processing](#image-processing)
 * [Examples](#examples)
+* [Advanced Usage](#advanced-usage)
 
 ## Requirements
 Stapler currently requires php >= 5.4 (Stapler is implemented via the use of traits).
@@ -94,11 +95,19 @@ In your show view:
 <img src="<?= $user->avatar->url('thumb') ?>" >
 ```
 
-To detach (reset) a file, simply set the attribute to the constant STAPLER_NULL before saving:
+To detach (reset) a file, simply call the clear() method of the attachment attribute before saving (you may also assign the constant STAPLER_NULL):
+
+```php
+$user->avatar->clear();
+$user->save();
+```
+or
+
 ```php
 $user->avatar = STAPLER_NULL;
 $user->save();
 ```
+This will ensure the the corresponding attachment fields in the database table record are cleared and the current file is removed from storage.  The database table record itself will not be destroyed and can be used normally (or even assigned a new file upload) as needed.
 
 ## Overview
 Stapler works by attaching file uploads to database table records.  This is done by defining attachments inside the table's corresponding model and then assigning uploaded files (from your forms) as properties (named after the attachments) on the model before saving it.  In essence, this allows uloaded files to be treated just like any other property on the model; stapler will abstract away all of the file processing, storage, etc so you can focus on the rest of your project without having to worry about where your files are at or how to retrieve them.  
@@ -118,6 +127,7 @@ $table->integer("avatar_file_size")->nullable();
 $table->string("avatar_content_type")->nullable();
 $table->timestamp("avatar_updated_at")->nullable();
 ```
+
 ## Configuration
 Configuration is available on both a per attachment basis or globally through the configuration file settings.  Stapler is very flexible about how it processes configuration; global configuration options can be overriden on a per attachment basis so tha you can easily cascade settings you would like to have on all attachments while still having the freedom to customize an individual attachment's configuration.  To get started, the first thing you'll probably want to do is publish the default configuration options to your app/config directory. 
 
@@ -161,7 +171,6 @@ Default values:
 *   **override_file_permissions**: null
     
 ### S3-Storage-Configuration
-
 As your web application grows, you may find yourself in need of more robust file storage than what's provided by the local filesystem (e.g you're using multiple server instances and need a shared location for storing/accessing uploaded file assets).  Stapler provides a simple mechanism for easily storing and retreiving file objects with Amazon Simple Storage Service (Amazon S3).  In fact, aside from a few extra configuration settings, there's really no difference between s3 storage and filesystem storage when interacting with your attachments.  To get started with s3 storage you'll first need to add the AWS SDK to your composer.json file:
 
 ```js
@@ -307,7 +316,9 @@ public function __construct($attributes = array(), $exists = false){
 }
 ```
 
-Stapler makes it easy to manage multiple file uploads as well.  In stapler, attachments (and the uploaded file objects they represent) are tied directly to database records.  Because of this, processing multiple file uploades is simply a matter of defining the correct Eloquent relationships between models.  As an example of how this works, let's assume that we have a system where users need to have multiple profile pictures (let's say 3).  Also, let's assume that users need to have the ability to upload all three of their photos from the user creation form. To do this, we'll need two tables (users and profile_pictures) and we'll need to set their relationships such that profile pictures belong to a user and a user has many profile pictures.  By doing this, uploaded images can be attached to the ProfilePicture model and instances of the User model can in turn access the uploaded files via their hasMany relationship to the ProfilePicture model.  Here's what this looks like:
+Stapler makes it easy to manage multiple file uploads as well.  In stapler, attachments (and the uploaded file objects they represent) are tied directly to database records.  Because of this, processing multiple file uploades is simply a matter of defining the correct Eloquent relationships between models.  
+
+As an example of how this works, let's assume that we have a system where users need to have multiple profile pictures (let's say 3).  Also, let's assume that users need to have the ability to upload all three of their photos from the user creation form. To do this, we'll need two tables (users and profile_pictures) and we'll need to set their relationships such that profile pictures belong to a user and a user has many profile pictures.  By doing this, uploaded images can be attached to the ProfilePicture model and instances of the User model can in turn access the uploaded files via their hasMany relationship to the ProfilePicture model.  Here's what this looks like:
 
 In models/user.php:
 
@@ -376,19 +387,30 @@ Displaying uploaded files is also easy.  When working with a model instance, eac
 foreach ($user->profilePictures as $profilePicture)
 {
     // Display a resized thumbnail style image belonging to a user record:
-    link_to_asset($profilePicture->url('thumbnail'));
+    link_to_asset($profilePicture->photo->url('thumbnail'));
 
     // Display the original image style (unmodified image):
-    link_to_asset($profilePicture->url('original'));
+    link_to_asset($profilePicture->photo->url('original'));
 
     // This also displays the unmodified original image (unless the :default_style interpolation has been set to a different style):
-    link_to_asset($profilePicture->url());
+    link_to_asset($profilePicture->photo->url());
 }
 ```
 
 We can also retrieve the file path, size, original filename, etc of an uploaded file:
 ```php
-$profilePicture->path('thumbnail');
-$profilePicture->size();
-$profilePicture->originalFilename();
+$profilePicture->photo->path('thumbnail');
+$profilePicture->photo->size();
+$profilePicture->photo->originalFilename();
+```
+
+## Advanced-Usage
+When working with attachments, there may come a point where you wish to do things outside of the normal workflow.  For example, suppose you wish to clear out an attachment (empty the attachment attributes fields in the underlying table record and remove the uploaded file from storage) without having to destroy the record itself.  As mentioned above, you can always set the attachment attribute to STAPLER_NULL before saving, however this only works if you save the record itself afterwards.  In situations where you wish to clear the uploaded file from storage without saving the record, you can use the attachment's destroy method:
+
+```php
+// Remove all of the attachment's uploaded files and empty the attacment attributes on the model:
+$profilePicture->photo->destroy();
+
+// For finer grained control, you can remove thumbnail files only (attachment attributes in the model will not be emptied).
+$profilePicture->photo->destroy(['thumbnail']);
 ```
