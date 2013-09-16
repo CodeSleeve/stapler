@@ -77,7 +77,7 @@ class StaplerServiceProvider extends ServiceProvider {
 	 */
 	protected function registerValidator()
 	{
-		$this->app->singleton('Validator', function($app)
+		$this->app->singleton('AttachmentValidator', function($app)
         {
             return new Validator();
         });

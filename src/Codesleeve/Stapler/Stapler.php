@@ -88,7 +88,7 @@ trait Stapler
 	protected function registerAttachment($name, $options)
 	{
 		$options = $this->mergeOptions($options);
-		App::make('Validator')->validateOptions($options);
+		App::make('AttachmentValidator')->validateOptions($options);
 		
 		$interpolator = App::make('Interpolator');
 		$attachment = App::make('Attachment', ['name' => $name, 'options' => $options, 'interpolator' => $interpolator]);
