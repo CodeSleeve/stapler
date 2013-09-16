@@ -381,21 +381,16 @@ public function store()
 }
 ```
 
-Displaying uploaded files is also easy.  When working with a model instance, each attachment can be accessed as a property on the model.  An attachment object provides methods for seamlessly accessing the properties, paths, and urls of the underlying uploaded file object.  As an example, for an attachment named 'photo', the path(), url(), createdAt(), contentType(), size(), and originalFilename() methods would be available on the model to which the file was attached.  Continuing our example from above, let's loop through a user's profile pictures display the uploaded files:
+Displaying uploaded files is also easy.  When working with a model instance, each attachment can be accessed as a property on the model.  An attachment object provides methods for seamlessly accessing the properties, paths, and urls of the underlying uploaded file object.  As an example, for an attachment named 'photo', the path(), url(), createdAt(), contentType(), size(), and originalFilename() methods would be available on the model to which the file was attached.  Continuing our example from above, we can loop through a user's profile pictures display each of the uploaded files like this:
 
-```php 
-foreach ($user->profilePictures as $profilePicture)
-{
-    // Display a resized thumbnail style image belonging to a user record:
-    link_to_asset($profilePicture->photo->url('thumbnail'));
+// Display a resized thumbnail style image belonging to a user record:
+<img src="<?= asset($profilePicture->photo->url('thumbnail')) ?>">
 
-    // Display the original image style (unmodified image):
-    link_to_asset($profilePicture->photo->url('original'));
+// Display the original image style (unmodified image):
+<img src="<?=  asset($profilePicture->photo->url('original')) ?>">
 
-    // This also displays the unmodified original image (unless the :default_style interpolation has been set to a different style):
-    link_to_asset($profilePicture->photo->url());
-}
-```
+// This also displays the unmodified original image (unless the :default_style interpolation has been set to a different style):
+<img src="<?=  asset($profilePicture->photo->url()) ?>">
 
 We can also retrieve the file path, size, original filename, etc of an uploaded file:
 ```php
