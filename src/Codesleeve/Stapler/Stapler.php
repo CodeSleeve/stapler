@@ -43,38 +43,40 @@ trait Stapler
 	/**
      * Handle the dynamic retrieval of attachment objects.
      * 
-     * @param  string $property
+     * @param  string $key
      * @return mixed
      */
-    public function __get($property)
-    {
-		if (array_key_exists($property, $this->attachedFiles)) {
-		    return $this->attachedFiles[$property];
+	public function getAttribute($key)
+	{
+		if (array_key_exists($key, $this->attachedFiles))
+		{
+		    return $this->attachedFiles[$key];
 		}
 
-		return parent::__get($property);
+		return parent::getAttribute($key);
     }
 
 	/**
      * Handle the dynamic setting of attachment objects.
      *
-     * @param  string $property
+     * @param  string $key
      * @param  mixed $value
-     * @return mixed
+     * @return void
      */
-	public function __set($property, $value) 
+	public function setAttribute($key, $value)
 	{
-		if (array_key_exists($property, $this->attachedFiles)) 
+		if (array_key_exists($key, $this->attachedFiles)) 
 		{
-			if ($value) {
-				$attachedFile = $this->attachedFiles[$property];
+			if ($value)
+			{
+				$attachedFile = $this->attachedFiles[$key];
 				$attachedFile->setUploadedFile($value);
 			}
 
 			return;
 		}
 		
-		parent::__set($property, $value);
+		parent::setAttribute($key, $value);
 	}
 
 	/**
