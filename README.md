@@ -49,18 +49,20 @@ In your model:
 class User extends Eloquent {
 	use Codesleeve\Stapler\Stapler;
 
-    public function __construct($attributes = array(), $exists = false){
-        parent::__construct($attributes, $exists);
-
+    public function __construct(array $attributes = array()) {
         $this->hasAttachedFile('avatar', [
             'styles' => [
-            	'medium' => '300x300',
-                'thumb' => '100x100'
+            'medium' => '300x300',
+            'thumb' => '100x100'
             ]
         ]);
+
+        parent::__construct($attributes);
     }
 }
 ```
+
+> Make sure that the `hasAttachedFile()` method is called right before `parent::__construct()` of your model.
 
 From the command line, use the migration generator:
 
@@ -263,9 +265,7 @@ For more customized image processing you may also pass a [callable](http://php.n
 Create an attachment named 'picture', with both thumbnail (100x100) and large (300x300) styles, using custom url and default_url configurations.
 
 ```php
-public function __construct($attributes = array(), $exists = false){
-    parent::__construct($attributes, $exists);
-
+public function __construct(array $attributes = array()) {
     $this->hasAttachedFile('picture', [
         'styles' => [
             'thumbnail' => '100x100',
@@ -274,37 +274,37 @@ public function __construct($attributes = array(), $exists = false){
         'url' => '/system/:attachment/:id_partition/:style/:filename',
         'default_url' => '/:attachment/:style/missing.jpg'
     ]);
+
+    parent::__construct($attributes);
 }
 ```
 
 Create an attachment named 'picture', with both thumbnail (100x100) and large (300x300) styles, using custom url and default_url configurations, with the keep_old_files flag set to true (so that older file uploads aren't deleted from the file system) and image cropping turned on.
 
 ```php
-public function __construct($attributes = array(), $exists = false){
-    parent::__construct($attributes, $exists);
-
+public function __construct(array $attributes = array()) {
     $this->hasAttachedFile('picture', [
         'styles' => [
             'thumbnail' => '100x100#',
-            'thumbnail' => '300x300#'
+            'large' => '300x300#'
         ],
         'url' => '/system/:attachment/:id_partition/:style/:filename',
         'default_url' => '/:attachment/:style/missing.jpg',
         'keep_old_files' => true
     ]);
+
+    parent::__construct($attributes);
 }
 ```
 
 To store this on s3, you'll need to set a few s3 specific configuraiton options (the url interpolation will no longer be necessary when using s3 storage): 
 
 ```php
-public function __construct($attributes = array(), $exists = false){
-    parent::__construct($attributes, $exists);
-
+public function __construct(array $attributes = array()) {
     $this->hasAttachedFile('picture', [
         'styles' => [
             'thumbnail' => '100x100#',
-            'thumbnail' => '300x300#'
+            'large' => '300x300#'
         ],
         'default_url' => '/:attachment/:style/missing.jpg',
         'storage' => 's3',
@@ -313,6 +313,8 @@ public function __construct($attributes = array(), $exists = false){
         'bucket' => 'your.s3.bucket',
         'keep_old_files' => true
     ]);
+
+    parent::__construct($attributes);
 }
 ```
 
@@ -331,15 +333,15 @@ public function profilePictures(){
 
 In models/ProfilePicture.php:
 ```php
-public function __construct($attributes = array(), $exists = false){
-    parent::__construct($attributes, $exists);
-
+public function __construct(array $attributes = array()) {
     // Profile pictures have an attached file (we'll call it photo).
     $this->hasAttachedFile('photo', [
         'styles' => [
             'thumbnail' => '100x100#'
         ]
     ]);
+
+    parent::__construct($attributes);
 }
 
 // A profile picture belongs to a user.
