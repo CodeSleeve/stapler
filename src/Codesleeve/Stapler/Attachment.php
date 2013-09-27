@@ -377,7 +377,7 @@ class Attachment
 			if ($style->value && $this->uploadedFile->isImage()) {
 				$imageProcessor = App::make($this->image_processing_library);
 				$resizer = new File\Image\Resizer($imageProcessor);
-				$file = $resizer->resize($this->uploadedFile, $style);
+				$file = $resizer->resize($this->uploadedFile, $style, $this->options['default_image_quality']);
 			}
 			else {
 				$file = $this->uploadedFile->getRealPath();
