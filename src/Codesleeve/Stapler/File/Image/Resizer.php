@@ -26,21 +26,22 @@ class Resizer
 	 *
 	 * @param  UploadedFile $file
 	 * @param  stdClass $style
+	 * @param  int $defaultQuality
 	 * @return void
 	 */
-	public function resize($file, $style)
+	public function resize($file, $style, $defaultQuality = 75)
 	{
 		$filePath = tempnam(sys_get_temp_dir(), 'STP') . '.' . $file->getFilename();
-		list($width, $height, $option) = $this->parseStyleDimensions($style);
+		list($width, $height, $option, $quality) = $this->parseStyleDimensions($style, $defaultQuality);
 		$method = "resize" . ucfirst($option);
 
 		if ($method == 'resizeCustom') {
 			$this->resizeCustom($file, $style->value)
-				->save($filePath);
+				->save($filePath, array('quality' => $quality));
 		}
-    	else {
-      		$this->$method($file, $width, $height)
-		       ->save($filePath);
+		else {
+			$this->$method($file, $width, $height)
+				->save($filePath, array('quality' => $quality));
 		}
 
 		return $filePath;
@@ -53,52 +54,50 @@ class Resizer
 	 * perform any necessary image resizing for a given style.
 	 *
 	 * @param  stdClass $style
+	 * @param  int $defaultQuality
 	 * @return array
 	 */
-	protected function parseStyleDimensions($style)
-  	{
+	protected function parseStyleDimensions($style, $defaultQuality)
+	{
 		if (is_callable($style->value)) {
-			return [null, null, 'custom'];
+			return [null, null, 'custom', $defaultQuality];
 		}
 
-		if (strpos($style->value, 'x') === false)
+		preg_match('/^(?<width>\d+)?(?:x(?<height>\d+))?(?<resizing>[#!])?(?:@(?<quality>\d+))?$/i', $style->value, $matches);
+
+		$width = empty($matches['width']) ? null : $matches['width'];
+		$height = empty($matches['height']) ? null : $matches['height'];
+
+		$qualityOption = empty($matches['quality']) ? $defaultQuality : $matches['quality'];
+
+		if (!$height)
 		{
 			// Width given, height automagically selected to preserve aspect ratio (landscape).
-			$width = $style->value;
-
-			return [$width, null, 'landscape'];
+			return [$width, null, 'landscape', $qualityOption];
 		}
 
-		$dimensions = explode('x', $style->value);
-		$width = $dimensions[0];
-		$height = $dimensions[1];
-
-		if (empty($width))
-    	{
+		if (!$width)
+		{
 			// Height given, width automagically selected to preserve aspect ratio (portrait).
-			return [null, $height, 'portrait'];
+			return [null, $height, 'portrait', $qualityOption];
 		}
 
-		$resizingOption = substr($height, -1, 1);
+		$resizingOption = empty($matches['resizing']) ? false : $matches['resizing'];
 
 		if ($resizingOption == '#')
 		{
 			// Resize, then crop.
-      		$height = rtrim($height, '#');
-
-			return [$width, $height, 'crop'];
+			return [$width, $height, 'crop', $qualityOption];
 		}
 
 		if ($resizingOption == '!')
 		{
 			// Resize by exact width/height (does not preserve aspect ratio).
-			$height = rtrim($height, '!');
-
-			return [$width, $height, 'exact'];
+			return [$width, $height, 'exact', $qualityOption];
 		}
 
 		// Let the script decide the best way to resize.
-		return [$width, $height, 'auto'];
+		return [$width, $height, 'auto', $qualityOption];
 	}
 
 	/**
