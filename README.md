@@ -148,6 +148,7 @@ The following configuration settings apply to stapler in general.
     is always stored within the 'original' style, however the default_style can be set to point to any of the defined syles within the styles array.
 *   **styles**: An array of image sizes defined for the file attachment.  Stapler will attempt to use to format the file upload
     into the defined style.
+*   **default_image_quality**: The default image quality used when generating defined image styles.
 *   **keep_old_files**: Set this to true in order to prevent older file uploads from being deleted from the file system when a record is updated.
 *   **preserve_old_files**: Set this to true in order to prevent an attachment's file uploads from being deleted from the file system when an the attachment object is destroyed (attachment's are destroyed when their corresponding mondels are deleted/destroyed from the database).
 
@@ -157,6 +158,7 @@ Default values:
 *   **default_url**: '/:attachment/:style/missing.png'
 *   **default_style**: 'original'
 *   **styles**: []
+*   **default_image_quality**: 75
 *   **keep_old_files**: false
 *   **preserve_old_files**: false
 
@@ -224,7 +226,7 @@ Stapler makes use of the [imagine image](https://packagist.org/packages/imagine/
 *   **xheight**: A style that defines a heigh only (portrait).  Width automagically selected to preserve aspect ratio.
 *   **widthxheight#**: Resize then crop.
 *   **widthxheight!**: Resize by exacty width and height.  Width and height emphatically given, original aspect ratio will be ignored.
-*   **widthxheight**: Auto determine both width and height when resizing.  This will resize as close as possible to the given dimensions while still preserving the original aspect ratio.
+*   **widthxheight@95**: Auto determine both width and height when resizing.  This will resize as close as possible to the given dimensions while still preserving the original aspect ratio.  Image quality is set to 95%.
 
 To create styles for an attachment, simply define them (you may use any style name you like: foo, bar, baz, etc) inside the attachment's styles array using a combination of the directives defined above:
 
@@ -235,7 +237,8 @@ To create styles for an attachment, simply define them (you may use any style na
     'landscape' => '150',
     'portrait' => 'portrait' => 'x150',
     'foo' => '75x75',
-    'fooCropped' => '75x75#'
+    'fooCropped' => '75x75#',
+    'fooQuality' => '75x75@100',
 ]
 ````
 
