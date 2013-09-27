@@ -29,9 +29,10 @@ class Resizer
 	 * @param  int $defaultQuality
 	 * @return void
 	 */
-	public function resize($file, $style, $defaultQuality = 75)
+	public function resize($file, $style, $defaultQuality = null)
 	{
 		$filePath = tempnam(sys_get_temp_dir(), 'STP') . '.' . $file->getFilename();
+		$defaultQuality = is_numeric($defaultQuality) ? $defaultQuality : 75;
 		list($width, $height, $option, $quality) = $this->parseStyleDimensions($style, $defaultQuality);
 		$method = "resize" . ucfirst($option);
 
