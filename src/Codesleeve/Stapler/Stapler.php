@@ -6,12 +6,12 @@ use Event, Config, App;
  * Easy file attachment management for Eloquent (Laravel 4).
  * 
  * Credits to the guys at thoughtbot for creating the
- * papclip plugin (rails) from which this bundle is inspired.
+ * paperclip plugin (rails) from which this package is inspired.
  * https://github.com/thoughtbot/paperclip
  * 
  * 
  * @package tabennett/stapler
- * @version v1.0.0-Beta2
+ * @version v1.0.0-Beta3
  * @author Travis Bennett <tandrewbennett@hotmail.com>
  * @link 	
  */

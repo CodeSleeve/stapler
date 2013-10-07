@@ -84,7 +84,7 @@ class FastenCommand extends Command {
 		if (!is_dir($path)) mkdir($path);
 
 		$fileName  = $path . '/' . $prefix . '_add_' . $data['attachment'] . '_fields_to_' . $data['table'] . '_table.php';
-		$data['className'] = 'Add' . ucfirst($data['attachment']) . 'FieldsTo' . ucfirst($data['table']) . 'Table';
+		$data['className'] = 'Add' . ucfirst($data['attachment']) . 'FieldsTo' . ucfirst(Str::camel($data['table'])) . 'Table';
 
 		// Save the new migration to disk using the stapler migration view.
 		$migration = View::make('stapler::migration', $data)->render();
