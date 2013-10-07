@@ -35,12 +35,6 @@ class S3 implements StorageInterface
 	function __construct($attachedFile)
 	{
 		$this->attachedFile = $attachedFile;
-		$this->s3Client = S3Client::factory([
-			'key' => $attachedFile->key, 
-			'secret' => $attachedFile->secret, 
-			'region' => $attachedFile->region, 
-			'scheme' => $attachedFile->scheme
-		]);
 	}
 
 	/**
@@ -51,7 +45,7 @@ class S3 implements StorageInterface
 	 */
 	public function url($styleName)
 	{
-		return $this->s3Client->getObjectUrl($this->getBucket(), $this->path($styleName));
+		return $this->getS3Client()->getObjectUrl($this->getBucket(), $this->path($styleName));
 	}
 
 	/**
@@ -74,7 +68,7 @@ class S3 implements StorageInterface
 	public function remove($filePaths)
 	{
 		if ($filePaths) {
-			$this->s3Client->deleteObjects(['Bucket' => $this->getBucket(), 'Objects' => $this->getKeys($filePaths)]);
+			$this->getS3Client()->deleteObjects(['Bucket' => $this->getBucket(), 'Objects' => $this->getKeys($filePaths)]);
 		}
 	}
 
@@ -89,7 +83,7 @@ class S3 implements StorageInterface
 	 */
 	public function move($file, $filePath)
 	{
- 		$this->s3Client->putObject(['Bucket' => $this->getBucket(), 'Key' => $filePath, 'SourceFile' => $file, 'ACL' => $this->attachedFile->ACL]);
+ 		$this->getS3Client()->putObject(['Bucket' => $this->getBucket(), 'Key' => $filePath, 'SourceFile' => $file, 'ACL' => $this->attachedFile->ACL]);
 	}
 
 	/**
@@ -132,12 +126,45 @@ class S3 implements StorageInterface
 	 * @param  string $bucketName
 	 * @return void
 	 */
-	public function buildBucket($bucketName)
+	protected function buildBucket($bucketName)
 	{
-		if (!$this->s3Client->doesBucketExist($bucketName, true)) {
-			$this->s3Client->createBucket(['ACL' => $this->attachedFile->ACL, 'Bucket' => $bucketName, 'LocationConstraint' => $this->attachedFile->region]);
+		if (!$this->getS3Client()->doesBucketExist($bucketName, true)) {
+			$this->getS3Client()->createBucket(['ACL' => $this->attachedFile->ACL, 'Bucket' => $bucketName, 'LocationConstraint' => $this->attachedFile->region]);
 		}
 
 		$this->bucketExists = true;
+	}
+
+	/**
+	 * Return the S3Client object this class is using.
+	 * If no instance has been defined yet we'll buld one and then
+	 * cache it on the S3Client property.  This allows us to lazy load
+	 * the S3Client instance only when it's being used.
+	 * 	
+	 * @return SS3Client
+	 */
+	protected function getS3Client()
+	{
+		if ($this->s3Client) {
+			return $this->s3Client;
+		}
+
+		return $this->s3Client = $this->buildS3Client();
+	}
+
+	/**
+	 * Build an S3Client instance using the information defined in
+	 * this class's attachedFile object.
+	 * 
+	 * @return S3Client
+	 */
+	protected function buildS3Client()
+	{
+		return S3Client::factory([
+			'key' => $this->attachedFile->key, 
+			'secret' => $this->attachedFile->secret, 
+			'region' => $this->attachedFile->region, 
+			'scheme' => $this->attachedFile->scheme
+		]);
 	}
 }
