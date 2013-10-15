@@ -182,19 +182,19 @@ class StaplerServiceProvider extends ServiceProvider {
 	protected function registerUploadedFile()
 	{
 		$this->app->bind('UploadedFile', function($app, $uploadedFile)
-        {
-            if (!$uploadedFile->isValid()) {
-				throw new Exceptions\FileException($uploadedFile->getErrorMessage($uploadedFile->getError()));
-			}
+    {
+        if (!$uploadedFile->isValid()) {
+				    throw new Exceptions\FileException("Uploaded file has error code of ".$uploadedFile->getError());
+			  }
 
-            $path = $uploadedFile->getPathname();
-            $originalName = $uploadedFile->getClientOriginalName();
-            $mimeType = $uploadedFile->getClientMimeType();
-            $size = $uploadedFile->getClientSize();
-            $error = $uploadedFile->getError();
-            
-            return new UploadedFile($path, $originalName, $mimeType, $size, $error);
-        });
+        $path = $uploadedFile->getPathname();
+        $originalName = $uploadedFile->getClientOriginalName();
+        $mimeType = $uploadedFile->getClientMimeType();
+        $size = $uploadedFile->getClientSize();
+        $error = $uploadedFile->getError();
+        
+        return new UploadedFile($path, $originalName, $mimeType, $size, $error);
+    });
 	}
 
 	/**
