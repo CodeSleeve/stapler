@@ -3,7 +3,7 @@
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
-use DB, View, File;
+use DB, View, File, Str;
 
 class FastenCommand extends Command {
 
@@ -89,7 +89,7 @@ class FastenCommand extends Command {
 		// Save the new migration to disk using the stapler migration view.
 		$migration = View::make('stapler::migration', $data)->render();
 		File::put($fileName, $migration);
-		
+
 		// Dump the autoloader and print a created migration message to the console.
 		$this->call('dump-autoload');
 		$this->info("Created migration: $fileName");
