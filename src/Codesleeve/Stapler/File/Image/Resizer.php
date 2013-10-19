@@ -106,8 +106,8 @@ class Resizer
 	 * Resize an image as a landscape (width only)
 	 *
 	 * @param  UploadedFile $file
-	 * @param  string $width
-	 * @param  string $height
+	 * @param  string $width - The image's new width.
+	 * @param  string $height - The image's new height.
 	 * @return Imagine\Image
 	 */
 	protected function resizeLandscape($file, $width, $height)
@@ -127,8 +127,8 @@ class Resizer
 	 * Resize an image as a portrait (height only)
 	 *
 	 * @param  UploadedFile $file
-	 * @param  string $width
-	 * @param  string $height
+	 * @param  string $width - The image's new width.
+	 * @param  string $height - The image's new height.
 	 * @return Imagine\Image
 	 */
 	protected function resizePortrait($file, $width, $height)
@@ -148,8 +148,8 @@ class Resizer
 	 * Resize an image and then center crop it.
 	 *
 	 * @param  UploadedFile $file
-	 * @param  string $width
-	 * @param  string $height
+	 * @param  string $width - The image's new width.
+	 * @param  string $height - The image's new height.
 	 * @return Imagine\Image
 	 */
 	protected function resizeCrop($file, $width, $height)
@@ -158,7 +158,7 @@ class Resizer
 		list($optimalWidth, $optimalHeight) = $this->getOptimalCrop($image->getSize(), $width, $height);
 
 		// Find center - this will be used for the crop
-		$centerX = ($optimalWidth  / 2) - ($width  / 2);
+		$centerX = ($optimalWidth / 2) - ($width  / 2);
 		$centerY = ($optimalHeight / 2) - ($height / 2);
 		
 		return $image->resize(new Box($optimalWidth, $optimalHeight))
@@ -169,8 +169,8 @@ class Resizer
 	 * Resize an image to an exact width and height.
 	 *
 	 * @param  UploadedFile $file
-	 * @param  string $width
-	 * @param  string $height
+	 * @param  string $width - The image's new width.
+	 * @param  string $height - The image's new height.
 	 * @return Imagine\Image
 	 */
 	protected function resizeExact($file, $width, $height)
@@ -185,8 +185,8 @@ class Resizer
 	 * width and height while still maintaining aspect ratio.
 	 *
 	 * @param  UploadedFile $file
-	 * @param  string $width
-	 * @param  string $height
+	 * @param  string $width - The image's new width.
+	 * @param  string $height - The image's new height.
 	 * @return Imagine\Image
 	 */
 	protected function resizeAuto($file, $width, $height)
@@ -223,14 +223,14 @@ class Resizer
 	 * Takes into account the image being a portrait or landscape.
 	 *
 	 * @param  Imagine\Image\Box $size - The image's current size.
-	 * @param  int $width - The image's new width.
-	 * @param  int $height - The image's new height.
+	 * @param  string $width - The image's new width.
+	 * @param  string $height - The image's new height.
 	 * @return array
 	 */
 	protected function getOptimalCrop($size, $width, $height)
 	{
-		$heightRatio = $size->getHeight() / $height;
-		$widthRatio  = $size->getWidth() /  $width;
+		$heightRatio = floor($size->getHeight() / $height);
+		$widthRatio  = floor($size->getWidth() /  $width);
 		
 		if ($heightRatio < $widthRatio) {
 			$optimalRatio = $heightRatio;
@@ -240,7 +240,7 @@ class Resizer
 		}
 		
 		$optimalHeight = $size->getHeight() / $optimalRatio;
-		$optimalWidth  = $size->getWidth()  / $optimalRatio;
+		$optimalWidth  = $size->getWidth() / $optimalRatio;
 		
 		return [$optimalWidth, $optimalHeight];
 	}
