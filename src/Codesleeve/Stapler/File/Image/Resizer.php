@@ -158,8 +158,8 @@ class Resizer
 		list($optimalWidth, $optimalHeight) = $this->getOptimalCrop($image->getSize(), $width, $height);
 
 		// Find center - this will be used for the crop
-		$centerX = ($optimalWidth  / 2) - ($width  / 2);
-		$centerY = ($optimalHeight / 2) - ($height / 2);
+		$centerX = round( ($optimalWidth  / 2) - ($width  / 2), 2);
+		$centerY = round( ($optimalHeight / 2) - ($height / 2), 2);
 		
 		return $image->resize(new Box($optimalWidth, $optimalHeight))
 			->crop(new Point($centerX, $centerY), new Box($width, $height));
