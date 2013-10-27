@@ -5,17 +5,17 @@ use Imagine\Image\Point;
 
 class Resizer
 {
-	
+
 	/**
 	 * Instance of Imagine Interface.
-	 * 
+	 *
 	 * @var mixed
 	 */
 	protected $imagine;
 
 	/**
 	 * Constructor method
-	 * 
+	 *
 	 * @param mixed $imagine
 	 */
 	function __construct($imagine) {
@@ -27,29 +27,29 @@ class Resizer
 	 *
 	 * @param  UploadedFile $file
 	 * @param  stdClass $style
-	 * @return void           
+	 * @return void
 	 */
 	public function resize($file, $style)
 	{
 		$filePath = tempnam(sys_get_temp_dir(), 'STP') . '.' . $file->getClientOriginalName();
 		list($width, $height, $option) = $this->parseStyleDimensions($style);
 		$method = "resize" . ucfirst($option);
-		
+
 		if ($method == 'resizeCustom') {
 			$this->resizeCustom($file, $style->value)
 				->save($filePath);
 		}
-		else {
-			$this->$method($file, $width, $height)
-				->save($filePath);
+    else {
+      $this->$method($file, $width, $height)
+		       ->save($filePath);
 		}
-		
+
 		return $filePath;
 	}
 
 	/**
-	 * parseStyleDimensions method 
-	 * 
+	 * parseStyleDimensions method
+	 *
 	 * Parse the given style dimensions to extract out the file processing options,
 	 * perform any necessary image resizing for a given style.
 	 *
@@ -57,35 +57,36 @@ class Resizer
 	 * @return array
 	 */
 	protected function parseStyleDimensions($style)
-	{
+  {
 		if (is_callable($style->value)) {
 			return [null, null, 'custom'];
 		}
 
-		if (strpos($style->value, 'x') === false) 
+		if (strpos($style->value, 'x') === false)
 		{
 			// Width given, height automagically selected to preserve aspect ratio (landscape).
 			$width = $style->value;
 
 			return [$width, null, 'landscape'];
 		}
-		
+
 		$dimensions = explode('x', $style->value);
 		$width = $dimensions[0];
 		$height = $dimensions[1];
-		
-		if (empty($width)) 
-		{
+
+
+		if (empty($width))
+    {
 			// Height given, width automagically selected to preserve aspect ratio (portrait).
 			return [null, $height, 'portrait'];
 		}
-		
+
 		$resizingOption = substr($height, -1, 1);
-		
-		if ($resizingOption == '#') 
+
+		if ($resizingOption == '#')
 		{
 			// Resize, then crop.
-			$height = rtrim($height, '#');
+      $height = rtrim($height, '#');
 
 			return [$width, $height, 'crop'];
 		}
@@ -94,10 +95,10 @@ class Resizer
 		{
 			// Resize by exact width/height (does not preserve aspect ratio).
 			$height = rtrim($height, '!');
-			
+
 			return [$width, $height, 'exact'];
 		}
-			
+
 		// Let the script decide the best way to resize.
 		return [$width, $height, 'auto'];
 	}
@@ -153,14 +154,14 @@ class Resizer
 	 * @return Imagine\Image
 	 */
 	protected function resizeCrop($file, $width, $height)
-	{
+  {
 		$image = $this->imagine->open($file->getRealPath());
 		list($optimalWidth, $optimalHeight) = $this->getOptimalCrop($image->getSize(), $width, $height);
 
-		// Find center - this will be used for the crop
-		$centerX = ($optimalWidth / 2) - ($width  / 2);
-		$centerY = ($optimalHeight / 2) - ($height / 2);
-		
+    // Find center - this will be used for the crop
+		$centerX = ($optimalWidth / 2) - ($width / 2);
+    $centerY = ($optimalHeight / 2) - ($height / 2);
+
 		return $image->resize(new Box($optimalWidth, $optimalHeight))
 			->crop(new Point($centerX, $centerY), new Box($width, $height));
 	}
@@ -219,7 +220,7 @@ class Resizer
 	}
 
 	/**
-	 * Attempts to find the best way to crop. 
+	 * Attempts to find the best way to crop.
 	 * Takes into account the image being a portrait or landscape.
 	 *
 	 * @param  Imagine\Image\Box $size - The image's current size.
@@ -229,19 +230,19 @@ class Resizer
 	 */
 	protected function getOptimalCrop($size, $width, $height)
 	{
-		$heightRatio = floor($size->getHeight() / $height);
-		$widthRatio  = floor($size->getWidth() /  $width);
-		
+		$heightRatio = $size->getHeight() / $height;
+		$widthRatio  = $size->getWidth() / $width;
+
 		if ($heightRatio < $widthRatio) {
 			$optimalRatio = $heightRatio;
-		} 
+		}
 		else {
 			$optimalRatio = $widthRatio;
 		}
-		
-		$optimalHeight = $size->getHeight() / $optimalRatio;
-		$optimalWidth  = $size->getWidth() / $optimalRatio;
-		
+
+		$optimalHeight = round($size->getHeight() / $optimalRatio, 2);
+		$optimalWidth  = round($size->getWidth() / $optimalRatio, 2);
+
 		return [$optimalWidth, $optimalHeight];
 	}
 

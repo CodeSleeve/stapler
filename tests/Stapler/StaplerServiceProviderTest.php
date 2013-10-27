@@ -2,17 +2,8 @@
 
 use Illuminate\Support\Facades\App;
 
-class StaplerServiceProviderTest extends PHPUnit_Framework_TestCase
+class StaplerServiceProviderTest extends TestCase
 {
-    public function setUp()
-    {
-        $app = new Illuminate\Foundation\Application;
-        $app->instance('app', $app);
-        $app->register('Codesleeve\Stapler\StaplerServiceProvider');
-        Illuminate\Support\Facades\Facade::setFacadeApplication($app);
-    }
-
-
     /**
      * @expectedException Codesleeve\Stapler\Exceptions\FileException
      */
@@ -20,7 +11,7 @@ class StaplerServiceProviderTest extends PHPUnit_Framework_TestCase
     {
         $uploadedFile = $this->getMock('Symfony\Component\HttpFoundation\File\UploadedFile',
           ['isValid'],
-          [__DIR__.'/empty.gif', 'Test', null, null, null, true]
+          [__DIR__.'/../fixtures/empty.gif', 'Test', null, null, null, true]
         );
 
         $uploadedFile->expects($this->once())

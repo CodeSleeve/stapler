@@ -6,66 +6,66 @@ class Attachment
 {
 	/**
 	 * The model the attachment belongs to.
-	 * 
+	 *
 	 * @var string
 	 */
 	public $instance;
 
 	/**
 	 * The name of the attachment.
-	 * 
+	 *
 	 * @var string
 	 */
 	public $name;
 
 	/**
 	 * An instance of the underlying storage driver that is being used.
-	 * 
+	 *
 	 * @var mixed.
 	 */
 	protected $storageDriver;
 
 	/**
 	 * The attachment options.
-	 * 
+	 *
 	 * @var array
 	 */
 	protected $options;
 
 	/**
 	 * An instance of the interpolator class for processing interpolations.
-	 * 
+	 *
 	 * @var Codesleeve\Stapler\Interpolator
 	 */
 	protected $interpolator;
 
 	/**
 	 * The uploaded file object for the attachment.
-	 * 
+	 *
 	 * @var Codesleeve\Stapler\UploadedFile
 	 */
 	protected $uploadedFile;
 
 	/**
 	 * The uploaded/resized files that have been queued up for deletion.
-	 * 
+	 *
 	 * @var array
 	 */
 	protected $queuedForDeletion = [];
 
 	/**
 	 * The uploaded/resized files that have been queued up for deletion.
-	 * 
+	 *
 	 * @var array
 	 */
 	protected $queuedForWrite = [];
 
 	/**
 	 * Constructor method
-	 * 
+	 *
 	 * @param array $foo
 	 */
-	function __construct($name, $options = [], $interpolator) 
+	function __construct($name, $options = [], $interpolator)
 	{
 		$this->name = $name;
 		$this->options = $options;
@@ -75,7 +75,7 @@ class Attachment
 
 	/**
 	 * Handle the dynamic setting of attachment options.
-	 * 
+	 *
 	 * @param string $name
 	 * @param mixed $value
 	 */
@@ -87,13 +87,13 @@ class Attachment
     /**
      * Handle the dynamic retrieval of attachment options.
      * Style options will be converted into a php stcClass.
-     * 
+     *
      * @param  string $optionName
      * @return mixed
      */
     public function __get($optionName)
     {
-		if (array_key_exists($optionName, $this->options)) 
+		if (array_key_exists($optionName, $this->options))
 		{
 		    if ($optionName == 'styles') {
 		    	return $this->convertToObject($this->options[$optionName]);
@@ -108,7 +108,7 @@ class Attachment
     /**
 	 * Mutator method for the uploadedFile property.
 	 * Takes a symfony uploaded file object and builds a Codesleeve\Stapler\UploadedFile from it.
-	 * 
+	 *
 	 * @param Symfony\Component\HttpFoundation\File\UploadedFile $uploadedFile
 	 */
 	public function setUploadedFile($uploadedFile)
@@ -118,8 +118,8 @@ class Attachment
 		if ($uploadedFile == STAPLER_NULL) {
 			return;
 		}
-		
-		$this->uploadedFile = APP::make('UploadedFile', $uploadedFile);
+
+		$this->uploadedFile = App::make('UploadedFile', $uploadedFile);
 		$this->instanceWrite('file_name', $this->uploadedFile->getClientOriginalName());
 		$this->instanceWrite('file_size', $this->uploadedFile->getClientSize());
 		$this->instanceWrite('content_type', $this->uploadedFile->getMimeType());
@@ -129,7 +129,7 @@ class Attachment
 
 	/**
 	 * Accessor method for the uploadedFile property.
-	 * 
+	 *
 	 * @return Symfony\Component\HttpFoundation\File\UploadedFile
 	 */
 	public function getUploadedFile()
@@ -139,8 +139,8 @@ class Attachment
 
 	/**
 	 * Mutator method for the interpolator property.
-	 * 
-	 * @param Interpolator $value 
+	 *
+	 * @param Interpolator $value
 	 */
 	public function setInterpolator($value)
 	{
@@ -149,7 +149,7 @@ class Attachment
 
 	/**
 	 * Accessor method for the uploadedFile property.
-	 * 
+	 *
 	 * @return Symfony\Component\HttpFoundation\File\UploadedFile
 	 */
 	public function getInterpolator()
@@ -158,12 +158,12 @@ class Attachment
 	}
 
 	/**
-	 * Bootstrap the attachment.  
+	 * Bootstrap the attachment.
 	 * This provides a mechanism for the attachment to access properties of the
 	 * corresponding model instance it's attached to.
-	 * 
-	 * @param  Model $instance      
-	 * @return void             
+	 *
+	 * @param  Model $instance
+	 * @return void
 	 */
 	public function bootstrap($instance)
 	{
@@ -172,7 +172,7 @@ class Attachment
 
 	/**
 	 * Handle dynamic method calls on the attachment.
-	 * This allows us to call methods on the underlying 
+	 * This allows us to call methods on the underlying
 	 * storage or utility objects directly via the attachment.
 	 *
 	 * @param  string  $method
@@ -183,7 +183,7 @@ class Attachment
 	{
 		// Storage methods
 		$callable = ['reset', 'remove', 'buildDirectory', 'cleanDirectory', 'move'];
-		
+
 		if (in_array($method, $callable)) {
 			return call_user_func_array([$this->storageDriver, $method], $parameters);
 		}
@@ -209,7 +209,7 @@ class Attachment
 		if ($this->originalFilename()) {
 			return $this->storageDriver->url($styleName, $this);
 		}
-		
+
 		return $this->defaultUrl($styleName);
 	}
 
@@ -232,7 +232,7 @@ class Attachment
 	 * Returns the creation time of the file as originally assigned to this attachment's model.
 	 * Lives in the <attachment>_created_at attribute of the model.
 	 * This attribute may conditionally exist on the model, it is not one of the four required fields.
-     * 
+     *
 	 * @return datetime
 	 */
 	public function createdAt()
@@ -243,7 +243,7 @@ class Attachment
 	/**
 	 * Returns the last modified time of the file as originally assigned to this attachment's model.
 	 * Lives in the <attachment>_updated_at attribute of the model.
-     * 
+     *
 	 * @return datetime
 	 */
 	public function updatedAt()
@@ -254,7 +254,7 @@ class Attachment
 	/**
 	 * Returns the content type of the file as originally assigned to this attachment's model.
 	 * Lives in the <attachment>_content_type attribute of the model.
-     * 
+     *
 	 * @return string
 	 */
 	public function contentType()
@@ -265,7 +265,7 @@ class Attachment
 	/**
 	 * Returns the size of the file as originally assigned to this attachment's model.
 	 * Lives in the <attachment>_file_size attribute of the model.
-     * 
+     *
 	 * @return integer
 	 */
 	public function size()
@@ -276,7 +276,7 @@ class Attachment
 	/**
 	 * Returns the name of the file as originally assigned to this attachment's model.
 	 * Lives in the <attachment>_file_name attribute of the model.
-     * 
+     *
 	 * @return string
 	 */
 	public function originalFilename()
@@ -290,7 +290,7 @@ class Attachment
 	 * @param  Eloquent $instance
 	 * @return void
 	*/
-	public function afterSave($instance) 
+	public function afterSave($instance)
 	{
 		$this->bootstrap($instance);
 		$this->save();
@@ -314,7 +314,7 @@ class Attachment
 	 * @param  Eloquent $instance
 	 * @return void
 	*/
-	public function afterDelete($instance) 
+	public function afterDelete($instance)
 	{
 		$this->bootstrap($instance);
 		$this->flushDeletes();
@@ -323,9 +323,9 @@ class Attachment
 	/**
 	 * Destroys the attachment.  Has the same effect as previously assigning
 	 * STAPLER_NULL to the attachment and then saving.
-	 * 
-	 * @param  array $stylesToClear 
-	 * @return void  
+	 *
+	 * @param  array $stylesToClear
+	 * @return void
 	 */
 	public function destroy($stylesToClear = [])
 	{
@@ -336,9 +336,9 @@ class Attachment
 	/**
 	 * Clears out the attachment.  Has the same effect as previously assigning
 	 * STAPLER_NULL to the attachment.  Does not save the associated model.
-	 * 
-	 * @param  array $stylesToClear 
-	 * @return void                   
+	 *
+	 * @param  array $stylesToClear
+	 * @return void
 	 */
 	public function clear($stylesToClear = [])
 	{
@@ -353,7 +353,7 @@ class Attachment
 	/**
 	 * Removes the old file upload (if necessary).
 	 * Saves the new file upload.
-	 *  
+	 *
 	 * @return void
 	 */
 	public function save()
@@ -367,21 +367,22 @@ class Attachment
 
 	/**
 	 * Process the queuedForWrite que.
-	 * 
+	 *
 	 * @return void
 	 */
 	protected function flushWrites()
 	{
-		foreach ($this->queuedForWrite as $style) 
+
+		foreach ($this->queuedForWrite as $style)
 		{
-			if ($style->value && $this->uploadedFile->isImage()) {
+      if ($style->value && $this->uploadedFile->isImage()) {
 				$imageProcessor = App::make($this->image_processing_library);
 				$resizer = new File\Image\Resizer($imageProcessor);
 				$file = $resizer->resize($this->uploadedFile, $style);
 			}
 			else {
 				$file = $this->uploadedFile->getRealPath();
-				
+
 			}
 
 			$filePath = $this->path($style->name);
@@ -393,7 +394,7 @@ class Attachment
 
 	/**
 	 * Process the queuedForDeletion que.
-	 * 
+	 *
 	 * @return void
 	 */
 	protected function flushDeletes()
@@ -413,7 +414,7 @@ class Attachment
 		if ($url = $this->default_url) {
 			return $this->getInterpolator()->interpolate($url, $this, $styleName);
 		}
-		
+
 		return '';
 	}
 
@@ -430,8 +431,8 @@ class Attachment
 
 	/**
 	 * Wrapper for laravel's native public_path function.
-	 * 
-	 * @return mixed        
+	 *
+	 * @return mixed
 	 */
 	protected function publicPath()
 	{
@@ -440,7 +441,7 @@ class Attachment
 
 	/**
 	 * Fill the queuedForWrite que with all of this attachment's styles.
-	 * 
+	 *
 	 * @return void
 	 */
 	protected function queueAllForWrite()
@@ -451,17 +452,17 @@ class Attachment
 	/**
 	 * Add a subset (filtered via style) of the uploaded files for this attachment
 	 * to the queuedForDeletion queue.
-	 * 
-	 * @param  array $stylesToClear 
-	 * @return void               
+	 *
+	 * @param  array $stylesToClear
+	 * @return void
 	 */
 	protected function queueSomeForDeletion($stylesToClear)
 	{
-		$filePaths = array_map(function($styleToClear) 
+		$filePaths = array_map(function($styleToClear)
 		{
 			if (array_key_exists($styleToClear, $this->options['styles'])){
 				return $this->path($styleToClear);
-			} 
+			}
 		}, $stylesToClear);
 
 		array_merge($this->queuedForDeletion, $filePaths);
@@ -469,7 +470,7 @@ class Attachment
 
     /**
      * Add all uploaded files (across all image styles) to the queuedForDeletion queue.
-     * 
+     *
      * @return void
      */
     protected function queueAllForDeletion()
@@ -478,9 +479,9 @@ class Attachment
 			return;
 		}
 
-		if (!$this->preserve_files) 
+		if (!$this->preserve_files)
 		{
-			$filePaths = array_map(function($style) 
+			$filePaths = array_map(function($style)
 			{
 				return $this->path($style->name);
 			}, $this->styles);
@@ -496,10 +497,10 @@ class Attachment
 
     /**
      * Set an attachment attribute on the underlying model instance.
-     * 
-     * @param  string $property 
-     * @param  mixed $value    
-     * @return void        
+     *
+     * @param  string $property
+     * @param  mixed $value
+     * @return void
      */
     protected function instanceWrite($property, $value)
     {
