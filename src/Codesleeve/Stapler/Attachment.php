@@ -488,10 +488,10 @@ class Attachment
 			$this->queuedForDeletion = array_merge($this->queuedForDeletion, $filePaths);
 		}
 
-		$this->instanceWrite('file_name', '');
-		$this->instanceWrite('file_size', '');
-		$this->instanceWrite('content_type', '');
-		$this->instanceWrite('updated_at', '');
+		$this->instanceWrite('file_name', NULL);
+		$this->instanceWrite('file_size', NULL);
+		$this->instanceWrite('content_type', NULL);
+		$this->instanceWrite('updated_at', NULL);
     }
 
     /**
