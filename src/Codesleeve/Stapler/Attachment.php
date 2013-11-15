@@ -1,5 +1,7 @@
 <?php namespace Codesleeve\Stapler;
 
+use Codesleeve\Stapler\Storage\StorageInterface;
+use Codesleeve\Stapler\File\Image\Resizer;
 use App;
 
 class Attachment
@@ -12,11 +14,11 @@ class Attachment
 	public $instance;
 
 	/**
-	 * The name of the attachment.
+	 * An instance of the configuration class.
 	 *
-	 * @var string
+	 * @var Codesleeve\Stapler\Config
 	 */
-	public $name;
+	protected $config;
 
 	/**
 	 * An instance of the underlying storage driver that is being used.
@@ -24,13 +26,6 @@ class Attachment
 	 * @var mixed.
 	 */
 	protected $storageDriver;
-
-	/**
-	 * The attachment options.
-	 *
-	 * @var array
-	 */
-	protected $options;
 
 	/**
 	 * An instance of the interpolator class for processing interpolations.
@@ -45,6 +40,13 @@ class Attachment
 	 * @var Codesleeve\Stapler\UploadedFile
 	 */
 	protected $uploadedFile;
+
+	/**
+	 * An instance of the resizer library that's being used for image processing.
+	 * 
+	 * @var Codesleeve\Stapler\File\Image\Resizer
+	 */
+	protected $resizer;
 
 	/**
 	 * The uploaded/resized files that have been queued up for deletion.
@@ -63,14 +65,15 @@ class Attachment
 	/**
 	 * Constructor method
 	 *
-	 * @param array $foo
+	 * @param Codesleeve\Stapler\Config $config
+	 * @param array $options
+	 * @param Interpolator $interpolator
 	 */
-	function __construct($name, $options = [], $interpolator)
+	function __construct(Config $config, Interpolator $interpolator, Resizer $resizer)
 	{
-		$this->name = $name;
-		$this->options = $options;
+		$this->config = $config;
 		$this->interpolator = $interpolator;
-		$this->storageDriver = App::make($this->storage, $this);
+		$this->resizer = $resizer;
 	}
 
 	/**
@@ -81,7 +84,7 @@ class Attachment
 	 */
 	public function __set($name, $value)
     {
-        $this->options[$name] = $value;
+        $this->config->$name = $value;
     }
 
     /**
@@ -93,16 +96,7 @@ class Attachment
      */
     public function __get($optionName)
     {
-		if (array_key_exists($optionName, $this->options))
-		{
-		    if ($optionName == 'styles') {
-		    	return $this->convertToObject($this->options[$optionName]);
-		    }
-
-		    return $this->options[$optionName];
-		}
-
-		return null;
+		return $this->config->$optionName;
     }
 
     /**
@@ -140,11 +134,11 @@ class Attachment
 	/**
 	 * Mutator method for the interpolator property.
 	 *
-	 * @param Interpolator $value
+	 * @param Interpolator $interpolator
 	 */
-	public function setInterpolator($value)
+	public function setInterpolator(Interpolator $interpolator)
 	{
-		$this->interpolator = $value;
+		$this->interpolator = $interpolator;
 	}
 
 	/**
@@ -155,6 +149,36 @@ class Attachment
 	public function getInterpolator()
 	{
 		return $this->interpolator;
+	}
+
+	/**
+	 * Mutator method for the resizer property.
+	 *
+	 * @param Codesleeve\Stapler\File\Image\Resizer $resizer
+	 */
+	public function setResizer(Resizer $resizer)
+	{
+		$this->resizer = $resizer;
+	}
+
+	/**
+	 * Accessor method for the uploadedFile property.
+	 *
+	 * @return Codesleeve\Stapler\File\Image\Resizer
+	 */
+	public function getResizer()
+	{
+		return $this->resizer;
+	}
+
+	/**
+	 * Mutator method for the storageDriver property.
+	 *
+	 * @param Interpolator $storageDriver
+	 */
+	public function setStorageDriver(StorageInterface $storageDriver)
+	{
+		$this->storageDriver = $storageDriver;
 	}
 
 	/**
@@ -182,19 +206,10 @@ class Attachment
 	public function __call($method, $parameters)
 	{
 		// Storage methods
-		$callable = ['reset', 'remove', 'buildDirectory', 'cleanDirectory', 'move'];
+		$callable = ['remove', 'move'];
 
 		if (in_array($method, $callable)) {
 			return call_user_func_array([$this->storageDriver, $method], $parameters);
-		}
-
-		// Utility methods
-		$callable = ['convertToObject'];
-
-		if (in_array($method, $callable))
-		{
-			$utility = App::make('Utility', $this);
-			return call_user_func_array([$utility, $method], $parameters);
 		}
 	}
 
@@ -375,14 +390,11 @@ class Attachment
 
 		foreach ($this->queuedForWrite as $style)
 		{
-      if ($style->value && $this->uploadedFile->isImage()) {
-				$imageProcessor = App::make($this->image_processing_library);
-				$resizer = new File\Image\Resizer($imageProcessor);
-				$file = $resizer->resize($this->uploadedFile, $style);
+      		if ($style->value && $this->uploadedFile->isImage()) {
+				$file = $this->resizer->resize($this->uploadedFile, $style);
 			}
 			else {
 				$file = $this->uploadedFile->getRealPath();
-
 			}
 
 			$filePath = $this->path($style->name);

@@ -92,8 +92,7 @@ trait Stapler
 		$options = $this->mergeOptions($options);
 		App::make('AttachmentValidator')->validateOptions($options);
 		
-		$interpolator = App::make('Interpolator');
-		$attachment = App::make('Attachment', ['name' => $name, 'options' => $options, 'interpolator' => $interpolator]);
+		$attachment = App::make('Attachment', ['name' => $name, 'options' => $options]);
 		$attachment->bootstrap($this);
 		$this->attachedFiles[$name] = $attachment;
 	}

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\ServiceProvider;
 use Codesleeve\Stapler\File\UploadedFile;
+use Codesleeve\Stapler\File\Image\Resizer;
 
 class StaplerServiceProvider extends ServiceProvider {
 
@@ -42,7 +43,8 @@ class StaplerServiceProvider extends ServiceProvider {
 			define('STAPLER_NULL', $this->staplerNull);
 		}
 		
-		$this->registerAttachment();
+		$this->registerResizer();
+		$this->registerConfig();
 		$this->registerValidator();
 		$this->registerInterpolator();
 		$this->registerGD();
@@ -50,11 +52,38 @@ class StaplerServiceProvider extends ServiceProvider {
 		$this->registerGmagick();
 		$this->registerFilesystemStorage();
 		$this->registerS3Storage();
+		$this->registerAttachment();
 		$this->registerUtility();
 		$this->registerUploadedFile();
 		$this->registerStaplerFasten();
 
 		$this->commands('stapler.fasten');
+	}
+
+	/**
+	 * Register Codesleeve\Stapler\File\Image\Resizer with the container.
+	 * 
+	 * @return void
+	 */
+	protected function registerResizer()
+	{
+		$this->app->bind('Resizer', function($app, $params)
+        {
+        	return new Resizer($params['imageProcessor']);
+        });
+	}
+
+	/**
+	 * Register Codesleeve\Stapler\Config with the container.
+	 * 
+	 * @return void
+	 */
+	protected function registerConfig()
+	{
+		$this->app->bind('Config', function($app, $params)
+        {
+        	return new Config($params['name'], $params['options']);
+        });
 	}
 
 	/**
@@ -66,7 +95,17 @@ class StaplerServiceProvider extends ServiceProvider {
 	{
 		$this->app->bind('Attachment', function($app, $params)
         {
-            return new Attachment($params['name'], $params['options'], $params['interpolator']);
+			$config = $app->make('Config', ['name' => $params['name'], 'options' => $params['options']]);
+			$interpolator = $app->make('Interpolator');
+			$imageProcessor = $app->make($params['options']['image_processing_library']);
+			$resizer = $app->make('Resizer', ['imageProcessor' => $imageProcessor]);
+
+            $attachment = new Attachment($config, $interpolator, $resizer);
+            
+            $storageDriver = $app->make($params['options']['storage'], ['attachment' => $attachment]);
+            $attachment->setStorageDriver($storageDriver);
+
+            return $attachment;
         });
 	}
 
@@ -142,9 +181,9 @@ class StaplerServiceProvider extends ServiceProvider {
 	 */
 	protected function registerFilesystemStorage()
 	{
-		$this->app->bind('filesystem', function($app, $attachment)
+		$this->app->bind('filesystem', function($app, $params)
         {
-            return new Storage\Filesystem($attachment);
+            return new Storage\Filesystem($params['attachment']);
         });
 	}
 
@@ -155,9 +194,9 @@ class StaplerServiceProvider extends ServiceProvider {
 	 */
 	protected function registerS3Storage()
 	{
-		$this->app->bind('s3', function($app, $attachment)
+		$this->app->bind('s3', function($app, $params)
         {
-            return new Storage\S3($attachment);
+            return new Storage\S3($params['attachment']);
         });
 	}
 
@@ -184,8 +223,8 @@ class StaplerServiceProvider extends ServiceProvider {
 		$this->app->bind('UploadedFile', function($app, $uploadedFile)
     {
         if (!$uploadedFile->isValid()) {
-				    throw new Exceptions\FileException("Uploaded file has error code of ".$uploadedFile->getError());
-			  }
+			throw new Exceptions\FileException("Uploaded file has error code of ".$uploadedFile->getError());
+		}
 
         $path = $uploadedFile->getPathname();
         $originalName = $uploadedFile->getClientOriginalName();
