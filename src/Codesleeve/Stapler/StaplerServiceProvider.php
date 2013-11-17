@@ -44,6 +44,7 @@ class StaplerServiceProvider extends ServiceProvider {
 		}
 		
 		$this->registerResizer();
+		$this->registerIOWrapper();
 		$this->registerConfig();
 		$this->registerValidator();
 		$this->registerInterpolator();
@@ -74,6 +75,19 @@ class StaplerServiceProvider extends ServiceProvider {
 	}
 
 	/**
+	 * Register Codesleeve\Stapler\IOWrapper with the container.
+	 * 
+	 * @return void
+	 */
+	protected function registerIOWrapper()
+	{
+		$this->app->singleton('IOWrapper', function($app, $params)
+        {
+        	return new IOWrapper();
+        });
+	}
+
+	/**
 	 * Register Codesleeve\Stapler\Config with the container.
 	 * 
 	 * @return void
@@ -99,8 +113,9 @@ class StaplerServiceProvider extends ServiceProvider {
 			$interpolator = $app->make('Interpolator');
 			$imageProcessor = $app->make($params['options']['image_processing_library']);
 			$resizer = $app->make('Resizer', ['imageProcessor' => $imageProcessor]);
+			$IOWrapper = $app->make('IOWrapper');
 
-            $attachment = new Attachment($config, $interpolator, $resizer);
+            $attachment = new Attachment($config, $interpolator, $resizer, $IOWrapper);
             
             $storageDriver = $app->make($params['options']['storage'], ['attachment' => $attachment]);
             $attachment->setStorageDriver($storageDriver);

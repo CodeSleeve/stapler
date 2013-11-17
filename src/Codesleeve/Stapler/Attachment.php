@@ -2,7 +2,6 @@
 
 use Codesleeve\Stapler\Storage\StorageInterface;
 use Codesleeve\Stapler\File\Image\Resizer;
-use App;
 
 class Attachment
 {
@@ -49,6 +48,14 @@ class Attachment
 	protected $resizer;
 
 	/**
+	 * An IOWrapper instance for converting file input formats (symfony uploaded file object
+	 * arrays, string, etc) into an instance of Codesleeve\Stapler\UploadedFile.
+	 * 
+	 * @var IOWrapper
+	 */
+	protected $IOWrapper;
+
+	/**
 	 * The uploaded/resized files that have been queued up for deletion.
 	 *
 	 * @var array
@@ -68,12 +75,14 @@ class Attachment
 	 * @param Codesleeve\Stapler\Config $config
 	 * @param array $options
 	 * @param Interpolator $interpolator
+	 * @param IOWrapper $IOWrapper
 	 */
-	function __construct(Config $config, Interpolator $interpolator, Resizer $resizer)
+	function __construct(Config $config, Interpolator $interpolator, Resizer $resizer, IOWrapper $IOWrapper)
 	{
 		$this->config = $config;
 		$this->interpolator = $interpolator;
 		$this->resizer = $resizer;
+		$this->IOWrapper = $IOWrapper;
 	}
 
 	/**
@@ -113,7 +122,7 @@ class Attachment
 			return;
 		}
 
-		$this->uploadedFile = App::make('UploadedFile', $uploadedFile);
+		$this->uploadedFile = $this->IOWrapper->make($uploadedFile);
 		$this->instanceWrite('file_name', $this->uploadedFile->getClientOriginalName());
 		$this->instanceWrite('file_size', $this->uploadedFile->getClientSize());
 		$this->instanceWrite('content_type', $this->uploadedFile->getMimeType());
