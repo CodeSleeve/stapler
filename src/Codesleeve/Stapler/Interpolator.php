@@ -105,7 +105,7 @@ class Interpolator
 	*/
 	protected function basename($attachment, $styleName = '') 
 	{
-		return pathinfo($attachment->attributes['fileName'], PATHINFO_FILENAME);
+		return pathinfo($attachment->originalFilename(), PATHINFO_FILENAME);
 	}
 
     /**
@@ -117,7 +117,7 @@ class Interpolator
 	*/
 	protected function extension($attachment, $styleName = '') 
 	{
-		return pathinfo($attachment->attributes['fileName'], PATHINFO_EXTENSION);
+		return pathinfo($attachment->originalFilename(), PATHINFO_EXTENSION);
 	}
 
 	/**
