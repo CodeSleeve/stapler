@@ -229,31 +229,6 @@ class StaplerServiceProvider extends ServiceProvider {
 	}
 
 	/**
-	 * Register Codesleeve\Stapler\UploadedFile with the container.
-	 * 
-	 * @return void
-	 */
-	/*protected function registerUploadedFile()
-	{
-		$this->app->bind('UploadedFile', function($app, $uploadedFile)
-	    {
-	        $path = $uploadedFile->getPathname();
-	        $originalName = $uploadedFile->getClientOriginalName();
-	        $mimeType = $uploadedFile->getClientMimeType();
-	        $size = $uploadedFile->getClientSize();
-	        $error = $uploadedFile->getError();
-
-	        $staplerUploadedFile = new UploadedFile($path, $originalName, $mimeType, $size, $error);
-
-	        if (!$staplerUploadedFile->isValid()) {
-				throw new Exceptions\FileException($staplerUploadedFile->getErrorMessage($staplerUploadedFile->getError()));
-			}
-	        
-	        return $staplerUploadedFile;
-	    });
-	}*/
-
-	/**
 	 * Register the stapler fasten command with the container.
 	 * 
 	 * @return void

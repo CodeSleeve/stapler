@@ -77,11 +77,11 @@ class IOWrapper
 		curl_close ($ch);
 		
 		// Create a filepath for the file by storing it on disk.
-		$filePath = tempnam(sys_get_temp_dir(), 'STP')
+		$filePath = tempnam(sys_get_temp_dir(), 'STP');
 		file_put_contents($filePath, $rawFile);
 
 		// Get the origin name of the file
-		$name = pathinfo($file)['filename'];
+		$name = pathinfo($file)['basename'];
 
 		// Get the mime type of the file
 		$sizeInfo = getimagesizefromstring($rawFile);
