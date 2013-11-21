@@ -70,6 +70,30 @@ class IOWrapper
 	 */
 	protected function createFromString($file)
 	{
+		$ch = curl_init ($file);
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		$rawFile = curl_exec($ch);
+		curl_close ($ch);
 		
+		// Create a filepath for the file by storing it on disk.
+		$filePath = tempnam(sys_get_temp_dir(), 'STP')
+		file_put_contents($filePath, $rawFile);
+
+		// Get the origin name of the file
+		$name = pathinfo($file)['filename'];
+
+		// Get the mime type of the file
+		$sizeInfo = getimagesizefromstring($rawFile);
+		$mime = $sizeInfo['mime'];
+
+		// Get the length of the file
+		if (function_exists('mb_strlen')) {
+			$size = mb_strlen($rawFile, '8bit');
+		} else {
+			$size = strlen($rawFile);
+		}
+
+		return new UploadedFile($filePath, $name, $mime, $size, 0);
 	}
 }

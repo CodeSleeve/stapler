@@ -55,7 +55,7 @@ class StaplerServiceProvider extends ServiceProvider {
 		$this->registerS3Storage();
 		$this->registerAttachment();
 		$this->registerUtility();
-		$this->registerUploadedFile();
+		//$this->registerUploadedFile();
 		$this->registerStaplerFasten();
 
 		$this->commands('stapler.fasten');
@@ -233,7 +233,7 @@ class StaplerServiceProvider extends ServiceProvider {
 	 * 
 	 * @return void
 	 */
-	protected function registerUploadedFile()
+	/*protected function registerUploadedFile()
 	{
 		$this->app->bind('UploadedFile', function($app, $uploadedFile)
 	    {
@@ -251,7 +251,7 @@ class StaplerServiceProvider extends ServiceProvider {
 	        
 	        return $staplerUploadedFile;
 	    });
-	}
+	}*/
 
 	/**
 	 * Register the stapler fasten command with the container.
