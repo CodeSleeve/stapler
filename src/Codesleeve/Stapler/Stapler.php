@@ -37,12 +37,41 @@ trait Stapler
 	{
 		// Register the attachment with stapler and setup event listeners.
 		$this->registerAttachment($name, $options);
-		$this->registerEvents($name);
 	}
 
 	/**
+	 * Register eloquent event handlers once for each class that uses eloquent
+	 * For each event (after save, before delete, etc) we'll register a listener
+	 * for it using a callback on the attachment.
+	 *
+	 * @return void
+	 */
+	public static function boot() {
+		parent::boot();
+
+		static::saved(function($instance) {
+		  foreach($instance->attachedFiles as $attachedFile) {
+			$attachedFile->afterSave($instance);
+		  }
+
+		});
+
+		static::deleting(function($instance) {
+		  foreach($instance->attachedFiles as $attachedFile) {
+			$attachedFile->beforeDelete($instance);
+		  }
+		});
+
+		static::deleted(function($instance) {
+		  foreach($instance->attachedFiles as $attachedFile) {
+			$attachedFile->afterDelete($instance);
+		  }
+		});
+
+	}
+	/**
      * Handle the dynamic retrieval of attachment objects.
-     * 
+     *
      * @param  string $key
      * @return mixed
      */
@@ -118,28 +147,4 @@ trait Stapler
 		return $options;
 	}
 
-	/**
-	 * Register eloquent event handlers.
-	 * For each event (after save, before delete, etc) we'll register a listener
-	 * for it using a callback on the attachment.
-	 *
-	 * @param  $attachmentName
-	 * @return void 
-	 */
-	protected function registerEvents($attachmentName)
-	{
-		$attachedFile = $this->attachedFiles[$attachmentName];
-        
-        $this->saved(function($instance) use ($attachedFile) {
-        	$attachedFile->afterSave($instance);
-        });
-
-        $this->deleting(function($instance) use ($attachedFile) {
-        	$attachedFile->beforeDelete($instance);
-        });
-
-        $this->deleted(function($instance) use ($attachedFile) {
-        	$attachedFile->afterDelete($instance);
-        });
-	}
 }
