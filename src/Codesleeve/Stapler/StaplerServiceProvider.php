@@ -55,7 +55,6 @@ class StaplerServiceProvider extends ServiceProvider {
 		$this->registerS3Storage();
 		$this->registerAttachment();
 		$this->registerUtility();
-		//$this->registerUploadedFile();
 		$this->registerStaplerFasten();
 
 		$this->commands('stapler.fasten');
@@ -146,7 +145,7 @@ class StaplerServiceProvider extends ServiceProvider {
 	{
 		$this->app->singleton('Interpolator', function($app)
         {
-            return new Interpolator();
+            return new Interpolator($app['Str']);
         });
 	}
 
