@@ -80,7 +80,7 @@ class IOWrapper
 		$filePath = tempnam(sys_get_temp_dir(), 'STP');
 		file_put_contents($filePath, $rawFile);
 
-		// Get the origin name of the file
+		// Get the original name of the file
 		$name = pathinfo($file)['basename'];
 
 		// Get the mime type of the file

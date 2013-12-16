@@ -1,9 +1,23 @@
 <?php namespace Codesleeve\Stapler;
 
-use Str;
-
 class Interpolator
 {
+	/**
+	 * The string manipulation library for pluralizing strings, etc.
+	 * 
+	 * @var mixed
+	 */
+	protected $string;
+
+	/**
+	 * Constructor method.
+	 * 
+	 * @param mixed $string 
+	 */
+	function __construct($string) {
+		$this->string = $string;
+	}
+
 	/**
 	 * Interpolate a string.
 	 *
@@ -180,7 +194,7 @@ class Interpolator
 	*/
 	protected function attachment($attachment, $styleName = '') 
 	{
-		return Str::plural($attachment->name);
+		return $this->string->plural($attachment->name);
 	}
 
 	/**
