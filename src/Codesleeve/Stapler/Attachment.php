@@ -390,6 +390,34 @@ class Attachment
 	}
 
 	/**
+	 * Rebuild the images for this attachment.
+	 *
+	 * @return void 
+	 */
+	public function refresh()
+	{
+		if (!$this->originalFilename()) {
+			return;
+		}
+
+		foreach ($this->styles as $style) 
+		{
+			$fileLocation = $this->storage == 'filesystem' ? $this->path() : $this->url();
+			$file = $this->IOWrapper->make($fileLocation);
+
+			if ($style->value && $file->isImage()) {
+				$file = $this->resizer->resize($file, $style);
+			}
+			else {
+				$file = $file->getRealPath();
+			}
+
+			$filePath = $this->path($style->name);
+			$this->move($file, $filePath);
+		}
+	}
+
+	/**
 	 * Process the queuedForWrite que.
 	 *
 	 * @return void

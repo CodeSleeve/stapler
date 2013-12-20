@@ -46,7 +46,7 @@ class ImageRefreshService
 			foreach ($model->getAttachedFiles() as $attachedFile) 
 			{
 				if (in_array($attachedFile->name, $attachments)) {
-					$this->rebuildImages($attachedFile);
+					$attachedFile->refresh();
 				}
 			}
 		}
@@ -63,38 +63,8 @@ class ImageRefreshService
 		{
 			foreach ($model->getAttachedFiles() as $attachedFile) 
 			{
-				$this->rebuildImages($attachedFile);
+				$attachedFile->refresh();
 			}
-		}
-	}
-
-	/**
-	 * Rebuild the images for a specific attachment.
-	 *
-	 * @param  AttachedFile $attachedFile
-	 * @return void 
-	 */
-	protected function rebuildImages($attachedFile)
-	{
-		if (!$attachedFile->originalFilename()) {
-			return;
-		}
-
-		foreach ($attachedFile->styles as $style) 
-		{
-			$ioWrapper = new IOWrapper;
-			$fileLocation = $attachedFile->storage == 'filesystem' ? $attachedFile->path() : $attachedFile->url();
-			$file = $ioWrapper->make($fileLocation);
-
-			if ($style->value && $file->isImage()) {
-				$file = $attachedFile->getResizer()->resize($file, $style);
-			}
-			else {
-				$file = $file->getRealPath();
-			}
-
-			$filePath = $attachedFile->path($style->name);
-			$attachedFile->move($file, $filePath);
 		}
 	}
 }
