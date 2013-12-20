@@ -19,7 +19,7 @@ class FastenCommand extends Command {
 	 *
 	 * @var string
 	 */
-	protected $description = 'Generate a migration for adding stapler file fields to a database table.';
+	protected $description = 'Generate a migration for adding stapler file fields to a database table';
 
 	/**
 	 * Create a new command instance.
@@ -38,13 +38,7 @@ class FastenCommand extends Command {
 	 */
 	public function fire()
 	{
-		try {
-			DB::table($this->argument('table'))->first();
-			$this->createMigration();
-
-		} catch(Exception $e) {
-			$this->error("No such table found in database: " . $this->argument('table'));
-		}
+		$this->createMigration();
 	}
 
 	/**
@@ -75,7 +69,7 @@ class FastenCommand extends Command {
 	 *
 	 * @return void
 	 */
-	public function createMigration()
+	protected function createMigration()
 	{
 		$data = ['table' => $this->argument('table'), 'attachment' => $this->argument('attachment')];
 		$prefix = date('Y_m_d_His');
