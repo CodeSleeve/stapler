@@ -26,6 +26,16 @@ trait Stapler
 	protected $attachedFiles = [];
 
 	/**
+	 * Accessor method for the $attachedFiles property.
+	 * 
+	 * @return array
+	 */
+	public function getAttachedFiles()
+	{
+		return $this->attachedFiles;
+	}
+
+	/**
 	 * Add a new file attachment type to the list of available attachments.
 	 * This function acts as a quasi constructor for this trait.
 	 *

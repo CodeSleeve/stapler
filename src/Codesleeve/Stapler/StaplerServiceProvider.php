@@ -55,9 +55,16 @@ class StaplerServiceProvider extends ServiceProvider {
 		$this->registerS3Storage();
 		$this->registerAttachment();
 		$this->registerUtility();
-		$this->registerStaplerFasten();
+		
+		// commands
+		$this->registerStaplerFastenCommand();
+		$this->registerStaplerRefreshCommand();
+		
+		// services
+		$this->registerImageRefreshService();
 
 		$this->commands('stapler.fasten');
+		$this->commands('stapler.refresh');
 	}
 
 	/**
@@ -232,13 +239,40 @@ class StaplerServiceProvider extends ServiceProvider {
 	 * 
 	 * @return void
 	 */
-	protected function registerStaplerFasten()
+	protected function registerStaplerFastenCommand()
 	{
 		$this->app->bind('stapler.fasten', function($app) 
 		{
 			return new Commands\FastenCommand;
 		});
 	}
+
+	/**
+	 * Register the stapler refresh command with the container.
+	 * 
+	 * @return void
+	 */
+	protected function registerStaplerRefreshCommand()
+	{
+		$this->app->bind('stapler.refresh', function($app) 
+		{
+			$refreshService = $app['ImageRefreshService'];
+			
+			return new Commands\RefreshCommand($refreshService);
+		});
+	}
+
+	/**
+     * Register the image refresh service with the container.
+     * 
+     * @return void 
+     */
+    protected function registerImageRefreshService()
+    {
+        $this->app->singleton('ImageRefreshService', function($app, $params) {
+            return new Services\ImageRefreshService();
+        });
+    }
 
 	/**
 	 * Get the services provided by the provider.
