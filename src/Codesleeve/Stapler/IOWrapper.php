@@ -21,6 +21,10 @@ class IOWrapper
 			return $this->createFromArray($file);
 		}
 
+		if (array_key_exists('scheme', parse_url($file))) {
+			return $this->createFromUrl($file);
+		}
+
 		return $this->createFromString($file);
 	}
 
@@ -68,7 +72,7 @@ class IOWrapper
 	 * @param  string $file 
 	 * @return Codesleeve\Stapler\File\UploadedFile   
 	 */
-	protected function createFromString($file)
+	protected function createFromUrl($file)
 	{
 		$ch = curl_init ($file);
 		curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -95,5 +99,17 @@ class IOWrapper
 		}
 
 		return new UploadedFile($filePath, $name, $mime, $size, 0);
+	}
+
+	/**
+	 * Fetch a local file using a string location and convert it into
+	 * an instance of Codesleeve\Stapler\File\UploadedFile.
+	 * 
+	 * @param  string $file 
+	 * @return Codesleeve\Stapler\File\UploadedFile   
+	 */
+	protected function createFromString($file)
+	{
+		return new UploadedFile($file, pathinfo($file)['basename']);
 	}
 }
