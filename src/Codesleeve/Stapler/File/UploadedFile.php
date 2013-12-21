@@ -48,8 +48,10 @@ class UploadedFile extends \Symfony\Component\HttpFoundation\File\UploadedFile
      * @param int $code The error code returned by an upload attempt
      * @return string The error message regarding the specified error code
      */
-    public function getErrorMessage($errorCode)
+    public function getErrorMessage($errorCode = null)
     {
+		$errorCode = $errorCode ?: $this->$error;
+
 		static $errors = [
 			UPLOAD_ERR_INI_SIZE   => 'The file "%s" exceeds your upload_max_filesize ini directive (limit is %d kb).',
 			UPLOAD_ERR_FORM_SIZE  => 'The file "%s" exceeds the upload limit defined in your form.',
