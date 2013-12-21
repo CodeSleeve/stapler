@@ -22,7 +22,7 @@ class Attachment
 	/**
 	 * An instance of the underlying storage driver that is being used.
 	 *
-	 * @var mixed.
+	 * @var Codesleeve\Stapler\Storage\StorageInterface.
 	 */
 	protected $storageDriver;
 
@@ -51,7 +51,7 @@ class Attachment
 	 * An IOWrapper instance for converting file input formats (symfony uploaded file object
 	 * arrays, string, etc) into an instance of Codesleeve\Stapler\UploadedFile.
 	 * 
-	 * @var IOWrapper
+	 * @var Codesleeve\Stapler\IOWrapper
 	 */
 	protected $IOWrapper;
 
@@ -73,9 +73,9 @@ class Attachment
 	 * Constructor method
 	 *
 	 * @param Codesleeve\Stapler\Config $config
-	 * @param array $options
-	 * @param Interpolator $interpolator
-	 * @param IOWrapper $IOWrapper
+	 * @param Codesleeve\Stapler\Interpolator $interpolator
+	 * @param Codesleeve\Stapler\File\Image\Resizer $resizer
+	 * @param Codesleeve\Stapler\IOWrapper $IOWrapper
 	 */
 	function __construct(Config $config, Interpolator $interpolator, Resizer $resizer, IOWrapper $IOWrapper)
 	{
@@ -110,9 +110,13 @@ class Attachment
 
     /**
 	 * Mutator method for the uploadedFile property.
-	 * Takes a symfony uploaded file object and builds a Codesleeve\Stapler\UploadedFile from it.
+	 * Accepts the following inputs: 
+	 * - An absolute string url (for fetching remote files).
+	 * - An array (data parsed from the $_FILES array),
+	 * - A symfony uploaded file object.
 	 *
-	 * @param Symfony\Component\HttpFoundation\File\UploadedFile $uploadedFile
+	 * @param mixed $uploadedFile
+	 * @return void
 	 */
 	public function setUploadedFile($uploadedFile)
 	{
@@ -143,7 +147,8 @@ class Attachment
 	/**
 	 * Mutator method for the interpolator property.
 	 *
-	 * @param Interpolator $interpolator
+	 * @param Codesleeve\Stapler\Interpolator $interpolator
+	 * @return void 
 	 */
 	public function setInterpolator(Interpolator $interpolator)
 	{
@@ -151,9 +156,9 @@ class Attachment
 	}
 
 	/**
-	 * Accessor method for the uploadedFile property.
+	 * Accessor method for the interpolator property.
 	 *
-	 * @return Symfony\Component\HttpFoundation\File\UploadedFile
+	 * @return Codesleeve\Stapler\Interpolator
 	 */
 	public function getInterpolator()
 	{
@@ -164,6 +169,7 @@ class Attachment
 	 * Mutator method for the resizer property.
 	 *
 	 * @param Codesleeve\Stapler\File\Image\Resizer $resizer
+	 * @return  void
 	 */
 	public function setResizer(Resizer $resizer)
 	{
@@ -183,7 +189,8 @@ class Attachment
 	/**
 	 * Mutator method for the storageDriver property.
 	 *
-	 * @param Interpolator $storageDriver
+	 * @param  Codesleeve\Stapler\Storage\StorageInterface $storageDriver
+	 * @return void
 	 */
 	public function setStorageDriver(StorageInterface $storageDriver)
 	{
@@ -191,14 +198,14 @@ class Attachment
 	}
 
 	/**
-	 * Bootstrap the attachment.
+	 * Mutator method for the instance property.
 	 * This provides a mechanism for the attachment to access properties of the
 	 * corresponding model instance it's attached to.
 	 *
 	 * @param  Model $instance
 	 * @return void
 	 */
-	public function bootstrap($instance)
+	public function setInstance($instance)
 	{
 		$this->instance = $instance;
 	}
@@ -316,7 +323,7 @@ class Attachment
 	*/
 	public function afterSave($instance)
 	{
-		$this->bootstrap($instance);
+		$this->setInstance($instance);
 		$this->save();
 	}
 
@@ -328,7 +335,7 @@ class Attachment
 	 */
 	public function beforeDelete($instance)
 	{
-		$this->bootstrap($instance);
+		$this->setInstance($instance);
 		$this->queueAllForDeletion();
 	}
 
@@ -340,7 +347,7 @@ class Attachment
 	*/
 	public function afterDelete($instance)
 	{
-		$this->bootstrap($instance);
+		$this->setInstance($instance);
 		$this->flushDeletes();
 	}
 
@@ -424,7 +431,6 @@ class Attachment
 	 */
 	protected function flushWrites()
 	{
-
 		foreach ($this->queuedForWrite as $style)
 		{
       		if ($style->value && $this->uploadedFile->isImage()) {

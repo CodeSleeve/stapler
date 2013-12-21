@@ -18,7 +18,8 @@ class Config
 
 	/**
 	 * Constructor method.
-	 * 
+	 *
+	 * @param string $name
 	 * @param array $options
 	 */
 	function __construct($name, $options)

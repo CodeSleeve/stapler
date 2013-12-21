@@ -5,7 +5,6 @@ use Imagine\Image\Point;
 
 class Resizer
 {
-
 	/**
 	 * Instance of Imagine Interface.
 	 *
@@ -39,8 +38,8 @@ class Resizer
 			$this->resizeCustom($file, $style->value)
 				->save($filePath);
 		}
-    else {
-      $this->$method($file, $width, $height)
+    	else {
+      		$this->$method($file, $width, $height)
 		       ->save($filePath);
 		}
 
@@ -57,7 +56,7 @@ class Resizer
 	 * @return array
 	 */
 	protected function parseStyleDimensions($style)
-  {
+  	{
 		if (is_callable($style->value)) {
 			return [null, null, 'custom'];
 		}
@@ -74,9 +73,8 @@ class Resizer
 		$width = $dimensions[0];
 		$height = $dimensions[1];
 
-
 		if (empty($width))
-    {
+    	{
 			// Height given, width automagically selected to preserve aspect ratio (portrait).
 			return [null, $height, 'portrait'];
 		}
@@ -86,7 +84,7 @@ class Resizer
 		if ($resizingOption == '#')
 		{
 			// Resize, then crop.
-      $height = rtrim($height, '#');
+      		$height = rtrim($height, '#');
 
 			return [$width, $height, 'crop'];
 		}
@@ -154,13 +152,13 @@ class Resizer
 	 * @return Imagine\Image
 	 */
 	protected function resizeCrop($file, $width, $height)
-  {
+  	{
 		$image = $this->imagine->open($file->getRealPath());
 		list($optimalWidth, $optimalHeight) = $this->getOptimalCrop($image->getSize(), $width, $height);
 
-    // Find center - this will be used for the crop
+    	// Find center - this will be used for the crop
 		$centerX = ($optimalWidth / 2) - ($width / 2);
-    $centerY = ($optimalHeight / 2) - ($height / 2);
+    	$centerY = ($optimalHeight / 2) - ($height / 2);
 
 		return $image->resize(new Box($optimalWidth, $optimalHeight))
 			->crop(new Point($centerX, $centerY), new Box($width, $height));

@@ -11,7 +11,7 @@ use Event, Config, App;
  * 
  * 
  * @package tabennett/stapler
- * @version v1.0.0-Beta3
+ * @version v1.0.0-Beta4
  * @author Travis Bennett <tandrewbennett@hotmail.com>
  * @link 	
  */
@@ -132,7 +132,7 @@ trait Stapler
 		App::make('AttachmentValidator')->validateOptions($options);
 		
 		$attachment = App::make('Attachment', ['name' => $name, 'options' => $options]);
-		$attachment->bootstrap($this);
+		$attachment->setInstance($this);
 		$this->attachedFiles[$name] = $attachment;
 	}
 
