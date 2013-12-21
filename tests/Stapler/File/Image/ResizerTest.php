@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\App;
 
 class ResizerTest extends TestCase
 {
-
 	/**
 	 * Test the resize crop method.
 	 * 
@@ -24,7 +23,7 @@ class ResizerTest extends TestCase
 		$imageProcessor = $this->mockImageProcessor($image);
 		$resizer = new Codesleeve\Stapler\File\Image\Resizer($imageProcessor);
 
-		$style = $this->styleObject('512x512#');
+		$style = $this->styleObject('thumbnail', '512x512#');
 		$file = $resizer->resize($uploadedFile, $style);
 	}
 
@@ -45,7 +44,7 @@ class ResizerTest extends TestCase
 		$imageProcessor = $this->mockImageProcessor($image);
 		$resizer = new Codesleeve\Stapler\File\Image\Resizer($imageProcessor);
 
-		$style = $this->styleObject('440x244#');
+		$style = $this->styleObject('thumbnail', '440x244#');
 		$file = $resizer->resize($uploadedFile, $style);
 	}
 
@@ -71,26 +70,26 @@ class ResizerTest extends TestCase
 	* @param  integer $expectedCropBox   
 	* @return Image                    
 	*/
-	protected function mockImage($originalSize, $expectedResize, $expectedCropPoint = null, $expectedCropBox = null) {
-
+	protected function mockImage($originalSize, $expectedResize, $expectedCropPoint = null, $expectedCropBox = null) 
+	{
 		$image = $this->getMock('Image', ['getSize', 'resize', 'crop', 'save']);
 
 		$image->expects($this->once())
-		->method('getSize')
-		->will($this->returnValue($originalSize));
+			->method('getSize')
+			->will($this->returnValue($originalSize));
 
 		$image->expects($this->once())
-		->method('resize')
-		->with($expectedResize)
-		->will($this->returnValue($image));
+			->method('resize')
+			->with($expectedResize)
+			->will($this->returnValue($image));
 
 		$image->expects($this->once())
-		->method('crop')
-		->with($expectedCropPoint, $expectedCropBox)
-		->will($this->returnValue($image));
+			->method('crop')
+			->with($expectedCropPoint, $expectedCropBox)
+			->will($this->returnValue($image));
 
 		$image->expects($this->once())
-		->method('save');
+			->method('save');
 
 		return $image;
 	}
@@ -101,25 +100,30 @@ class ResizerTest extends TestCase
 	 * @param  Image $image 
 	 * @return Imagine
 	 */
-	protected function mockImageProcessor($image) {
+	protected function mockImageProcessor($image) 
+	{
 		$imageProcessor = $this->getMock('Imagine', ['open']);
 
 		$imageProcessor->expects($this->once())
-		->method('open')
-		->will($this->returnValue($image));
+			->method('open')
+			->will($this->returnValue($image));
 
 		return $imageProcessor;
 	}
 
 	/**
 	 * Helper method to build a mock style object.
-	 * 
-	 * @param  string $style 
+	 *
+	 * @param  string $name
+	 * @param  string $value 
 	 * @return Object        
 	 */
-	protected function styleObject($style) {
-		$utility = App::make('Utility');
-		$styles = $utility->convertToObject(['thumbnail' => $style]);
-		return $styles[0];
+	protected function styleObject($name, $value) 
+	{
+		$style = new stdClass;
+		$style->name = $name;
+		$style->value = $value;
+
+		return $style;
 	}
 }
