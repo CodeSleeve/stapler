@@ -90,7 +90,7 @@ class ResizerTest extends TestCase
 
 		$image->expects($this->once())
 			->method('save');
-
+	
 		return $image;
 	}
 
