@@ -446,6 +446,17 @@ class Attachment
 	}
 
 	/**
+     * Return the class type of the attachment's underlying
+     * model instance.
+     * 
+     * @return string
+     */
+    public function getInstanceClass()
+    {
+    	return get_class($this->instance);
+    }
+
+	/**
 	 * Process the queuedForWrite que.
 	 *
 	 * @return void
@@ -582,16 +593,5 @@ class Attachment
     {
     	$fieldName = "{$this->name}_{$property}";
     	$this->instance->setAttribute($fieldName, $value);
-    }
-
-    /**
-     * Return the class type of the attachment's underlying
-     * model instance.
-     * 
-     * @return string
-     */
-    protected function getInstanceClass()
-    {
-    	return get_class($this->instance);
     }
 }
