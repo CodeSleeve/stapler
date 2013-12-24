@@ -10,7 +10,7 @@ class Attachment
 	 *
 	 * @var string
 	 */
-	public $instance;
+	protected $instance;
 
 	/**
 	 * An instance of the configuration class.
@@ -208,6 +208,27 @@ class Attachment
 	public function setInstance($instance)
 	{
 		$this->instance = $instance;
+	}
+
+	/**
+	 * Return the underlying instance object for this attachment.
+	 * 
+	 * @return Model 
+	 */
+	public function getInstance()
+	{
+		return $this->instance;
+	}
+
+	/**
+	 * Mutator method for the config property.
+	 *
+	 * @param  Codesleeve\Stapler\Config $config
+	 * @return void
+	 */
+	public function setConfig($config)
+	{
+		$this->config = $config;
 	}
 
 	/**
@@ -561,5 +582,16 @@ class Attachment
     {
     	$fieldName = "{$this->name}_{$property}";
     	$this->instance->setAttribute($fieldName, $value);
+    }
+
+    /**
+     * Return the class type of the attachment's underlying
+     * model instance.
+     * 
+     * @return string
+     */
+    protected function getInstanceClass()
+    {
+    	return get_class($this->instance);
     }
 }
