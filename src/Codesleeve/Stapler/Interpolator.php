@@ -107,7 +107,7 @@ class Interpolator
 	*/
     protected function getClass($attachment, $styleName = '') 
     {
-    	return $this->handleBackslashes(get_class($attachment->instance));
+    	return $this->handleBackslashes($attachment->getInstanceClass());
     }
 
     /**
@@ -143,7 +143,7 @@ class Interpolator
 	*/
     protected function id($attachment, $styleName = '') 
     {
-     	return $attachment->instance->getKey();
+     	return $attachment->getInstance()->getKey();
     }
 
 	/**
@@ -168,7 +168,7 @@ class Interpolator
 	*/
 	protected function idPartition($attachment, $styleName = '')
 	{
-		$id = $attachment->instance->getKey();
+		$id = $attachment->getInstance()->getKey();
 
 		if (is_numeric($id))
 		{
