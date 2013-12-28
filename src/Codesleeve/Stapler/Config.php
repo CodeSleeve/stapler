@@ -68,7 +68,7 @@ class Config
 	 * @param  mixed $arrayElements 
 	 * @return mixed
 	 */
-	public function convertToObject($arrayElements)
+	protected function convertToObject($arrayElements)
 	{
 		$objects = [];
 		
