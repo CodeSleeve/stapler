@@ -232,6 +232,36 @@ class Attachment
 	}
 
 	/**
+	 * Mutator method for the IOWrapper property.
+	 * 
+	 * @param Codesleeve\Stapler\IOWrapper $IOWrapper 
+	 */
+	public function setIOWrapper($IOWrapper)
+	{
+		$this->IOWrapper = $IOWrapper;
+	}
+
+	/**
+	 * Accessor method for the QueuedForDeletion property.
+	 * 
+	 * @return array 
+	 */
+	public function getQueuedForDeletion()
+	{
+		return $this->queuedForDeletion;
+	}
+
+	/**
+	 * Mutator method for the QueuedForDeletion property.
+	 * 
+	 * @param array $array
+	 */
+	public function setQueuedForDeletion($array)
+	{
+		$this->queuedForDeletion = $array;
+	}
+
+	/**
 	 * Handle dynamic method calls on the attachment.
 	 * This allows us to call methods on the underlying
 	 * storage or utility objects directly via the attachment.
@@ -344,7 +374,7 @@ class Attachment
 	*/
 	public function afterSave($instance)
 	{
-		$this->setInstance($instance);
+		$this->instance = $instance;
 		$this->save();
 	}
 
@@ -356,8 +386,8 @@ class Attachment
 	 */
 	public function beforeDelete($instance)
 	{
-		$this->setInstance($instance);
-		$this->queueAllForDeletion();
+		$this->instance = $instance;
+		$this->clear();
 	}
 
 	/**
@@ -368,7 +398,7 @@ class Attachment
 	*/
 	public function afterDelete($instance)
 	{
-		$this->setInstance($instance);
+		$this->instance = $instance;
 		$this->flushDeletes();
 	}
 
@@ -513,17 +543,7 @@ class Attachment
 	*/
 	protected function defaultPath($styleName = '')
 	{
-		return $this->publicPath() . $this->defaultUrl($styleName);
-	}
-
-	/**
-	 * Wrapper for laravel's native public_path function.
-	 *
-	 * @return mixed
-	 */
-	protected function publicPath()
-	{
-		return realPath(public_path());
+		return $this->public_path . $this->defaultUrl($styleName);
 	}
 
 	/**
@@ -547,12 +567,10 @@ class Attachment
 	{
 		$filePaths = array_map(function($styleToClear)
 		{
-			if (array_key_exists($styleToClear, $this->options['styles'])){
-				return $this->path($styleToClear);
-			}
+			return $this->path($styleToClear);
 		}, $stylesToClear);
 
-		array_merge($this->queuedForDeletion, $filePaths);
+		$this->queuedForDeletion = array_merge($this->queuedForDeletion, $filePaths);
     }
 
     /**
