@@ -42,30 +42,4 @@ class UploadedFile extends \Symfony\Component\HttpFoundation\File\UploadedFile
 		return false;
 	}
 
-	/**
-     * Returns an informative upload error message.
-     *
-     * @param int $code The error code returned by an upload attempt
-     * @return string The error message regarding the specified error code
-     */
-    public function getErrorMessage($errorCode = null)
-    {
-		$errorCode = $errorCode ?: $this->$error;
-
-		static $errors = [
-			UPLOAD_ERR_INI_SIZE   => 'The file "%s" exceeds your upload_max_filesize ini directive (limit is %d kb).',
-			UPLOAD_ERR_FORM_SIZE  => 'The file "%s" exceeds the upload limit defined in your form.',
-			UPLOAD_ERR_PARTIAL    => 'The file "%s" was only partially uploaded.',
-			UPLOAD_ERR_NO_FILE    => 'No file was uploaded.',
-			UPLOAD_ERR_CANT_WRITE => 'The file "%s" could not be written on disk.',
-			UPLOAD_ERR_NO_TMP_DIR => 'File could not be uploaded: missing temporary directory.',
-			UPLOAD_ERR_EXTENSION  => 'File upload was stopped by a php extension.',
-		];
-
-		$maxFilesize = $errorCode === UPLOAD_ERR_INI_SIZE ? self::getMaxFilesize() / 1024 : 0;
-		$message = isset($errors[$errorCode]) ? $errors[$errorCode] : 'The file "%s" was not uploaded due to an unknown error.';
-
-		return sprintf($message, $this->getClientOriginalName(), $maxFilesize);
-    }
-
 }
