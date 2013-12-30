@@ -24,7 +24,7 @@ class ImageRefreshService
 
 		if ($attachments) 
 		{
-			$attachments = explode(', ', $this->option('attachments'));
+			$attachments = explode(', ', $attachments);
 			$this->processSomeAttachments($models, $attachments);
 
 			return;
