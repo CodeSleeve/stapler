@@ -452,7 +452,7 @@ class Attachment
 	 *
 	 * @return void 
 	 */
-	public function refresh()
+	public function reprocess()
 	{
 		if (!$this->originalFilename()) {
 			return;

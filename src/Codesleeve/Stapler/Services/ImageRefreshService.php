@@ -46,7 +46,7 @@ class ImageRefreshService
 			foreach ($model->getAttachedFiles() as $attachedFile) 
 			{
 				if (in_array($attachedFile->name, $attachments)) {
-					$attachedFile->refresh();
+					$attachedFile->reprocess();
 				}
 			}
 		}
@@ -63,7 +63,7 @@ class ImageRefreshService
 		{
 			foreach ($model->getAttachedFiles() as $attachedFile) 
 			{
-				$attachedFile->refresh();
+				$attachedFile->reprocess();
 			}
 		}
 	}
