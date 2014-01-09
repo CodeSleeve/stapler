@@ -1,5 +1,16 @@
 #Stapler
-Be warned: this package is still very much in development.  I'm currently in the middle of refacting it to be more decoupled, solid, etc.  The features that are currently available should be more than equivalent to the L3 version of Stapler.  In general I want to make Stapler as powerful and fully featured as its Paperclip counterpart.  That being said....
+## Changelog - v1.0.0-Beata4
+- Added the ability to fetch and process remote files (requires the CURL extension).
+- Added the abiliyt to refresh/reprocess styles both programmatically and systematically (via artisan).
+- Stapler core (attachment, interpolator, IOWrapper, Config, Validator, and Storage drivers) have now been completely decoupled from the Laravel framework.
+- Created unit test suite.
+- Various bug fixes.
+
+## Roadmap - v1.0.0
+- Add ability to assign attachment objects from model to model.
+- Break stapler core into a separate, framework agnostic package that can be used to attach file uploads to various different ORM's.
+- Create more complete unit test suite with more complete coverage, etc.
+- Misc, etc.
 
 Stapler can be used to generate file upload attachments for use with the wonderfully fabulous Laravel PHP Framework (>= 4.0), authored by Taylor Otwell.  If you have used ruby on rails' paperclip plugin then you will be familiar with its syntax.  This package is inspired entirely from the work done by the guys at thoughtbot for the Rails Paperclip bundle: https://github.com/thoughtbot/paperclip.  While not an exact duplicate, if you've used Paperclip before then you should be somewhat familiar with how this package works.
 
@@ -28,7 +39,7 @@ Install the package using Composer.  Edit your project's `composer.json` file to
 
 ```js
   "require": {
-    "laravel/framework": "4.0.*",
+    "laravel/framework": "4.*",
     "codesleeve/stapler": "dev-master"
   }
 ```
@@ -74,7 +85,7 @@ php artisan migrate
 In your new view:
 
 ```php
-<?= Form::open(['url' => action('UsersController@store'), 'method' => 'POST']) ?>
+<?= Form::open(['url' => action('UsersController@store'), 'method' => 'POST', 'files' => true]) ?>
 	<?= Form::file('avatar') ?>
     <?= Form::submit('save') ?>   
 <?= Form::close() ?>
@@ -404,7 +415,7 @@ $profilePicture->photo->originalFilename();
 ```
 
 ## Advanced-Usage
-When working with attachments, there may come a point where you wish to do things outside of the normal workflow.  For example, suppose you wish to clear out an attachment (empty the attachment attributes fields in the underlying table record and remove the uploaded file from storage) without having to destroy the record itself.  As mentioned above, you can always set the attachment attribute to STAPLER_NULL before saving, however this only works if you save the record itself afterwards.  In situations where you wish to clear the uploaded file from storage without saving the record, you can use the attachment's destroy method:
+When working with attachments, there may come a point where you wish to do things outside of the normal workflow.  For example, suppose you wish to clear out an attachment (empty the attachment fields in the underlying table record and remove the uploaded file from storage) without having to destroy the record itself.  As mentioned above, you can always set the attachment attribute to STAPLER_NULL on the record before saving, however this only works if you save the record itself afterwards.  In situations where you wish to clear the uploaded file from storage without saving the record, you can use the attachment's destroy method:
 
 ```php
 // Remove all of the attachment's uploaded files and empty the attacment attributes on the model:
@@ -413,3 +424,19 @@ $profilePicture->photo->destroy();
 // For finer grained control, you can remove thumbnail files only (attachment attributes in the model will not be emptied).
 $profilePicture->photo->destroy(['thumbnail']);
 ```
+
+You may also reprocess uploaded images on an attachment by calling the reprocess() command (this is very useful for adding new styles to an existing attachment type where records have already been uploaded).
+
+```php
+// Programmatically reprocess a record's uploaded images:
+$profilePicture->photo->reprocess();
+``
+
+This may also be achieved via a call to the stapler:refresh command:
+```php
+// Reprocess all attachments for the ProfilePicture model:
+php artisan stapler:refresh ProfilePicture
+
+// Reprocess only the photo attachment on the ProfilePicture model:
+php artisan stapler:refresh TestPhoto --attachments="photo"
+``
