@@ -50,10 +50,7 @@ trait Stapler
 	}
 
 	/**
-	 * Register eloquent event handlers.
-     * We'll spin through each of the attached files defined on this class
-     * and register callbacks for the events we need to observe in order to 
-     * handle file uploads.
+	 * The "booting" method of the model.
 	 *
 	 * @return void
 	 */
@@ -61,6 +58,19 @@ trait Stapler
 	{
 		parent::boot();
 
+		static::bootStapler();
+	}
+
+	/**
+	 * Register eloquent event handlers.
+     * We'll spin through each of the attached files defined on this class
+     * and register callbacks for the events we need to observe in order to 
+     * handle file uploads.
+     * 
+	 * @return void
+	 */
+	public static function bootStapler()
+	{
 		static::saved(function($instance) {
 			foreach($instance->attachedFiles as $attachedFile) {
 				$attachedFile->afterSave($instance);
@@ -79,6 +89,7 @@ trait Stapler
 			}
 		});
 	}
+
 	/**
      * Handle the dynamic retrieval of attachment objects.
      *
