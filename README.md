@@ -1,5 +1,5 @@
 #Stapler
-## Changelog - v1.0.0-Beata4
+## Changelog - v1.0.0-Beta4
 - Added the ability to fetch and process remote files (requires the CURL extension).
 - Added the abiliyt to refresh/reprocess styles both programmatically and systematically (via artisan).
 - Stapler core (attachment, interpolator, IOWrapper, Config, Validator, and Storage drivers) have now been completely decoupled from the Laravel framework.
@@ -9,10 +9,10 @@
 ## Roadmap - v1.0.0
 - Add ability to assign attachment objects from model to model.
 - Break stapler core into a separate, framework agnostic package that can be used to attach file uploads to various different ORM's.
-- Create more complete unit test suite with more complete coverage, etc.
-- Misc, etc.
+- Create more complete unit test suite (more complete coverage, etc).
+- Stapler 1.0 will support Laravel Framework 4.1.* (this will be the last release that maintains backwards compatibility with Laravel 4.0, due in part to changes in the version of Symfony HttpFoundation used by Laravel).
 
-Stapler can be used to generate file upload attachments for use with the wonderfully fabulous Laravel PHP Framework (>= 4.0), authored by Taylor Otwell.  If you have used ruby on rails' paperclip plugin then you will be familiar with its syntax.  This package is inspired entirely from the work done by the guys at thoughtbot for the Rails Paperclip bundle: https://github.com/thoughtbot/paperclip.  While not an exact duplicate, if you've used Paperclip before then you should be somewhat familiar with how this package works.
+Stapler can be used to generate file upload attachments for use with the wonderfully fabulous Laravel PHP Framework (>= 4.0), authored by Taylor Otwell.  If you have used ruby on rails' paperclip gem then you will be familiar with its syntax.  This package is inspired entirely from the work done by the guys at thoughtbot for the Rails Paperclip gem: https://github.com/thoughtbot/paperclip.  While not an exact duplicate, if you've used Paperclip before then you should feel quite comfortable using this package.
 
 Stapler was created by Travis Bennett.
 
@@ -63,8 +63,8 @@ class User extends Eloquent {
     public function __construct(array $attributes = array()) {
         $this->hasAttachedFile('avatar', [
             'styles' => [
-            'medium' => '300x300',
-            'thumb' => '100x100'
+              'medium' => '300x300',
+              'thumb' => '100x100'
             ]
         ]);
 
