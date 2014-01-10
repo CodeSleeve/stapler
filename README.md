@@ -1,7 +1,7 @@
 #Stapler
 ## Changelog - v1.0.0-Beta4
 - Added the ability to fetch and process remote files (requires the CURL extension).
-- Added the abiliyt to refresh/reprocess styles both programmatically and systematically (via artisan).
+- Added the ability to refresh/reprocess styles both programmatically and systematically (via artisan).
 - Stapler core (attachment, interpolator, IOWrapper, Config, Validator, and Storage drivers) have now been completely decoupled from the Laravel framework.
 - Created unit test suite.
 - Various bug fixes.
@@ -12,7 +12,7 @@
 - Create more complete unit test suite (more complete coverage, etc).
 - Stapler 1.0 will support Laravel Framework 4.1.* (this will be the last release that maintains backwards compatibility with Laravel 4.0, due in part to changes in the version of Symfony HttpFoundation used by Laravel).
 
-Stapler can be used to generate file upload attachments for use with the wonderfully fabulous Laravel PHP Framework (>= 4.0), authored by Taylor Otwell.  If you have used ruby on rails' paperclip gem then you will be familiar with its syntax.  This package is inspired entirely from the work done by the guys at thoughtbot for the Rails Paperclip gem: https://github.com/thoughtbot/paperclip.  While not an exact duplicate, if you've used Paperclip before then you should feel quite comfortable using this package.
+Stapler can be used to generate file upload attachments for use with the wonderfully fabulous Laravel PHP Framework (>= 4.0), authored by Taylor Otwell.  This package is inspired entirely from the work done by the guys at thoughtbot for the Rails Paperclip gem: https://github.com/thoughtbot/paperclip.  While not an exact duplicate, if you've used Paperclip before then you should feel quite comfortable using this package.
 
 Stapler was created by Travis Bennett.
 
@@ -60,16 +60,16 @@ In your model:
 class User extends Eloquent {
 	use Codesleeve\Stapler\Stapler;
 
-    public function __construct(array $attributes = array()) {
-        $this->hasAttachedFile('avatar', [
-            'styles' => [
-              'medium' => '300x300',
-              'thumb' => '100x100'
-            ]
-        ]);
+  public function __construct(array $attributes = array()) {
+      $this->hasAttachedFile('avatar', [
+          'styles' => [
+            'medium' => '300x300',
+            'thumb' => '100x100'
+          ]
+      ]);
 
-        parent::__construct($attributes);
-    }
+      parent::__construct($attributes);
+  }
 }
 ```
 
@@ -414,6 +414,9 @@ $profilePicture->photo->size();
 $profilePicture->photo->originalFilename();
 ```
 
+## Fetching-Remote-Images
+As of Stapler v1.0.0-Beta4, remote images can now be fetched by assigning an absolute URL (e.g http://foo.com/bar-baz.jpg) to an attachment property that's defined on a model (e.g ```php $profilePicture->photo = "http://foo.com/bar.jpg"; ```).  This is very useful when working with third party API's such as facebook, twitter, etc.  Note that this feature requires that the CURL extension is included as part of your PHP installation.
+
 ## Advanced-Usage
 When working with attachments, there may come a point where you wish to do things outside of the normal workflow.  For example, suppose you wish to clear out an attachment (empty the attachment fields in the underlying table record and remove the uploaded file from storage) without having to destroy the record itself.  As mentioned above, you can always set the attachment attribute to STAPLER_NULL on the record before saving, however this only works if you save the record itself afterwards.  In situations where you wish to clear the uploaded file from storage without saving the record, you can use the attachment's destroy method:
 
@@ -428,15 +431,17 @@ $profilePicture->photo->destroy(['thumbnail']);
 You may also reprocess uploaded images on an attachment by calling the reprocess() command (this is very useful for adding new styles to an existing attachment type where records have already been uploaded).
 
 ```php
-// Programmatically reprocess a record's uploaded images:
+// Programmatically reprocess an attachment's uploaded images:
 $profilePicture->photo->reprocess();
-``
+```
 
-This may also be achieved via a call to the stapler:refresh command:
-```php
-// Reprocess all attachments for the ProfilePicture model:
+This may also be achieved via a call to the stapler:refresh command.
+
+Reprocess all attachments for the ProfilePicture model:
 php artisan stapler:refresh ProfilePicture
 
-// Reprocess only the photo attachment on the ProfilePicture model:
+Reprocess only the photo attachment on the ProfilePicture model:
 php artisan stapler:refresh TestPhoto --attachments="photo"
-``
+
+Reprocess a list of attachments on the ProfilePicture model:
+php artisan stapler:refresh TestPhoto --attachments="foo, bar, baz, etc"
