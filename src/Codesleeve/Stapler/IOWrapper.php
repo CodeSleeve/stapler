@@ -7,8 +7,8 @@ class IOWrapper
 {
 	/**
 	 * Build an UploadedFile object using various file input types.
-	 *  
-	 * @param  mixed $file 
+	 *
+	 * @param  mixed $file
 	 * @return Codesleeve\Stapler\File\UploadedFile
 	 */
 	public function make($file)
@@ -31,34 +31,32 @@ class IOWrapper
 	/**
 	 * Build a Codesleeve\Stapler\File\UploadedFile object from
 	 * a symfony\Component\HttpFoundation\File\UploadedFile object.
-	 * 
-	 * @param  symfony\Component\HttpFoundation\File\UploadedFile $file 
+	 *
+	 * @param  symfony\Component\HttpFoundation\File\UploadedFile $file
 	 * @return Codesleeve\Stapler\File\UploadedFile
 	 */
 	protected function createFromObject(SymfonyUploadedFile $file)
 	{
+    if (!$file->isValid()) {
+			throw new Exceptions\FileException($staplerFile->getErrorMessage());
+    }
+
 		$path = $file->getPathname();
-        $originalName = $file->getClientOriginalName();
-        $mimeType = $file->getClientMimeType();
-        $size = $file->getClientSize();
-        $error = $file->getError();
+    $originalName = $file->getClientOriginalName();
+    $mimeType = $file->getClientMimeType();
+    $size = $file->getClientSize();
+    $error = $file->getError();
 
-        $staplerFile = new UploadedFile($path, $originalName, $mimeType, $size, $error);
-
-        if (!$staplerFile->isValid()) {
-			throw new Exceptions\FileException($staplerFile->getErrorMessage($staplerFile->getError()));
-		}
-        
-        return $staplerFile;
+    return new UploadedFile($path, $originalName, $mimeType, $size, $error);
 	}
 
 	/**
 	 * Build a Codesleeve\Stapler\File\UploadedFile object from the
 	 * raw php $_FILES array date.	We assume here that the $_FILES array
 	 * has been formated using the Stapler::arrangeFiles utility method.
-	 * 
-	 * @param  array $file 
-	 * @return Codesleeve\Stapler\File\UploadedFile      
+	 *
+	 * @param  array $file
+	 * @return Codesleeve\Stapler\File\UploadedFile
 	 */
 	protected function createFromArray($file)
 	{
@@ -68,9 +66,9 @@ class IOWrapper
 	/**
 	 * Fetch a remote file using a string URL and convert it into
 	 * an instance of Codesleeve\Stapler\File\UploadedFile.
-	 * 
-	 * @param  string $file 
-	 * @return Codesleeve\Stapler\File\UploadedFile   
+	 *
+	 * @param  string $file
+	 * @return Codesleeve\Stapler\File\UploadedFile
 	 */
 	protected function createFromUrl($file)
 	{
@@ -79,7 +77,7 @@ class IOWrapper
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		$rawFile = curl_exec($ch);
 		curl_close ($ch);
-		
+
 		// Create a filepath for the file by storing it on disk.
 		$filePath = tempnam(sys_get_temp_dir(), 'STP');
 		file_put_contents($filePath, $rawFile);
@@ -104,9 +102,9 @@ class IOWrapper
 	/**
 	 * Fetch a local file using a string location and convert it into
 	 * an instance of Codesleeve\Stapler\File\UploadedFile.
-	 * 
-	 * @param  string $file 
-	 * @return Codesleeve\Stapler\File\UploadedFile   
+	 *
+	 * @param  string $file
+	 * @return Codesleeve\Stapler\File\UploadedFile
 	 */
 	protected function createFromString($file)
 	{
