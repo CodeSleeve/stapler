@@ -416,7 +416,13 @@ $profilePicture->photo->originalFilename();
 ```
 
 ## Fetching-Remote-Images
-As of Stapler v1.0.0-Beta4, remote images can now be fetched by assigning an absolute URL to an attachment property that's defined on a model (e.g ```php $profilePicture->photo = "http://foo.com/bar.jpg"; ```).  This is very useful when working with third party API's such as facebook, twitter, etc.  Note that this feature requires that the CURL extension is included as part of your PHP installation.
+As of Stapler v1.0.0-Beta4, remote images can now be fetched by assigning an absolute URL to an attachment property that's defined on a model: 
+
+```php 
+$profilePicture->photo = "http://foo.com/bar.jpg"; 
+```
+
+This is very useful when working with third party API's such as facebook, twitter, etc.  Note that this feature requires that the CURL extension is included as part of your PHP installation.
 
 ## Advanced-Usage
 When working with attachments, there may come a point where you wish to do things outside of the normal workflow.  For example, suppose you wish to clear out an attachment (empty the attachment fields in the underlying table record and remove the uploaded file from storage) without having to destroy the record itself.  As mentioned above, you can always set the attachment attribute to STAPLER_NULL on the record before saving, however this only works if you save the record itself afterwards.  In situations where you wish to clear the uploaded file from storage without saving the record, you can use the attachment's destroy method:
