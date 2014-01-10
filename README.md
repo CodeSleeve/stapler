@@ -1,4 +1,7 @@
 #Stapler
+
+[![Build Status](https://travis-ci.org/CodeSleeve/stapler.png?branch=master)](https://travis-ci.org/CodeSleeve/stapler)
+
 ## Changelog - v1.0.0-Beta4
 - Added the ability to fetch and process remote files (requires the CURL extension).
 - Added the ability to refresh/reprocess styles both programmatically and systematically (via artisan).
