@@ -24,7 +24,7 @@ class ImageRefreshService
 
 		if ($attachments) 
 		{
-			$attachments = explode(', ', $attachments);
+			$attachments = explode(',', str_replace(', ', ',', $attachments));
 			$this->processSomeAttachments($models, $attachments);
 
 			return;
