@@ -30,7 +30,7 @@ class Resizer
 	 */
 	public function resize($file, $style)
 	{
-		$filePath = tempnam(sys_get_temp_dir(), 'STP') . '.' . $file->getClientOriginalName();
+		$filePath = tempnam(sys_get_temp_dir(), 'STP') . '.' . $file->getFilename();
 		list($width, $height, $option) = $this->parseStyleDimensions($style);
 		$method = "resize" . ucfirst($option);
 

@@ -1,7 +1,18 @@
 <?php namespace Codesleeve\Stapler\File;
 
-class UploadedFile extends \Symfony\Component\HttpFoundation\File\UploadedFile
+use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
+use Codesleeve\Stapler\Exceptions\FileException;
+
+class UploadedFile
 {
+	/**
+	 * The underlying uploaded file object that acts 
+	 * as part of this class's composition.
+	 * 
+	 * @var symfony\Component\HttpFoundation\File\UploadedFile
+	 */
+	protected $uploadedFile;
+
 	/**
 	 * An array of key value pairs for valid image
 	 * extensions and their associated MIME types.
@@ -20,9 +31,33 @@ class UploadedFile extends \Symfony\Component\HttpFoundation\File\UploadedFile
 	];
 
 	/**
-	 * Utility method for detecing whether a given file upload is an image.
+	 * Constructor method.
+	 * 
+	 * @param symfony\Component\HttpFoundation\File\UploadedFile $uploadedFile 
+	 */
+	function __construct(SymfonyUploadedFile $uploadedFile) {
+		$this->uploadedFile = $uploadedFile;
+	}
+
+	/**
+	 * Handle dynamic method calls on this class.
+	 * This method allows this class to act as a 'composite' object
+	 * by delegating method calls to the underlying SymfonyUploadedFile object.
 	 *
-	 * @return bool
+	 * @param  string  $method
+	 * @param  array   $parameters
+	 * @return mixed
+	 */
+	public function __call($method, $parameters)
+	{
+ 		return call_user_func_array([$this->uploadedFile, $method], $parameters);
+	}
+
+	/**
+	 * Method for determining whether the uploaded file is
+	 * an image type.
+	 * 
+	 * @return boolean 
 	 */
 	public function isImage()
 	{
@@ -30,7 +65,7 @@ class UploadedFile extends \Symfony\Component\HttpFoundation\File\UploadedFile
 		
 		// The $imageMimes property contains an array of file extensions and
 		// their associated MIME types. We will loop through them and look for 
-		// the MIME type of the current UploadedFile.
+		// the MIME type of the current SymfonyUploadedFile.
 		foreach ($this->imageMimes as $imageMime)
 		{
 			if (in_array($mime, (array) $imageMime))
@@ -43,14 +78,55 @@ class UploadedFile extends \Symfony\Component\HttpFoundation\File\UploadedFile
 	}
 
 	/**
+	 * Return the name of the file.
+	 *  
+	 * @return string          
+	 */
+	public function getFilename()
+	{
+		return $this->uploadedFile->getClientOriginalName();
+	}
+
+	/**
+	 * Return the size of the file.
+	 *  
+	 * @return string          
+	 */
+	public function getSize()
+	{
+		return $this->uploadedFile->getClientSize();
+	}
+
+	/**
+	 * Return the mime type of the file.
+	 * 
+	 * @return string
+	 */
+	public function getMimeType()
+	{
+		return $this->uploadedFile->getMimeType();
+	}
+
+	/**
+	 * Validate the uploaded file object.
+	 * 
+	 * @return void
+	 */
+	public function validate()
+	{
+		if (!$this->isValid()) {
+			throw new FileException($this->getErrorMessage());
+		}
+	}
+
+	/**
      * Returns an informative upload error message.
      *
-     * @param int $code The error code returned by an upload attempt
      * @return string The error message regarding the specified error code
      */
-    public function getErrorMessage($errorCode = null)
+    protected function getErrorMessage()
     {
-		$errorCode = $errorCode ?: $this->$error;
+		$errorCode = $this->getErrorCode();
 
 		static $errors = [
 			UPLOAD_ERR_INI_SIZE   => 'The file "%s" exceeds your upload_max_filesize ini directive (limit is %d kb).',
@@ -67,5 +143,4 @@ class UploadedFile extends \Symfony\Component\HttpFoundation\File\UploadedFile
 
 		return sprintf($message, $this->getClientOriginalName(), $maxFilesize);
     }
-
 }
