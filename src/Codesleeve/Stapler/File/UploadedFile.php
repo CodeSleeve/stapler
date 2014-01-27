@@ -126,7 +126,7 @@ class UploadedFile
      */
     protected function getErrorMessage()
     {
-		$errorCode = $this->getErrorCode();
+		$errorCode = $this->getError();
 
 		static $errors = [
 			UPLOAD_ERR_INI_SIZE   => 'The file "%s" exceeds your upload_max_filesize ini directive (limit is %d kb).',
