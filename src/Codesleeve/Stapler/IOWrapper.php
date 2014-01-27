@@ -21,7 +21,7 @@ class IOWrapper
 			return $this->createFromArray($file);
 		}
 
-		if (array_key_exists('scheme', parse_url($file))) {
+		if (filter_var($file, FILTER_VALIDATE_URL) === TRUE) {
 			return $this->createFromUrl($file);
 		}
 
