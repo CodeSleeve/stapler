@@ -57,8 +57,9 @@ class ResizerTest extends TestCase
 	{
 		$path = __DIR__.'/../../../fixtures/empty.gif';
 		$originalName = 'Test.gif';
+		$symfonyUploadedFile = new Symfony\Component\HttpFoundation\File\UploadedFile($path, $originalName, null, null, null, true);
 
-		return new Codesleeve\Stapler\File\UploadedFile($path, $originalName, null, null, null, true);
+		return new Codesleeve\Stapler\File\UploadedFile($symfonyUploadedFile);
 	}
 
 	/**

@@ -127,8 +127,8 @@ class Attachment
 		}
 
 		$this->uploadedFile = $this->IOWrapper->make($uploadedFile);
-		$this->instanceWrite('file_name', $this->uploadedFile->getClientOriginalName());
-		$this->instanceWrite('file_size', $this->uploadedFile->getClientSize());
+		$this->instanceWrite('file_name', $this->uploadedFile->getFilename());
+		$this->instanceWrite('file_size', $this->uploadedFile->getSize());
 		$this->instanceWrite('content_type', $this->uploadedFile->getMimeType());
 		$this->instanceWrite('updated_at', date('Y-m-d H:i:s'));
 		$this->queueAllForWrite();

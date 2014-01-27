@@ -375,8 +375,8 @@ class AttachmentTest extends TestCase
 	protected function buildMockIOWrapper()
 	{
 		$mockUploadedFile = m::mock('Codesleeve\Stapler\File\UploadedFile');
-		$mockUploadedFile->shouldReceive('getClientOriginalName')->once();
-		$mockUploadedFile->shouldReceive('getClientSize')->once();
+		$mockUploadedFile->shouldReceive('getFilename')->once();
+		$mockUploadedFile->shouldReceive('getSize')->once();
 		$mockUploadedFile->shouldReceive('getMimeType')->once();
 		
 		$IOWrapper = m::mock('Codesleeve\Stapler\IOWrapper');
