@@ -22,7 +22,7 @@ class IOWrapper
 			return $this->createFromArray($file);
 		}
 
-		if (filter_var($file, FILTER_VALIDATE_URL) === TRUE) {
+		if (substr($file, 0, 7) == "http://" || substr($file, 0, 8) == "https://") {
 			return $this->createFromUrl($file);
 		}
 
