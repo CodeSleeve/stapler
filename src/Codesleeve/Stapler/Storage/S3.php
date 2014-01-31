@@ -1,8 +1,6 @@
 <?php namespace Codesleeve\Stapler\Storage;
 
-use Codesleeve\Stapler\File\UploadedFile;
-use Aws\S3\S3Client;
-use Config;
+use Codesleeve\Stapler\Attachment;
 
 class S3 implements StorageInterface
 {
@@ -14,11 +12,11 @@ class S3 implements StorageInterface
 	public $attachedFile;
 
 	/**
-	 * An AWS S3Client instance.
+	 * An instance of the S3Client manager.
 	 * 
 	 * @var S3Client
 	 */
-	protected $s3Client;
+	protected $s3ClientManager;
 
 	/**
 	 * Boolean flag indicating if this attachment's bucket currently exists.
@@ -31,10 +29,12 @@ class S3 implements StorageInterface
 	 * Constructor method
 	 * 
 	 * @param Codesleeve\Stapler\Attachment $attachedFile
+	 * @param Codesleeve\Stapler\Storage\S3ClientManager $s3ClientManager
 	 */
-	function __construct($attachedFile)
+	function __construct(Attachment $attachedFile, S3ClientManager $s3ClientManager)
 	{
 		$this->attachedFile = $attachedFile;
+		$this->s3ClientManager = $s3ClientManager;
 	}
 
 	/**
@@ -136,35 +136,14 @@ class S3 implements StorageInterface
 	}
 
 	/**
-	 * Return the S3Client object this class is using.
-	 * If no instance has been defined yet we'll buld one and then
-	 * cache it on the S3Client property.  This allows us to lazy load
-	 * the S3Client instance only when it's being used.
+	 * Use the s3ClientManager to return the S3Client object this class is using.
+	 * Redirecting all requests for an S3Client through this method
+	 * allows us to lazy load S3Client instances.
 	 * 	
-	 * @return SS3Client
+	 * @return S3Client
 	 */
 	protected function getS3Client()
 	{
-		if ($this->s3Client) {
-			return $this->s3Client;
-		}
-
-		return $this->s3Client = $this->buildS3Client();
-	}
-
-	/**
-	 * Build an S3Client instance using the information defined in
-	 * this class's attachedFile object.
-	 * 
-	 * @return S3Client
-	 */
-	protected function buildS3Client()
-	{
-		return S3Client::factory([
-			'key' => $this->attachedFile->key, 
-			'secret' => $this->attachedFile->secret, 
-			'region' => $this->attachedFile->region, 
-			'scheme' => $this->attachedFile->scheme
-		]);
+		return $this->s3ClientManager->getS3Client($this->attachedFile);
 	}
 }

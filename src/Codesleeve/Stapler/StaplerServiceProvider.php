@@ -53,8 +53,8 @@ class StaplerServiceProvider extends ServiceProvider {
 		$this->registerGmagick();
 		$this->registerFilesystemStorage();
 		$this->registerS3Storage();
+		$this->registerS3ClientManager();
 		$this->registerAttachment();
-		$this->registerUtility();
 		
 		// commands
 		$this->registerStaplerFastenCommand();
@@ -217,20 +217,22 @@ class StaplerServiceProvider extends ServiceProvider {
 	{
 		$this->app->bind('s3', function($app, $params)
         {
-            return new Storage\S3($params['attachment']);
+            $s3ClientManager = $app->make('S3ClientManager');
+
+            return new Storage\S3($params['attachment'], $s3ClientManager);
         });
 	}
 
 	/**
-	 * Register Codesleeve\Stapler\Utility with the container.
+	 * Register Codesleeve\Stapler\Storage\S3ClientManager with the container.
 	 * 
 	 * @return void
 	 */
-	protected function registerUtility()
+	protected function registerS3ClientManager()
 	{
-		$this->app->singleton('Utility', function($app, $arrayElements)
+		$this->app->bind('S3ClientManager', function($app, $params)
         {
-            return new Utility($arrayElements);
+            return Storage\S3ClientManager::getInstance();
         });
 	}
 
