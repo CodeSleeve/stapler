@@ -202,7 +202,7 @@ class Attachment
 	 * This provides a mechanism for the attachment to access properties of the
 	 * corresponding model instance it's attached to.
 	 *
-	 * @param  Model $instance
+	 * @param  Eloquent $instance
 	 * @return void
 	 */
 	public function setInstance($instance)
@@ -211,9 +211,11 @@ class Attachment
 	}
 
 	/**
-	 * Return the underlying instance object for this attachment.
+	 * Accessore method for the underlying 
+	 * instance (Eloquent model) object this attachment
+	 * is defined on.
 	 * 
-	 * @return Model 
+	 * @return Eloquent 
 	 */
 	public function getInstance()
 	{
@@ -229,6 +231,16 @@ class Attachment
 	public function setConfig($config)
 	{
 		$this->config = $config;
+	}
+
+	/**
+	 * Accessor method for the Config property.
+	 * 
+	 * @return array 
+	 */
+	public function getConfig()
+	{
+		return $this->config;
 	}
 
 	/**
