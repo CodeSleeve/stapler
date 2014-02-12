@@ -507,8 +507,8 @@ class Attachment
 	{
 		foreach ($this->queuedForWrite as $style)
 		{
-      		if ($style->value && $this->uploadedFile->isImage()) {
-				$file = $this->resizer->resize($this->uploadedFile, $style);
+			if ($style->value && $this->uploadedFile->isImage()) {
+				$file = $this->resizer->resize($this->uploadedFile, $style, $this->default_image_quality);
 			}
 			else {
 				$file = $this->uploadedFile->getRealPath();
