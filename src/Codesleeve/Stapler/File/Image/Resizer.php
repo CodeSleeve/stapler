@@ -102,48 +102,6 @@ class Resizer
 	}
 
 	/**
-	 * Resize an image as a landscape (width only)
-	 *
-	 * @param  UploadedFile $file
-	 * @param  string $width - The image's new width.
-	 * @param  string $height - The image's new height.
-	 * @return Imagine\Image
-	 */
-	protected function resizeLandscape($file, $width, $height)
-	{
-		$image = $this->imagine
-			->open($file->getRealPath());
-
-		$dimensions = $image->getSize()
-			->widen($width);
-
-		$image = $image->resize($dimensions);
-
-		return $image;
-	}
-
-	/**
-	 * Resize an image as a portrait (height only)
-	 *
-	 * @param  UploadedFile $file
-	 * @param  string $width - The image's new width.
-	 * @param  string $height - The image's new height.
-	 * @return Imagine\Image
-	 */
-	protected function resizePortrait($file, $width, $height)
-	{
-		$image = $this->imagine
-			->open($file->getRealPath());
-
-		$dimensions = $image->getSize()
-			->heighten($height);
-
-		$image = $image->resize($dimensions);
-
-		return $image;
-	}
-
-	/**
 	 * Resize an image and then center crop it.
 	 *
 	 * @param  UploadedFile $file
@@ -190,19 +148,27 @@ class Resizer
 	 */
 	protected function resizeAuto($file, $width, $height)
 	{
-		// Image to be resized is wider (landscape)
-		if ($height < $width) {
-			return $this->resizeLandscape($file, $width, $height);
+		Log::info('Using resizeAuto');
+		$image = $this->imagine
+			->open($file->getRealPath());
 
+		$size = $image->getSize();
+		$dimensions;
+
+		if($size->getWidth() > $size->getHeight()) {
+			// Image is wide
+			$dimensions = $size->widen($width);
+		} else if($size->getWidth() < $size->getHeight()) {
+			// Image is tall
+			$dimensions = $size->heighten($height);
+		} else {
+			// Image is square
+			$dimensions = new Box($width, $height);
 		}
 
-		// Image to be resized is taller (portrait)
-		if ($height > $width){
-			return $this->resizePortrait($file, $width, $height);
-		}
+		$image = $image->resize($dimensions);
 
-		// Image to be resizerd is a square
-		return $this->resizeExact($file, $width, $height);
+		return $image;
 	}
 
 	/**
