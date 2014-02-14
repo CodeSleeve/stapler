@@ -148,7 +148,6 @@ class Resizer
 	 */
 	protected function resizeAuto($file, $width, $height)
 	{
-		Log::info('Using resizeAuto');
 		$image = $this->imagine
 			->open($file->getRealPath());
 
