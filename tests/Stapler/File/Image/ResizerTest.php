@@ -124,6 +124,7 @@ class ResizerTest extends TestCase
 		$style = new stdClass;
 		$style->name = $name;
 		$style->value = $value;
+		$style->convert_options = [];
 
 		return $style;
 	}

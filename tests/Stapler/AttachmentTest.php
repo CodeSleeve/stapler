@@ -307,7 +307,13 @@ class AttachmentTest extends TestCase
 	 */
 	public function testClearWithoutStylesAndWithUploadedFile()
 	{
-		$config = m::mock('Codesleeve\Stapler\Config', ['mockAttachment', ['preserve_files' => false, 'styles' => ['foo' => '']]])->makePartial();
+		$config = m::mock('Codesleeve\Stapler\Config', [
+			'mockAttachment', [
+				'preserve_files' => false, 
+				'styles' => ['foo' => ''],
+				'convert_options' => []
+			]
+		])->makePartial();
 
 		$instance = m::mock();
 		$instance->shouldReceive('setAttribute')->once()->with('mockAttachment_file_name', null);

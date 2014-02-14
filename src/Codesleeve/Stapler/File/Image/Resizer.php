@@ -36,11 +36,11 @@ class Resizer
 
 		if ($method == 'resizeCustom') {
 			$this->resizeCustom($file, $style->value)
-				->save($filePath);
+				->save($filePath, $style->convert_options);
 		}
     	else {
       		$this->$method($file, $width, $height)
-		       ->save($filePath);
+		       ->save($filePath, $style->convert_options);
 		}
 
 		return $filePath;

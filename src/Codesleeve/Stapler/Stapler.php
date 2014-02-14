@@ -10,7 +10,7 @@ use Event, Config, App;
  * https://github.com/thoughtbot/paperclip
  * 
  * 
- * @package tabennett/stapler
+ * @package Codesleeve/stapler
  * @version v1.0.0-Beta4
  * @author Travis Bennett <tandrewbennett@hotmail.com>
  * @link 	

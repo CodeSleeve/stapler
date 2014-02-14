@@ -165,6 +165,7 @@ The following configuration settings apply to stapler in general.
     into the defined style.
 *   **keep_old_files**: Set this to true in order to prevent older file uploads from being deleted from the file system when a record is updated.
 *   **preserve_old_files**: Set this to true in order to prevent an attachment's file uploads from being deleted from the file system when an the attachment object is destroyed (attachment's are destroyed when their corresponding mondels are deleted/destroyed from the database).
+*   **convert_options**:  An array of options for setting the quality and DPI of resized images.  Default values are 75 for Jpeg quality and 72 dpi for x/y-resolution.  Please see the Imagine\Image documentation for more details.
 
 Default values:
 *   **storage**: 'filesystem'
@@ -174,6 +175,7 @@ Default values:
 *   **styles**: []
 *   **keep_old_files**: false
 *   **preserve_old_files**: false
+*   **convert_options**: []
 
 ### Filesystem-Storage-Configuration
 Filesystem (local disk) is the default storage option for stapler.  When using it, the following configuration settings are available:

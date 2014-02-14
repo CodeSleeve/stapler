@@ -1,5 +1,7 @@
 <?php namespace Codesleeve\Stapler;
 
+use stdClass;
+
 class Config
 {
 	/**
@@ -15,6 +17,13 @@ class Config
 	 * @var array
 	 */
 	protected $options;
+
+	/**
+	 * An array of stdClass style objects.
+	 * 
+	 * @var array
+	 */
+	protected $styleObjects;
 
 	/**
 	 * Constructor method.
@@ -51,7 +60,7 @@ class Config
 		if (array_key_exists($optionName, $this->options))
 		{
 		    if ($optionName == 'styles') {
-		    	return $this->convertToObject($this->options[$optionName]);
+		    	return $this->convertStylesToObject($this->options[$optionName]);
 		    }
 
 		    return $this->options[$optionName];
@@ -60,25 +69,43 @@ class Config
 		return null;
     }
 
-
 	/**
 	 * Utility method for converting an associative array into an array of php stdClass objects.
 	 * Both array keys and array values will be conveted to object properties.
 	 * 
-	 * @param  mixed $arrayElements 
+	 * @param  mixed $styles 
 	 * @return mixed
 	 */
-	protected function convertToObject($arrayElements)
+	protected function convertStylesToObject($styles)
 	{
-		$objects = [];
-		
-		foreach ($arrayElements as $key => $value) {
-			$object = new \stdClass();
-			$object->name = $key;
-			$object->value = $value;
-			$objects[] = $object;
+		if (!$this->styleObjects) 
+		{
+			foreach ($styles as $styleName => $styleValue) 
+			{
+				$style = new stdClass();
+				$style->name = $styleName;
+				$style->value = $styleValue;
+				$style->convert_options = $this->getStyleConvertOptions($styleName);
+
+				$this->styleObjects[] = $style;
+			}
 		}
 
-		return $objects;
+		return $this->styleObjects;
+	}
+
+	/**
+	 * Return the convert options for a styles.
+	 * 
+	 * @param  string $styleName
+	 * @return array       
+	 */
+	protected function getStyleConvertOptions($styleName)
+	{
+		if (array_key_exists($styleName, $this->options['convert_options'])) {
+			return $this->options['convert_options'][$styleName];
+		}
+
+		return [];
 	}
 }

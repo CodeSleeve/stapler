@@ -31,7 +31,14 @@ class ConfigTest extends TestCase
 	 */
 	public function testGet()
 	{
-		$config = m::mock('Codesleeve\Stapler\Config', ['mockAttachment', ['foo' => 'bar', 'styles' => ['baz' => '']]])->makePartial();
+		$config = m::mock('Codesleeve\Stapler\Config', [
+			'mockAttachment', 
+			[
+				'foo' => 'bar', 
+				'styles' => ['baz' => ''],
+				'convert_options' => []
+			]
+		])->makePartial();
 
 		$this->assertEquals('bar', $config->foo);
 		$this->assertInstanceOf('StdClass', $config->styles[0]);
