@@ -101,6 +101,48 @@ class Resizer
 		return [$width, $height, 'auto'];
 	}
 
+ 	/**
+	 * Resize an image as a landscape (width only)
+	 *
+	 * @param  UploadedFile $file
+	 * @param  string $width - The image's new width.
+	 * @param  string $height - The image's new height.
+	 * @return Imagine\Image
+	 */
+	protected function resizeLandscape($file, $width, $height)
+	{
+		$image = $this->imagine
+			->open($file->getRealPath());
+
+		$dimensions = $image->getSize()
+			->widen($width);
+
+		$image = $image->resize($dimensions);
+
+		return $image;
+	}
+
+	/**
+	 * Resize an image as a portrait (height only)
+	 *
+	 * @param  UploadedFile $file
+	 * @param  string $width - The image's new width.
+	 * @param  string $height - The image's new height.
+	 * @return Imagine\Image
+	 */
+	protected function resizePortrait($file, $width, $height)
+	{
+		$image = $this->imagine
+			->open($file->getRealPath());
+
+		$dimensions = $image->getSize()
+			->heighten($height);
+
+		$image = $image->resize($dimensions);
+
+		return $image;
+	}
+
 	/**
 	 * Resize an image and then center crop it.
 	 *
