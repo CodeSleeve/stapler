@@ -505,17 +505,20 @@ class Attachment
 	 */
 	protected function flushWrites()
 	{
-		foreach ($this->queuedForWrite as $style)
+		if($this->uploadedFile->isImage())
 		{
-      		if ($style->value && $this->uploadedFile->isImage()) {
-				$file = $this->resizer->resize($this->uploadedFile, $style);
-			}
-			else {
-				$file = $this->uploadedFile->getRealPath();
-			}
+			$uploadedFile = $this->resizer->beforeResize($this->uploadedFile, $this->before_styles);
 
-			$filePath = $this->path($style->name);
-			$this->move($file, $filePath);
+			foreach ($this->queuedForWrite as $style) {
+				if ($style->value) {
+					$file = $this->resizer->resize($uploadedFile, $style);
+				} else {
+					$file = $uploadedFile->getRealPath();
+				}
+
+				$filePath = $this->path($style->name);
+				$this->move($file, $filePath);
+			}
 		}
 
 		$this->queuedForWrite = [];

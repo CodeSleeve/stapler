@@ -2,6 +2,7 @@
 
 use Imagine\Image\Box;
 use Imagine\Image\Point;
+use App;
 
 class Resizer
 {
@@ -19,6 +20,25 @@ class Resizer
 	 */
 	function __construct($imagine) {
 		$this->imagine = $imagine;
+	}
+
+	/**
+	 * @param UploadedFile $file
+	 * @param $callable
+	 *
+	 * @return mixed
+	 */
+	public function beforeResize($file, $callable)
+	{
+		if (is_callable($callable) && $file->isImage())
+		{
+			$filePath = tempnam(sys_get_temp_dir(), 'STP') . '.' . $file->getFilename();
+			$file = call_user_func_array($callable, [$file, $this->imagine]);
+			$file->save($filePath);
+			return App::make('IOWrapper')->make($filePath);
+		}
+
+		return $file;
 	}
 
 	/**

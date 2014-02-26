@@ -80,6 +80,25 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Before Styles Function
+	|--------------------------------------------------------------------------
+	|
+	| Function to be performed on the image before resizing it. 
+	| Very useful to put watermark on all images before resizes them.
+	|
+	|
+	| 'before_styles' => function ($file, $imagine) {
+	|
+	|		$image = $imagine->open($file->getRealPath());
+	|
+	|		return $image;
+	|	},
+	*/
+
+	'before_styles' => NULL,
+
+	/*
+	|--------------------------------------------------------------------------
 	| Convert Options
 	|--------------------------------------------------------------------------
 	|
