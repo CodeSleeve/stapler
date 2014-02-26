@@ -472,7 +472,7 @@ class Attachment
 
 		foreach ($this->styles as $style) 
 		{
-			$fileLocation = $this->storage == 'filesystem' ? $this->path() : $this->url();
+			$fileLocation = $this->storage == 'filesystem' ? $this->path() : $this->url('original');
 			$file = $this->IOWrapper->make($fileLocation);
 
 			if ($style->value && $file->isImage()) {
