@@ -84,7 +84,7 @@ class UploadedFile
 	 */
 	public function getFilename()
 	{
-		return $this->uploadedFile->getClientOriginalName();
+		return preg_replace('/[^a-z0-9\.]/ui', '', $this->uploadedFile->getClientOriginalName());
 	}
 
 	/**
