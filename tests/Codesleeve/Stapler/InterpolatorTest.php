@@ -1,13 +1,13 @@
-<?php
+<?php namespace Codesleeve\Stapler;
 
 use Mockery as m;
-	
+
 class InterpolatorTest extends TestCase
 {
 	/**
 	 * Setup method.
-	 * 
-	 * @return void 
+	 *
+	 * @return void
 	 */
 	public function setUp()
 	{
@@ -16,8 +16,8 @@ class InterpolatorTest extends TestCase
 
 	/**
 	 * Teardown method.
-	 * 
-	 * @return void 
+	 *
+	 * @return void
 	 */
 	public function tearDown()
 	{
@@ -26,7 +26,7 @@ class InterpolatorTest extends TestCase
 
 	/**
 	 * Test that the interpolate method will correctly interpolate a string.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function testInterpolate()
@@ -42,14 +42,14 @@ class InterpolatorTest extends TestCase
 
 	/**
 	 * Build a mock attachment object.
-	 * 
+	 *
 	 * @return Attachment
 	 */
 	protected function buildMockAttachment()
 	{
 		$instance = m::mock();
 		$instance->shouldReceive('getKey')->twice()->andReturn(1);
-		
+
 		$config = m::mock('Codesleeve\Stapler\Config', ['bar', ['default_style' => 'original']]);
 
 		$attachment = m::mock('Codesleeve\Stapler\Attachment[originalFilename, getInstanceClass]');

@@ -1,13 +1,13 @@
-<?php
+<?php namespace Codesleeve\Stapler;
 
 use Mockery as m;
-	
+
 class ConfigTest extends TestCase
 {
 	/**
 	 * Setup method.
-	 * 
-	 * @return void 
+	 *
+	 * @return void
 	 */
 	public function setUp()
 	{
@@ -16,8 +16,8 @@ class ConfigTest extends TestCase
 
 	/**
 	 * Teardown method.
-	 * 
-	 * @return void 
+	 *
+	 * @return void
 	 */
 	public function tearDown()
 	{
@@ -26,15 +26,15 @@ class ConfigTest extends TestCase
 
 	/**
 	 * Test the __get magic method is working correctly.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function testGet()
 	{
 		$config = m::mock('Codesleeve\Stapler\Config', [
-			'mockAttachment', 
+			'mockAttachment',
 			[
-				'foo' => 'bar', 
+				'foo' => 'bar',
 				'styles' => ['baz' => ''],
 				'convert_options' => []
 			]

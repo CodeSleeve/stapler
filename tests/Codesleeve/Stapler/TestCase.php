@@ -1,8 +1,9 @@
-<?php
+<?php namespace Codesleeve\Stapler;
 
-use Illuminate\Support\Facades\App;
+use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Facade;
 
-class TestCase extends PHPUnit_Framework_TestCase {
+class TestCase extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * Bootstrap the test environemnt:
@@ -14,10 +15,10 @@ class TestCase extends PHPUnit_Framework_TestCase {
 	 */
 	public function setUp()
 	{
-		$app = new Illuminate\Foundation\Application;
+		$app = new Application;
 		$app->instance('app', $app);
 		$app->register('Codesleeve\Stapler\StaplerServiceProvider');
-		Illuminate\Support\Facades\Facade::setFacadeApplication($app);
+		Facade::setFacadeApplication($app);
 	}
 
 }

@@ -21,8 +21,7 @@
     },
     "autoload": {
         "classmap": [
-            "src/migrations",
-            "tests/TestCase.php"
+            "src/migrations"
         ],
         "psr-0": {
             "Codesleeve\\Stapler": "src/"

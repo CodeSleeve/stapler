@@ -1,13 +1,13 @@
-<?php
+<?php namespace Codesleeve\Stapler;
 
 use Mockery as m;
-	
+
 class AttachmentTest extends TestCase
 {
 	/**
 	 * Setup method.
-	 * 
-	 * @return void 
+	 *
+	 * @return void
 	 */
 	public function setUp()
 	{
@@ -16,8 +16,8 @@ class AttachmentTest extends TestCase
 
 	/**
 	 * Teardown method.
-	 * 
-	 * @return void 
+	 *
+	 * @return void
 	 */
 	public function tearDown()
 	{
@@ -26,15 +26,15 @@ class AttachmentTest extends TestCase
 
 	/**
 	 * Test that the setUploadedFile method is working correctly.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function testSetUploadedFile()
 	{
 		$IOWrapper = $this->buildMockIOWrapper();
-		
+
 		$config = m::mock('Codesleeve\Stapler\Config', ['mockAttachment', []]);
-		
+
 		$instance = m::mock();
 		$instance->shouldReceive('setAttribute')->once()->with('mockAttachment_file_name', '');
 		$instance->shouldReceive('setAttribute')->once()->with('mockAttachment_file_size', '');
@@ -52,7 +52,7 @@ class AttachmentTest extends TestCase
 
 	/**
 	 * Test that the url method returns the url to a file that has been uploaded.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function testUrlReturnsAUrl()
@@ -70,7 +70,7 @@ class AttachmentTest extends TestCase
 
 	/**
 	 * Test that the url method returns the default url when no file has been uploaded.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function testUrlReturnsTheDefaultUrl()
@@ -80,13 +80,13 @@ class AttachmentTest extends TestCase
 		$attachment = m::mock('Codesleeve\Stapler\Attachment')->makePartial();
 		$attachment->shouldReceive('originalFilename')->once()->andReturn(false);
 		$attachment->setConfig($config);
-		
+
 		$this->assertEquals('', $attachment->url());
 	}
 
 	/**
 	 * Test that the path method returns the path to a file that has been uploaded.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function testPathReturnsAPath()
@@ -104,7 +104,7 @@ class AttachmentTest extends TestCase
 
 	/**
 	 * Test that the path method returns the default path when no file has been uploaded.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function testPathReturnsTheDefaultPath()
@@ -114,19 +114,19 @@ class AttachmentTest extends TestCase
 		$attachment = m::mock('Codesleeve\Stapler\Attachment')->makePartial();
 		$attachment->shouldReceive('originalFilename')->once()->andReturn(false);
 		$attachment->setConfig($config);
-		
+
 		$this->assertEquals('/public', $attachment->path());
 	}
 
 	/**
 	 * Test that the createdAt method is working correctly.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function testCreatedAt()
 	{
 		$config = m::mock('Codesleeve\Stapler\Config', ['mockAttachment', []]);
-		
+
 		$instance = m::mock();
 		$instance->shouldReceive('getAttribute')->once()->with('mockAttachment_created_at')->andReturn('foo');
 
@@ -139,13 +139,13 @@ class AttachmentTest extends TestCase
 
 	/**
 	 * Test that the updatedAt method is working correctly.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function testUpdatedAt()
 	{
 		$config = m::mock('Codesleeve\Stapler\Config', ['mockAttachment', []]);
-		
+
 		$instance = m::mock();
 		$instance->shouldReceive('getAttribute')->once()->with('mockAttachment_updated_at')->andReturn('foo');
 
@@ -158,13 +158,13 @@ class AttachmentTest extends TestCase
 
 	/**
 	 * Test that the contentType method is working correctly.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function testContentType()
 	{
 		$config = m::mock('Codesleeve\Stapler\Config', ['mockAttachment', []]);
-		
+
 		$instance = m::mock();
 		$instance->shouldReceive('getAttribute')->once()->with('mockAttachment_content_type')->andReturn('foo');
 
@@ -177,13 +177,13 @@ class AttachmentTest extends TestCase
 
 	/**
 	 * Test that the size method is working correctly.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function testSize()
 	{
 		$config = m::mock('Codesleeve\Stapler\Config', ['mockAttachment', []]);
-		
+
 		$instance = m::mock();
 		$instance->shouldReceive('getAttribute')->once()->with('mockAttachment_file_size')->andReturn('foo');
 
@@ -196,13 +196,13 @@ class AttachmentTest extends TestCase
 
 	/**
 	 * Test that the originalFilename method is working correctly.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function testOriginalFilename()
 	{
 		$config = m::mock('Codesleeve\Stapler\Config', ['mockAttachment', []]);
-		
+
 		$instance = m::mock();
 		$instance->shouldReceive('getAttribute')->once()->with('mockAttachment_file_name')->andReturn('foo');
 
@@ -215,7 +215,7 @@ class AttachmentTest extends TestCase
 
 	/**
 	 * Test that the afterSave method is working correctly.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function testAfterSave()
@@ -232,7 +232,7 @@ class AttachmentTest extends TestCase
 
 	/**
 	 * Test that the beforeDelelete method is functioning properly.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function testBeforeDelete()
@@ -249,7 +249,7 @@ class AttachmentTest extends TestCase
 
 	/**
 	 * Test the the afterDelete method is working correctly.
-	 * 
+	 *
 	 * @return void
 	 */
 	/*public function testAfterDelete()
@@ -271,8 +271,8 @@ class AttachmentTest extends TestCase
 
 	/**
 	 * Test that the destroy method is functioning correctly.
-	 * 
-	 * @return void 
+	 *
+	 * @return void
 	 */
 	public function testDestroy()
 	{
@@ -286,14 +286,14 @@ class AttachmentTest extends TestCase
 	/**
 	 * Test that the clear method is working correctly when passed a
 	 * specific set of styles to clear.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function testClearWithStyles()
 	{
 		$attachment = m::mock('Codesleeve\Stapler\Attachment')->makePartial();
 		$attachment->shouldReceive('path')->once()->with('foo')->andReturn('bar');
-		
+
 		$attachment->clear(['foo']);
 
 		$this->assertEquals(['bar'], $attachment->getQueuedForDeletion());
@@ -302,14 +302,14 @@ class AttachmentTest extends TestCase
 	/**
 	 * Test that the clear method is working correctly when no styles are passed
 	 * and a file has already been uploaded and preserve files is set to false.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function testClearWithoutStylesAndWithUploadedFile()
 	{
 		$config = m::mock('Codesleeve\Stapler\Config', [
 			'mockAttachment', [
-				'preserve_files' => false, 
+				'preserve_files' => false,
 				'styles' => ['foo' => ''],
 				'convert_options' => []
 			]
@@ -335,7 +335,7 @@ class AttachmentTest extends TestCase
 	/**
 	 * Test that the clear method is working correctly when no styles are passed
 	 * and a file has already been uploaded and preserve files is set to true.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function testClearWithoutStylesAndWithUploadedFileAndPreserveFiles()
@@ -360,7 +360,7 @@ class AttachmentTest extends TestCase
 
 	/**
 	 * Test that the getInstanceClass method is working correctly.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function testGetInstanceClass()
@@ -375,7 +375,7 @@ class AttachmentTest extends TestCase
 
 	/**
 	 * Build a mock IOWrapper object.
-	 * 
+	 *
 	 * @return IOWrapper
 	 */
 	protected function buildMockIOWrapper()
@@ -384,7 +384,7 @@ class AttachmentTest extends TestCase
 		$mockUploadedFile->shouldReceive('getFilename')->once();
 		$mockUploadedFile->shouldReceive('getSize')->once();
 		$mockUploadedFile->shouldReceive('getMimeType')->once();
-		
+
 		$IOWrapper = m::mock('Codesleeve\Stapler\IOWrapper');
 		$IOWrapper->shouldReceive('make')->once()->andReturn($mockUploadedFile);
 

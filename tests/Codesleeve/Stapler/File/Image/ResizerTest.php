@@ -1,17 +1,20 @@
-<?php
+<?php namespace Codesleeve\Stapler\File\Image;
 
+use Codesleeve\Stapler\Testcase;
+use Codesleeve\Stapler\File\UploadedFile;
+use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
 use Imagine\Image\Box;
 use Imagine\Image\Point;
-use Illuminate\Support\Facades\App;
+use stdClass;
 
 class ResizerTest extends TestCase
 {
 	/**
 	 * Test the resize crop method.
-	 * 
-	 * @return void 
+	 *
+	 * @return void
 	 */
-	public function testResizeCrop() 
+	public function testResizeCrop()
 	{
 		$uploadedFile = $this->uploadedFile();
 		$originalSize = new Box(600, 400);
@@ -21,7 +24,7 @@ class ResizerTest extends TestCase
 
 		$image = $this->mockImage($originalSize, $expectedResize, $expectedCropPoint, $expectedCropBox);
 		$imageProcessor = $this->mockImageProcessor($image);
-		$resizer = new Codesleeve\Stapler\File\Image\Resizer($imageProcessor);
+		$resizer = new Resizer($imageProcessor);
 
 		$style = $this->styleObject('thumbnail', '512x512#');
 		$file = $resizer->resize($uploadedFile, $style);
@@ -29,10 +32,10 @@ class ResizerTest extends TestCase
 
 	/**
 	 * Test resize cropping edge case.
-	 * 
-	 * @return void 
+	 *
+	 * @return void
 	 */
-	public function testResizeCropEdgecase() 
+	public function testResizeCropEdgecase()
 	{
 		$uploadedFile = $this->uploadedFile();
 		$originalSize = new Box(1000, 653);
@@ -42,7 +45,7 @@ class ResizerTest extends TestCase
 
 		$image = $this->mockImage($originalSize, $expectedResize, $expectedCropPoint, $expectedCropBox);
 		$imageProcessor = $this->mockImageProcessor($image);
-		$resizer = new Codesleeve\Stapler\File\Image\Resizer($imageProcessor);
+		$resizer = new Resizer($imageProcessor);
 
 		$style = $this->styleObject('thumbnail', '440x244#');
 		$file = $resizer->resize($uploadedFile, $style);
@@ -50,28 +53,28 @@ class ResizerTest extends TestCase
 
 	/**
 	* Helper method to build a mock Stapler UploadedFile object.
-	* 
-	* @return UploadedFile 
+	*
+	* @return UploadedFile
 	*/
-	protected function uploadedFile() 
+	protected function uploadedFile()
 	{
-		$path = __DIR__.'/../../../fixtures/empty.gif';
+		$path = __DIR__.'/../../fixtures/empty.gif';
 		$originalName = 'Test.gif';
-		$symfonyUploadedFile = new Symfony\Component\HttpFoundation\File\UploadedFile($path, $originalName, null, null, null, true);
+		$symfonyUploadedFile = new SymfonyUploadedFile($path, $originalName, null, null, null, true);
 
-		return new Codesleeve\Stapler\File\UploadedFile($symfonyUploadedFile);
+		return new UploadedFile($symfonyUploadedFile);
 	}
 
 	/**
 	* Helper method to build a mock Image object.
-	* 
-	* @param  integer $originalSize      
-	* @param  integer $expectedResize    
-	* @param  integer $expectedCropPoint 
-	* @param  integer $expectedCropBox   
-	* @return Image                    
+	*
+	* @param  integer $originalSize
+	* @param  integer $expectedResize
+	* @param  integer $expectedCropPoint
+	* @param  integer $expectedCropBox
+	* @return Image
 	*/
-	protected function mockImage($originalSize, $expectedResize, $expectedCropPoint = null, $expectedCropBox = null) 
+	protected function mockImage($originalSize, $expectedResize, $expectedCropPoint = null, $expectedCropBox = null)
 	{
 		$image = $this->getMock('Image', ['getSize', 'resize', 'crop', 'save']);
 
@@ -91,17 +94,17 @@ class ResizerTest extends TestCase
 
 		$image->expects($this->once())
 			->method('save');
-	
+
 		return $image;
 	}
 
 	/**
 	 * Helper method to build a mock Imagine instance.
-	 * 
-	 * @param  Image $image 
+	 *
+	 * @param  Image $image
 	 * @return Imagine
 	 */
-	protected function mockImageProcessor($image) 
+	protected function mockImageProcessor($image)
 	{
 		$imageProcessor = $this->getMock('Imagine', ['open']);
 
@@ -116,10 +119,10 @@ class ResizerTest extends TestCase
 	 * Helper method to build a mock style object.
 	 *
 	 * @param  string $name
-	 * @param  string $value 
-	 * @return Object        
+	 * @param  string $value
+	 * @return Object
 	 */
-	protected function styleObject($name, $value) 
+	protected function styleObject($name, $value)
 	{
 		$style = new stdClass;
 		$style->name = $name;
