@@ -182,6 +182,14 @@ class Resizer
 	/**
 	 * Resize an image as closely as possible to a given
 	 * width and height while still maintaining aspect ratio.
+	 * This method is really just a proxy to other resize methods:
+	 * 
+	 * If the current image is wider than it is tall, we'll resize landscape.
+	 * If the current image is taller than it is wide, we'll resize portrait.
+	 * If the image is as tall as it is wide (it's a squarey) then we'll
+	 * apply the same process using the new dimensions (we'll resize exact if 
+	 * the new dimensions are both equal since at this point we'll have a square
+	 * image being resized to a square).
 	 *
 	 * @param  UploadedFile $file
 	 * @param  string $width - The image's new width.
@@ -190,18 +198,24 @@ class Resizer
 	 */
 	protected function resizeAuto($file, $width, $height)
 	{
-		// Image to be resized is wider (landscape)
-		if ($height < $width) {
-			return $this->resizeLandscape($file, $width, $height);
+		list($originalWidth, $originalHeight) = getimagesize($file->getRealPath());
 
+		if ($originalHeight < $originalWidth) {
+			return $this->resizeLandscape($file, $width, $height);
 		}
 
-		// Image to be resized is taller (portrait)
+		if ($originalHeight > $originalWidth){
+			return $this->resizePortrait($file, $width, $height);
+		}
+
+		if ($height < $width) {
+			return $this->resizeLandscape($file, $width, $height);
+		}
+
 		if ($height > $width){
 			return $this->resizePortrait($file, $width, $height);
 		}
 
-		// Image to be resizerd is a square
 		return $this->resizeExact($file, $width, $height);
 	}
 
