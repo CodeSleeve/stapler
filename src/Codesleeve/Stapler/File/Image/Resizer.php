@@ -25,7 +25,7 @@ class Resizer
 	 * Resize an image using the computed settings.
 	 *
 	 * @param  UploadedFile $file
-	 * @param  stdClass $style
+	 * @param  Style $style
 	 * @return void
 	 */
 	public function resize($file, $style)
@@ -34,14 +34,22 @@ class Resizer
 		list($width, $height, $option) = $this->parseStyleDimensions($style);
 		$method = "resize" . ucfirst($option);
 
-		if ($method == 'resizeCustom') {
+		if ($method == 'resizeCustom')
+		{
 			$this->resizeCustom($file, $style->value)
-				->save($filePath, $style->convert_options);
+				->save($filePath, $style->convertOptions);
+
+			return $filePath;
 		}
-    	else {
-      		$this->$method($file, $width, $height)
-		       ->save($filePath, $style->convert_options);
+
+  		$image = $this->imagine->open($file->getRealPath());
+
+		if ($style->autoOrient) {
+			$image = $this->autoOrient($file->getRealPath(), $image);
 		}
+
+  		$this->$method($image, $width, $height)
+	       ->save($filePath, $style->convertOptions);
 
 		return $filePath;
 	}
@@ -52,7 +60,7 @@ class Resizer
 	 * Parse the given style dimensions to extract out the file processing options,
 	 * perform any necessary image resizing for a given style.
 	 *
-	 * @param  stdClass $style
+	 * @param  Style $style
 	 * @return array
 	 */
 	protected function parseStyleDimensions($style)
@@ -104,16 +112,13 @@ class Resizer
 	/**
 	 * Resize an image as a landscape (width only)
 	 *
-	 * @param  UploadedFile $file
+	 * @param  Imagine\Image\ImageInterface $image
 	 * @param  string $width - The image's new width.
 	 * @param  string $height - The image's new height.
 	 * @return Imagine\Image
 	 */
-	protected function resizeLandscape($file, $width, $height)
+	protected function resizeLandscape($image, $width, $height)
 	{
-		$image = $this->imagine
-			->open($file->getRealPath());
-
 		$dimensions = $image->getSize()
 			->widen($width);
 
@@ -125,16 +130,13 @@ class Resizer
 	/**
 	 * Resize an image as a portrait (height only)
 	 *
-	 * @param  UploadedFile $file
+	 * @param  Imagine\Image\ImageInterface $image
 	 * @param  string $width - The image's new width.
 	 * @param  string $height - The image's new height.
 	 * @return Imagine\Image
 	 */
-	protected function resizePortrait($file, $width, $height)
+	protected function resizePortrait($image, $width, $height)
 	{
-		$image = $this->imagine
-			->open($file->getRealPath());
-
 		$dimensions = $image->getSize()
 			->heighten($height);
 
@@ -146,14 +148,13 @@ class Resizer
 	/**
 	 * Resize an image and then center crop it.
 	 *
-	 * @param  UploadedFile $file
+	 * @param  Imagine\Image\ImageInterface $image
 	 * @param  string $width - The image's new width.
 	 * @param  string $height - The image's new height.
 	 * @return Imagine\Image
 	 */
-	protected function resizeCrop($file, $width, $height)
+	protected function resizeCrop($image, $width, $height)
   	{
-		$image = $this->imagine->open($file->getRealPath());
 		list($optimalWidth, $optimalHeight) = $this->getOptimalCrop($image->getSize(), $width, $height);
 
     	// Find center - this will be used for the crop
@@ -167,56 +168,56 @@ class Resizer
 	/**
 	 * Resize an image to an exact width and height.
 	 *
-	 * @param  UploadedFile $file
+	 * @param  Imagine\Image\ImageInterface $image
 	 * @param  string $width - The image's new width.
 	 * @param  string $height - The image's new height.
 	 * @return Imagine\Image
 	 */
-	protected function resizeExact($file, $width, $height)
+	protected function resizeExact($image, $width, $height)
 	{
-		return $this->imagine
-			->open($file->getRealPath())
-			->resize(new Box($width, $height));
+		return $image->resize(new Box($width, $height));
 	}
 
 	/**
 	 * Resize an image as closely as possible to a given
 	 * width and height while still maintaining aspect ratio.
 	 * This method is really just a proxy to other resize methods:
-	 * 
+	 *
 	 * If the current image is wider than it is tall, we'll resize landscape.
 	 * If the current image is taller than it is wide, we'll resize portrait.
 	 * If the image is as tall as it is wide (it's a squarey) then we'll
-	 * apply the same process using the new dimensions (we'll resize exact if 
+	 * apply the same process using the new dimensions (we'll resize exact if
 	 * the new dimensions are both equal since at this point we'll have a square
 	 * image being resized to a square).
 	 *
-	 * @param  UploadedFile $file
+	 * @param  Imagine\Image\ImageInterface $image
 	 * @param  string $width - The image's new width.
 	 * @param  string $height - The image's new height.
 	 * @return Imagine\Image
 	 */
-	protected function resizeAuto($file, $width, $height)
+	protected function resizeAuto($image, $width, $height)
 	{
-		list($originalWidth, $originalHeight) = getimagesize($file->getRealPath());
+		$size = $image->getSize();
+		$originalWidth = $size->getWidth();
+		$originalHeight = $size->getHeight();
 
 		if ($originalHeight < $originalWidth) {
-			return $this->resizeLandscape($file, $width, $height);
+			return $this->resizeLandscape($image, $width, $height);
 		}
 
 		if ($originalHeight > $originalWidth){
-			return $this->resizePortrait($file, $width, $height);
+			return $this->resizePortrait($image, $width, $height);
 		}
 
 		if ($height < $width) {
-			return $this->resizeLandscape($file, $width, $height);
+			return $this->resizeLandscape($image, $width, $height);
 		}
 
 		if ($height > $width){
-			return $this->resizePortrait($file, $width, $height);
+			return $this->resizePortrait($image, $width, $height);
 		}
 
-		return $this->resizeExact($file, $width, $height);
+		return $this->resizeExact($image, $width, $height);
 	}
 
 	/**
@@ -256,6 +257,52 @@ class Resizer
 		$optimalWidth  = round($size->getWidth() / $optimalRatio, 2);
 
 		return [$optimalWidth, $optimalHeight];
+	}
+
+	/**
+	 * Re-orient an image using its embedded Exif profile orientation:
+	 * 1. Read the embedded exif data inside the image to determine it's orientation.
+	 * 2. Rotate and flip the image accordingly to re-orient it.
+	 * 3. Strip the Exif data from the image so that there can be no attempt to 'correct' it again.
+	 *
+	 * @param  string $path
+	 * @param  Imagine\Image\ImageInterface $image
+	 * @return Imagine\Image\ImageInterface $image
+	 */
+	protected function autoOrient($path, $image)
+	{
+		$exif = exif_read_data($path);
+
+		if (!empty($exif['Orientation']))
+		{
+		    switch($exif['Orientation']) {
+		        case 2:
+		            $image->flipHorizontally();
+		            break;
+		        case 3:
+		            $image->rotate(180);
+		            break;
+		        case 4:
+		            $image->flipVertically();
+		            break;
+		        case 5:
+		            $image->flipVertically()
+		            	->rotate(90);
+		            break;
+		        case 6:
+		            $image->rotate(90);
+		            break;
+		        case 7:
+		        	$image->flipHorizontally()
+		        		->rotate(90);
+		        	break;
+		        case 8:
+		            $image->rotate(-90);
+		            break;
+		    }
+		}
+
+		return $image->strip();
 	}
 
 }

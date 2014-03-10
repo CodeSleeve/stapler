@@ -1,7 +1,5 @@
 <?php namespace Codesleeve\Stapler;
 
-use stdClass;
-
 class Config
 {
 	/**
@@ -13,17 +11,17 @@ class Config
 
 	/**
 	 * An array of attachment configuration options.
-	 * 
+	 *
 	 * @var array
 	 */
 	protected $options;
 
 	/**
-	 * An array of stdClass style objects.
-	 * 
+	 * An array of Codesleeve\Stapler\Style objects.
+	 *
 	 * @var array
 	 */
-	protected $styleObjects;
+	protected $styles;
 
 	/**
 	 * Constructor method.
@@ -35,6 +33,7 @@ class Config
 	{
 		$this->name = $name;
 		$this->options = $options;
+		$this->styles = $this->buildStyleObjects($options['styles']);
 	}
 
 	/**
@@ -60,7 +59,7 @@ class Config
 		if (array_key_exists($optionName, $this->options))
 		{
 		    if ($optionName == 'styles') {
-		    	return $this->convertStylesToObject($this->options[$optionName]);
+		    	return $this->styles;
 		    }
 
 		    return $this->options[$optionName];
@@ -70,35 +69,30 @@ class Config
     }
 
 	/**
-	 * Utility method for converting an associative array into an array of php stdClass objects.
-	 * Both array keys and array values will be conveted to object properties.
-	 * 
-	 * @param  mixed $styles 
-	 * @return mixed
+	 * Convert the styles array into an array of Style objects.
+	 * Both array keys and array values will be converted to object properties.
+	 *
+	 * @param  mixed $styles
+	 * @return array
 	 */
-	protected function convertStylesToObject($styles)
+	protected function buildStyleObjects($styles)
 	{
-		if (!$this->styleObjects) 
-		{
-			foreach ($styles as $styleName => $styleValue) 
-			{
-				$style = new stdClass();
-				$style->name = $styleName;
-				$style->value = $styleValue;
-				$style->convert_options = $this->getStyleConvertOptions($styleName);
+		$styleObjects = [];
 
-				$this->styleObjects[] = $style;
-			}
+		foreach ($styles as $styleName => $styleValue)
+		{
+			$convertOptions = $this->getStyleConvertOptions($styleName);
+			$styleObjects[] = new Style($styleName, $styleValue, $convertOptions);
 		}
 
-		return $this->styleObjects;
+		return $styleObjects;
 	}
 
 	/**
 	 * Return the convert options for a styles.
-	 * 
+	 *
 	 * @param  string $styleName
-	 * @return array       
+	 * @return array
 	 */
 	protected function getStyleConvertOptions($styleName)
 	{

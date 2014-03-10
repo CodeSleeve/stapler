@@ -42,7 +42,7 @@ class Attachment
 
 	/**
 	 * An instance of the resizer library that's being used for image processing.
-	 * 
+	 *
 	 * @var Codesleeve\Stapler\File\Image\Resizer
 	 */
 	protected $resizer;
@@ -50,7 +50,7 @@ class Attachment
 	/**
 	 * An IOWrapper instance for converting file input formats (symfony uploaded file object
 	 * arrays, string, etc) into an instance of Codesleeve\Stapler\UploadedFile.
-	 * 
+	 *
 	 * @var Codesleeve\Stapler\IOWrapper
 	 */
 	protected $IOWrapper;
@@ -110,7 +110,7 @@ class Attachment
 
     /**
 	 * Mutator method for the uploadedFile property.
-	 * Accepts the following inputs: 
+	 * Accepts the following inputs:
 	 * - An absolute string url (for fetching remote files).
 	 * - An array (data parsed from the $_FILES array),
 	 * - A symfony uploaded file object.
@@ -148,7 +148,7 @@ class Attachment
 	 * Mutator method for the interpolator property.
 	 *
 	 * @param Codesleeve\Stapler\Interpolator $interpolator
-	 * @return void 
+	 * @return void
 	 */
 	public function setInterpolator(Interpolator $interpolator)
 	{
@@ -211,11 +211,11 @@ class Attachment
 	}
 
 	/**
-	 * Accessore method for the underlying 
+	 * Accessore method for the underlying
 	 * instance (Eloquent model) object this attachment
 	 * is defined on.
-	 * 
-	 * @return Eloquent 
+	 *
+	 * @return Eloquent
 	 */
 	public function getInstance()
 	{
@@ -235,8 +235,8 @@ class Attachment
 
 	/**
 	 * Accessor method for the Config property.
-	 * 
-	 * @return array 
+	 *
+	 * @return array
 	 */
 	public function getConfig()
 	{
@@ -245,8 +245,8 @@ class Attachment
 
 	/**
 	 * Mutator method for the IOWrapper property.
-	 * 
-	 * @param Codesleeve\Stapler\IOWrapper $IOWrapper 
+	 *
+	 * @param Codesleeve\Stapler\IOWrapper $IOWrapper
 	 */
 	public function setIOWrapper($IOWrapper)
 	{
@@ -255,8 +255,8 @@ class Attachment
 
 	/**
 	 * Accessor method for the QueuedForDeletion property.
-	 * 
-	 * @return array 
+	 *
+	 * @return array
 	 */
 	public function getQueuedForDeletion()
 	{
@@ -265,7 +265,7 @@ class Attachment
 
 	/**
 	 * Mutator method for the QueuedForDeletion property.
-	 * 
+	 *
 	 * @param array $array
 	 */
 	public function setQueuedForDeletion($array)
@@ -462,7 +462,7 @@ class Attachment
 	/**
 	 * Rebuild the images for this attachment.
 	 *
-	 * @return void 
+	 * @return void
 	 */
 	public function reprocess()
 	{
@@ -470,7 +470,7 @@ class Attachment
 			return;
 		}
 
-		foreach ($this->styles as $style) 
+		foreach ($this->styles as $style)
 		{
 			$fileLocation = $this->storage == 'filesystem' ? $this->path() : $this->url();
 			$file = $this->IOWrapper->make($fileLocation);
@@ -490,7 +490,7 @@ class Attachment
 	/**
      * Return the class type of the attachment's underlying
      * model instance.
-     * 
+     *
      * @return string
      */
     public function getInstanceClass()
