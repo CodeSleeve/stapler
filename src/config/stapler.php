@@ -54,6 +54,19 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Stapler Base Url
+	|--------------------------------------------------------------------------
+	| Base url for all the images.
+	| Very handy for use with CDN
+	| It also avoids unnecessary requests to Amazon S3
+	| 
+	| 'base_url' => 'http://my-host-cdn.dev.br/',
+	*/
+
+	'base_url' => false,
+
+	/*
+	|--------------------------------------------------------------------------
 	| Stapler Default Style
 	|--------------------------------------------------------------------------
 	|

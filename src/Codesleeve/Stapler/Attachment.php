@@ -300,6 +300,10 @@ class Attachment
 	*/
 	public function url($styleName = '')
 	{
+		if($this->base_url){
+			return $this->base_url . $this->path($styleName);
+		}
+		
 		if ($this->originalFilename()) {
 			return $this->storageDriver->url($styleName, $this);
 		}
