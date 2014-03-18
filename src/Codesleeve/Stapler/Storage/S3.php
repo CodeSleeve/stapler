@@ -82,8 +82,21 @@ class S3 implements StorageInterface
 	 * @return void 
 	 */
 	public function move($file, $filePath)
-	{
- 		$this->getS3Client()->putObject(['Bucket' => $this->getBucket(), 'Key' => $filePath, 'SourceFile' => $file, 'ContentType' => $this->attachedFile->contentType(), 'ACL' => $this->attachedFile->ACL]);
+  {
+    $options = [];
+
+    if($ACL = $this->attachedFile->ACL)
+      $options['ACL'] = $ACL;
+
+    if($cacheControl = $this->attachedFile->CacheControl)
+      $options['CacheControl'] = $cacheControl;
+
+    $this->getS3Client()->putObject(array_merge([
+        'Bucket' => $this->getBucket(),
+        'Key' => $filePath,
+        'SourceFile' => $file,
+        'ContentType' => $this->attachedFile->contentType(),
+    ], $options));
 	}
 
 	/**
@@ -110,7 +123,7 @@ class S3 implements StorageInterface
 	 * 
 	 * @return string
 	 */
-	protected function getBucket()
+	public function getBucket()
 	{
 		$bucketName = $this->attachedFile->bucket;
 		if (!$this->bucketExists) {
@@ -126,7 +139,7 @@ class S3 implements StorageInterface
 	 * @param  string $bucketName
 	 * @return void
 	 */
-	protected function buildBucket($bucketName)
+	public function buildBucket($bucketName)
 	{
 		if (!$this->getS3Client()->doesBucketExist($bucketName, true)) {
 			$this->getS3Client()->createBucket(['ACL' => $this->attachedFile->ACL, 'Bucket' => $bucketName, 'LocationConstraint' => $this->attachedFile->region]);
@@ -142,7 +155,7 @@ class S3 implements StorageInterface
 	 * 	
 	 * @return S3Client
 	 */
-	protected function getS3Client()
+	public function getS3Client()
 	{
 		return $this->s3ClientManager->getS3Client($this->attachedFile);
 	}

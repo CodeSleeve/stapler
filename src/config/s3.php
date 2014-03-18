@@ -61,6 +61,20 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| S3 CacheControl
+	|--------------------------------------------------------------------------
+	|
+  | This string will be the value for the S3 object's `CacheControl` option.
+  | If blank, the option will not be set.  The format is: `max-age=3600` as
+  | described here:
+  | http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Expiration.html
+	|
+	*/
+
+	'CacheControl' => '',
+
+	/*
+	|--------------------------------------------------------------------------
 	| S3 Scheme (s3_protocol)
 	|--------------------------------------------------------------------------
 	|
