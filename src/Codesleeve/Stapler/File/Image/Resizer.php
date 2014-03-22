@@ -273,7 +273,7 @@ class Resizer
 	{
 		$exif = exif_read_data($path);
 
-		if (!empty($exif['Orientation']))
+		if (isset($exif['Orientation']))
 		{
 		    switch($exif['Orientation']) {
 		        case 2:
