@@ -41,7 +41,7 @@ class ConfigTest extends TestCase
 		])->makePartial();
 
 		$this->assertEquals('bar', $config->foo);
-		$this->assertInstanceOf('StdClass', $config->styles[0]);
+		$this->assertInstanceOf('Codesleeve\Stapler\Style', $config->styles[0]);
 		$this->assertNull($config->baz);
 	}
 }

@@ -2,6 +2,7 @@
 
 use Codesleeve\Stapler\Testcase;
 use Codesleeve\Stapler\File\UploadedFile;
+use Codesleeve\Stapler\Style;
 use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
 use Imagine\Image\Box;
 use Imagine\Image\Point;
@@ -120,15 +121,11 @@ class ResizerTest extends TestCase
 	 *
 	 * @param  string $name
 	 * @param  string $value
+	 * @param  array $convertOptions
 	 * @return Object
 	 */
-	protected function styleObject($name, $value)
+	protected function styleObject($name, $value, $convertOptions = [])
 	{
-		$style = new stdClass;
-		$style->name = $name;
-		$style->value = $value;
-		$style->convert_options = [];
-
-		return $style;
+		return new Style($name, $value, $convertOptions);
 	}
 }

@@ -50,7 +50,7 @@ class InterpolatorTest extends TestCase
 		$instance = m::mock();
 		$instance->shouldReceive('getKey')->twice()->andReturn(1);
 
-		$config = m::mock('Codesleeve\Stapler\Config', ['bar', ['default_style' => 'original']]);
+		$config = m::mock('Codesleeve\Stapler\Config', ['bar', ['styles' => [], 'default_style' => 'original']]);
 
 		$attachment = m::mock('Codesleeve\Stapler\Attachment[originalFilename, getInstanceClass]');
 		$attachment->shouldReceive('originalFilename')->times(3)->andReturn('test.jpg');
