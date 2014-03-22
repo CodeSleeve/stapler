@@ -59,7 +59,7 @@ class ResizerTest extends TestCase
 	*/
 	protected function uploadedFile()
 	{
-		$path = __DIR__.'/../../fixtures/empty.gif';
+		$path = __DIR__.'/../../Fixtures/empty.gif';
 		$originalName = 'Test.gif';
 		$symfonyUploadedFile = new SymfonyUploadedFile($path, $originalName, null, null, null, true);
 
