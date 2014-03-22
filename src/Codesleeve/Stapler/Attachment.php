@@ -498,6 +498,19 @@ class Attachment
     	return get_class($this->instance);
     }
 
+    /**
+     * Set an attachment attribute on the underlying model instance.
+     *
+     * @param  string $property
+     * @param  mixed $value
+     * @return void
+     */
+    public function instanceWrite($property, $value)
+    {
+    	$fieldName = "{$this->name}_{$property}";
+    	$this->instance->setAttribute($fieldName, $value);
+    }
+
 	/**
 	 * Process the queuedForWrite que.
 	 *
@@ -610,18 +623,5 @@ class Attachment
 		$this->instanceWrite('file_size', NULL);
 		$this->instanceWrite('content_type', NULL);
 		$this->instanceWrite('updated_at', NULL);
-    }
-
-    /**
-     * Set an attachment attribute on the underlying model instance.
-     *
-     * @param  string $property
-     * @param  mixed $value
-     * @return void
-     */
-    protected function instanceWrite($property, $value)
-    {
-    	$fieldName = "{$this->name}_{$property}";
-    	$this->instance->setAttribute($fieldName, $value);
     }
 }
