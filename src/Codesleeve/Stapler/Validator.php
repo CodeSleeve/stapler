@@ -5,7 +5,7 @@ class Validator
 	/**
 	 * Validate the attachment options for an attachment type.
 	 * A url is required to have either an :id or an :id_partition interpolation.
-	 * 
+	 *
 	 * @param  array $options
 	 * @return void
 	 */
@@ -17,8 +17,8 @@ class Validator
 	/**
 	 * Validate the attachment optioins for an attachment type when the storage
 	 * driver is set to 'filesystem'.
-	 * 
-	 * @param  array $options 
+	 *
+	 * @param  array $options
 	 * @return void
 	 */
 	protected function validateFilesystemOptions($options)
@@ -31,8 +31,8 @@ class Validator
 	/**
 	 * Validate the attachment optioins for an attachment type when the storage
 	 * driver is set to 's3'.
-	 * 
-	 * @param  array $options 
+	 *
+	 * @param  array $options
 	 * @return void
 	 */
 	protected function validateS3Options($options)

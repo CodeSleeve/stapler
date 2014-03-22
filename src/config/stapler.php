@@ -1,7 +1,7 @@
 <?php
 
 return [
-	
+
 	/*
 	|--------------------------------------------------------------------------
 	| Stapler Public Path Location
@@ -11,7 +11,7 @@ return [
 	| public folder.
 	|
 	*/
-	
+
 	'public_path' => realPath(public_path()),
 
 	/*
@@ -23,7 +23,7 @@ return [
 	| both file system and Amazon S3 as options.
 	|
 	*/
-	
+
 	'storage' => 'filesystem',
 
 	/*
@@ -35,7 +35,7 @@ return [
 	| Gmagick.
 	|
 	*/
-	
+
 	'image_processing_library' => 'GD',
 
 
@@ -57,9 +57,9 @@ return [
 	| Stapler Default Style
 	|--------------------------------------------------------------------------
 	|
-	| The default style returned from the Stapler file location helper methods. 
-	| An unaltered version of uploaded file is always stored within the 'original' 
-	| style, however the default_style can be set to point to any of the defined 
+	| The default style returned from the Stapler file location helper methods.
+	| An unaltered version of uploaded file is always stored within the 'original'
+	| style, however the default_style can be set to point to any of the defined
 	| syles within the styles array.
 	|
 	*/
@@ -71,7 +71,7 @@ return [
 	| Stapler Styles
 	|--------------------------------------------------------------------------
 	|
-	| An array of image sizes defined for the file attachment. 
+	| An array of image sizes defined for the file attachment.
 	| Stapler will attempt to format the file upload into the defined style.
 	|
 	*/
@@ -109,7 +109,7 @@ return [
 	|--------------------------------------------------------------------------
 	|
 	| Set this to true in order to prevent file uploads from being deleted
-	| from the file system when an attachment is destroyed.  Essentially this 
+	| from the file system when an attachment is destroyed.  Essentially this
 	| ensures the preservation of uploads event after their corresponding database
 	| records have been removed.
 	|

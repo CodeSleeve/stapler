@@ -6,7 +6,7 @@ class S3ClientManager
 {
 	/**
 	 * A key value store of S3 clients.
-	 * 
+	 *
 	 * @var array
 	 */
 	protected $s3Clients = [];
@@ -21,7 +21,7 @@ class S3ClientManager
     public static function getInstance()
     {
         static $instance = null;
-        
+
         if (null === $instance) {
             $instance = new static();
         }
@@ -60,7 +60,7 @@ class S3ClientManager
      */
     protected function __construct()
     {
-        
+
     }
 
     /**
@@ -86,15 +86,15 @@ class S3ClientManager
 	/**
 	 * Build an S3Client instance using the information defined in
 	 * this class's attachedFile object.
-	 * 
+	 *
 	 * @return S3Client
 	 */
 	protected function buildS3Client($attachedFile)
 	{
 		return S3Client::factory([
-			'key' => $attachedFile->key, 
-			'secret' => $attachedFile->secret, 
-			'region' => $attachedFile->region, 
+			'key' => $attachedFile->key,
+			'secret' => $attachedFile->secret,
+			'region' => $attachedFile->region,
 			'scheme' => $attachedFile->scheme
 		]);
 	}

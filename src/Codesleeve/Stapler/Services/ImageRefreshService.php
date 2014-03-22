@@ -12,7 +12,7 @@ class ImageRefreshService
 	 *
 	 * @param  string $class
 	 * @param  array $attachments
-	 * @return void 
+	 * @return void
 	 */
 	public function refresh($class, $attachments)
 	{
@@ -22,28 +22,28 @@ class ImageRefreshService
 
 		$models = App::make($class)->all();
 
-		if ($attachments) 
+		if ($attachments)
 		{
 			$attachments = explode(',', str_replace(', ', ',', $attachments));
 			$this->processSomeAttachments($models, $attachments);
 
 			return;
 		}
-		
+
 		$this->processAllAttachments($models);
 	}
 
 	/**
 	 * Process a only a specified subset of stapler attachments.
-	 * 
-	 * @param  array $attachments 
-	 * @return void              
+	 *
+	 * @param  array $attachments
+	 * @return void
 	 */
 	protected  function processSomeAttachments($models, $attachments)
 	{
-		foreach ($models as $model) 
+		foreach ($models as $model)
 		{
-			foreach ($model->getAttachedFiles() as $attachedFile) 
+			foreach ($model->getAttachedFiles() as $attachedFile)
 			{
 				if (in_array($attachedFile->name, $attachments)) {
 					$attachedFile->reprocess();
@@ -54,14 +54,14 @@ class ImageRefreshService
 
 	/**
 	 * Process all stapler attachments defined on a class.
-	 * 
+	 *
 	 * @return void
 	 */
 	protected function processAllAttachments($models)
 	{
-		foreach ($models as $model) 
+		foreach ($models as $model)
 		{
-			foreach ($model->getAttachedFiles() as $attachedFile) 
+			foreach ($model->getAttachedFiles() as $attachedFile)
 			{
 				$attachedFile->reprocess();
 			}

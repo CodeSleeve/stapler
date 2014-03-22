@@ -5,8 +5,8 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use Codesleeve\Stapler\Services\ImageRefreshService;
 
-class RefreshCommand extends Command {
-
+class RefreshCommand extends Command
+{
 	/**
 	 * The console command name.
 	 *
@@ -24,7 +24,7 @@ class RefreshCommand extends Command {
 	/**
 	 * The image refresh service that will be used to
 	 * rebuild images.
-	 * 
+	 *
 	 * @var ImageRefreshService
 	 */
 	protected $imageRefreshService;
@@ -77,6 +77,4 @@ class RefreshCommand extends Command {
 			array('attachments', null, InputOption::VALUE_OPTIONAL, 'A list of specific attachments to refresh images on.'),
 		);
 	}
-
-	
 }

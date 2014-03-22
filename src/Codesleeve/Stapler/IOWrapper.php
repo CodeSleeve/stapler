@@ -8,8 +8,8 @@ class IOWrapper
 {
 	/**
 	 * Build an UploadedFile object using various file input types.
-	 *  
-	 * @param  mixed $file 
+	 *
+	 * @param  mixed $file
 	 * @return Codesleeve\Stapler\File\UploadedFile
 	 */
 	public function make($file)
@@ -32,15 +32,15 @@ class IOWrapper
 	/**
 	 * Compose a Codesleeve\Stapler\File\UploadedFile object from
 	 * a symfony\Component\HttpFoundation\File\UploadedFile object.
-	 * 
-	 * @param  symfony\Component\HttpFoundation\File\UploadedFile $file 
+	 *
+	 * @param  symfony\Component\HttpFoundation\File\UploadedFile $file
 	 * @return Codesleeve\Stapler\File\UploadedFile
 	 */
 	protected function createFromObject(SymfonyUploadedFile $file)
 	{
 		$staplerFile = new UploadedFile($file);
 		$staplerFile->validate();
-        
+
         return $staplerFile;
 	}
 
@@ -48,9 +48,9 @@ class IOWrapper
 	 * Build a Codesleeve\Stapler\File\File object from the
 	 * raw php $_FILES array date.	We assume here that the $_FILES array
 	 * has been formated using the Stapler::arrangeFiles utility method.
-	 * 
-	 * @param  array $file 
-	 * @return Codesleeve\Stapler\File\File      
+	 *
+	 * @param  array $file
+	 * @return Codesleeve\Stapler\File\File
 	 */
 	protected function createFromArray($file)
 	{
@@ -62,9 +62,9 @@ class IOWrapper
 	/**
 	 * Fetch a remote file using a string URL and convert it into
 	 * an instance of Codesleeve\Stapler\File\File.
-	 * 
-	 * @param  string $file 
-	 * @return Codesleeve\Stapler\File\File   
+	 *
+	 * @param  string $file
+	 * @return Codesleeve\Stapler\File\File
 	 */
 	protected function createFromUrl($file)
 	{
@@ -76,7 +76,7 @@ class IOWrapper
 
 		// Get the original name of the file
 		$name = pathinfo($file)['basename'];
-		
+
 		// Create a filepath for the file by storing it on disk.
 		$filePath = sys_get_temp_dir() . "/$name";
 		file_put_contents($filePath, $rawFile);
@@ -87,9 +87,9 @@ class IOWrapper
 	/**
 	 * Fetch a local file using a string location and convert it into
 	 * an instance of Codesleeve\Stapler\File\File.
-	 * 
-	 * @param  string $file 
-	 * @return Codesleeve\Stapler\File\File   
+	 *
+	 * @param  string $file
+	 * @return Codesleeve\Stapler\File\File
 	 */
 	protected function createFromString($file)
 	{

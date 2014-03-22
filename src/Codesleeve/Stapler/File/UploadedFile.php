@@ -6,9 +6,9 @@ use Codesleeve\Stapler\Exceptions\FileException;
 class UploadedFile
 {
 	/**
-	 * The underlying uploaded file object that acts 
+	 * The underlying uploaded file object that acts
 	 * as part of this class's composition.
-	 * 
+	 *
 	 * @var symfony\Component\HttpFoundation\File\UploadedFile
 	 */
 	protected $uploadedFile;
@@ -16,7 +16,7 @@ class UploadedFile
 	/**
 	 * An array of key value pairs for valid image
 	 * extensions and their associated MIME types.
-	 * 
+	 *
 	 * @var array
 	 */
 	protected $imageMimes = [
@@ -32,8 +32,8 @@ class UploadedFile
 
 	/**
 	 * Constructor method.
-	 * 
-	 * @param symfony\Component\HttpFoundation\File\UploadedFile $uploadedFile 
+	 *
+	 * @param symfony\Component\HttpFoundation\File\UploadedFile $uploadedFile
 	 */
 	function __construct(SymfonyUploadedFile $uploadedFile) {
 		$this->uploadedFile = $uploadedFile;
@@ -56,15 +56,15 @@ class UploadedFile
 	/**
 	 * Method for determining whether the uploaded file is
 	 * an image type.
-	 * 
-	 * @return boolean 
+	 *
+	 * @return boolean
 	 */
 	public function isImage()
 	{
 		$mime = $this->getMimeType();
-		
+
 		// The $imageMimes property contains an array of file extensions and
-		// their associated MIME types. We will loop through them and look for 
+		// their associated MIME types. We will loop through them and look for
 		// the MIME type of the current SymfonyUploadedFile.
 		foreach ($this->imageMimes as $imageMime)
 		{
@@ -79,8 +79,8 @@ class UploadedFile
 
 	/**
 	 * Return the name of the file.
-	 *  
-	 * @return string          
+	 *
+	 * @return string
 	 */
 	public function getFilename()
 	{
@@ -89,8 +89,8 @@ class UploadedFile
 
 	/**
 	 * Return the size of the file.
-	 *  
-	 * @return string          
+	 *
+	 * @return string
 	 */
 	public function getSize()
 	{
@@ -99,7 +99,7 @@ class UploadedFile
 
 	/**
 	 * Return the mime type of the file.
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getMimeType()
@@ -109,7 +109,7 @@ class UploadedFile
 
 	/**
 	 * Validate the uploaded file object.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function validate()

@@ -4,16 +4,16 @@ use Event, Config, App;
 
 /**
  * Easy file attachment management for Eloquent (Laravel 4).
- * 
+ *
  * Credits to the guys at thoughtbot for creating the
  * paperclip plugin (rails) from which this package is inspired.
  * https://github.com/thoughtbot/paperclip
- * 
- * 
+ *
+ *
  * @package Codesleeve/stapler
  * @version v1.0.0-Beta4
  * @author Travis Bennett <tandrewbennett@hotmail.com>
- * @link 	
+ * @link
  */
 
 trait Stapler
@@ -27,7 +27,7 @@ trait Stapler
 
 	/**
 	 * Accessor method for the $attachedFiles property.
-	 * 
+	 *
 	 * @return array
 	 */
 	public function getAttachedFiles()
@@ -54,7 +54,7 @@ trait Stapler
 	 *
 	 * @return void
 	 */
-	public static function boot() 
+	public static function boot()
 	{
 		parent::boot();
 
@@ -64,9 +64,9 @@ trait Stapler
 	/**
 	 * Register eloquent event handlers.
      * We'll spin through each of the attached files defined on this class
-     * and register callbacks for the events we need to observe in order to 
+     * and register callbacks for the events we need to observe in order to
      * handle file uploads.
-     * 
+     *
 	 * @return void
 	 */
 	public static function bootStapler()
@@ -115,7 +115,7 @@ trait Stapler
      */
 	public function setAttribute($key, $value)
 	{
-		if (array_key_exists($key, $this->attachedFiles)) 
+		if (array_key_exists($key, $this->attachedFiles))
 		{
 			if ($value)
 			{
@@ -125,7 +125,7 @@ trait Stapler
 
 			return;
 		}
-		
+
 		parent::setAttribute($key, $value);
 	}
 
@@ -141,7 +141,7 @@ trait Stapler
 	{
 		$options = $this->mergeOptions($options);
 		App::make('AttachmentValidator')->validateOptions($options);
-		
+
 		$attachment = App::make('Attachment', ['name' => $name, 'options' => $options]);
 		$attachment->setInstance($this);
 		$this->attachedFiles[$name] = $attachment;

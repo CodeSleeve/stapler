@@ -35,14 +35,14 @@ return [
 	| Override File Permissions Flag
 	|--------------------------------------------------------------------------
 	|
-	| Override the default file permissions used by stapler when creating a new 
+	| Override the default file permissions used by stapler when creating a new
 	| file in the file system.  Leaving this value as null will result in stapler
-	| chmod'ing files to 0666.  Set it to a specific octal value and stapler will 
-	| chmod accordingly.  Set it to false to prevent chmod from occuring (useful 
+	| chmod'ing files to 0666.  Set it to a specific octal value and stapler will
+	| chmod accordingly.  Set it to false to prevent chmod from occuring (useful
 	| for non unix-based environments).
 	|
 	*/
 
 	'override_file_permissions' => null,
-	
+
 ];

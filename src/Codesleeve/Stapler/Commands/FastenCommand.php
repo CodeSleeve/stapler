@@ -5,8 +5,8 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use DB, View, File, Str;
 
-class FastenCommand extends Command {
-
+class FastenCommand extends Command
+{
 	/**
 	 * The console command name.
 	 *

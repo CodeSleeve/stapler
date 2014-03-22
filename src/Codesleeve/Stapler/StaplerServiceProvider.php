@@ -4,8 +4,8 @@ use Illuminate\Support\ServiceProvider;
 use Codesleeve\Stapler\File\UploadedFile;
 use Codesleeve\Stapler\File\Image\Resizer;
 
-class StaplerServiceProvider extends ServiceProvider {
-
+class StaplerServiceProvider extends ServiceProvider
+{
 	/**
 	 * Indicates if loading of the provider is deferred.
 	 *
@@ -15,7 +15,7 @@ class StaplerServiceProvider extends ServiceProvider {
 
 	/**
 	 * Holds the hash value for the current STAPLER_NULL constant.
-	 * 
+	 *
 	 * @var string
 	 */
 	protected $staplerNull;
@@ -42,7 +42,7 @@ class StaplerServiceProvider extends ServiceProvider {
 		if (!defined('STAPLER_NULL')) {
 			define('STAPLER_NULL', $this->staplerNull);
 		}
-		
+
 		$this->registerResizer();
 		$this->registerIOWrapper();
 		$this->registerConfig();
@@ -55,11 +55,11 @@ class StaplerServiceProvider extends ServiceProvider {
 		$this->registerS3Storage();
 		$this->registerS3ClientManager();
 		$this->registerAttachment();
-		
+
 		// commands
 		$this->registerStaplerFastenCommand();
 		$this->registerStaplerRefreshCommand();
-		
+
 		// services
 		$this->registerImageRefreshService();
 
@@ -69,7 +69,7 @@ class StaplerServiceProvider extends ServiceProvider {
 
 	/**
 	 * Register Codesleeve\Stapler\File\Image\Resizer with the container.
-	 * 
+	 *
 	 * @return void
 	 */
 	protected function registerResizer()
@@ -82,7 +82,7 @@ class StaplerServiceProvider extends ServiceProvider {
 
 	/**
 	 * Register Codesleeve\Stapler\IOWrapper with the container.
-	 * 
+	 *
 	 * @return void
 	 */
 	protected function registerIOWrapper()
@@ -95,7 +95,7 @@ class StaplerServiceProvider extends ServiceProvider {
 
 	/**
 	 * Register Codesleeve\Stapler\Config with the container.
-	 * 
+	 *
 	 * @return void
 	 */
 	protected function registerConfig()
@@ -108,7 +108,7 @@ class StaplerServiceProvider extends ServiceProvider {
 
 	/**
 	 * Register Codesleeve\Stapler\Attachment with the container.
-	 * 
+	 *
 	 * @return void
 	 */
 	protected function registerAttachment()
@@ -122,7 +122,7 @@ class StaplerServiceProvider extends ServiceProvider {
 			$IOWrapper = $app->make('IOWrapper');
 
             $attachment = new Attachment($config, $interpolator, $resizer, $IOWrapper);
-            
+
             $storageDriver = $app->make($params['options']['storage'], ['attachment' => $attachment]);
             $attachment->setStorageDriver($storageDriver);
 
@@ -132,7 +132,7 @@ class StaplerServiceProvider extends ServiceProvider {
 
 	/**
 	 * Register Codesleeve\Stapler\Validator with the container.
-	 * 
+	 *
 	 * @return void
 	 */
 	protected function registerValidator()
@@ -145,7 +145,7 @@ class StaplerServiceProvider extends ServiceProvider {
 
 	/**
 	 * Register Codesleeve\Stapler\Interpolator with the container.
-	 * 
+	 *
 	 * @return void
 	 */
 	protected function registerInterpolator()
@@ -158,7 +158,7 @@ class StaplerServiceProvider extends ServiceProvider {
 
 	/**
 	 * Register Imagine\Gd\Imagine with the container.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function registerGD()
@@ -171,7 +171,7 @@ class StaplerServiceProvider extends ServiceProvider {
 
 	/**
 	 * Register Imagine\Imagick\Imagine with the container.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function registerImagick()
@@ -184,9 +184,9 @@ class StaplerServiceProvider extends ServiceProvider {
 
 	/**
 	 * Register Imagine\Gmagick\Imagine with the container.
-	 * 
+	 *
 	 * @return void
-	 */	
+	 */
 	public function registerGmagick()
 	{
 		$this->app->singleton('Gmagick', function($app)
@@ -197,7 +197,7 @@ class StaplerServiceProvider extends ServiceProvider {
 
 	/**
 	 * Register Storage\Filesystem with the contaioner.
-	 * 
+	 *
 	 * @return void
 	 */
 	protected function registerFilesystemStorage()
@@ -210,7 +210,7 @@ class StaplerServiceProvider extends ServiceProvider {
 
 	/**
 	 * Register Storage\S3 with the contaioner.
-	 * 
+	 *
 	 * @return void
 	 */
 	protected function registerS3Storage()
@@ -225,7 +225,7 @@ class StaplerServiceProvider extends ServiceProvider {
 
 	/**
 	 * Register Codesleeve\Stapler\Storage\S3ClientManager with the container.
-	 * 
+	 *
 	 * @return void
 	 */
 	protected function registerS3ClientManager()
@@ -238,12 +238,12 @@ class StaplerServiceProvider extends ServiceProvider {
 
 	/**
 	 * Register the stapler fasten command with the container.
-	 * 
+	 *
 	 * @return void
 	 */
 	protected function registerStaplerFastenCommand()
 	{
-		$this->app->bind('stapler.fasten', function($app) 
+		$this->app->bind('stapler.fasten', function($app)
 		{
 			return new Commands\FastenCommand;
 		});
@@ -251,23 +251,23 @@ class StaplerServiceProvider extends ServiceProvider {
 
 	/**
 	 * Register the stapler refresh command with the container.
-	 * 
+	 *
 	 * @return void
 	 */
 	protected function registerStaplerRefreshCommand()
 	{
-		$this->app->bind('stapler.refresh', function($app) 
+		$this->app->bind('stapler.refresh', function($app)
 		{
 			$refreshService = $app['ImageRefreshService'];
-			
+
 			return new Commands\RefreshCommand($refreshService);
 		});
 	}
 
 	/**
      * Register the image refresh service with the container.
-     * 
-     * @return void 
+     *
+     * @return void
      */
     protected function registerImageRefreshService()
     {
@@ -285,5 +285,4 @@ class StaplerServiceProvider extends ServiceProvider {
 	{
 		return array();
 	}
-
 }

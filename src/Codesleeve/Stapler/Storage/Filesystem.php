@@ -8,14 +8,14 @@ class Filesystem implements StorageInterface
 {
 	/**
 	 * The current attachedFile object being processed.
-	 * 
+	 *
 	 * @var Codesleeve\Stapler\Attachment
 	 */
 	public $attachedFile;
 
 	/**
 	 * Constructor method
-	 * 
+	 *
 	 * @param Codesleeve\Stapler\Attachment $attachedFile
 	 */
 	function __construct($attachedFile)
@@ -25,9 +25,9 @@ class Filesystem implements StorageInterface
 
 	/**
 	 * Return the url for a file upload.
-	 * 
-	 * @param  string $styleName 
-	 * @return string          
+	 *
+	 * @param  string $styleName
+	 * @return string
 	 */
 	public function url($styleName)
 	{
@@ -36,9 +36,9 @@ class Filesystem implements StorageInterface
 
 	/**
 	 * Return the path (on disk) of a file upload.
-	 * 
-	 * @param  string $styleName 
-	 * @return string          
+	 *
+	 * @param  string $styleName
+	 * @return string
 	 */
 	public function path($styleName)
 	{
@@ -64,9 +64,9 @@ class Filesystem implements StorageInterface
 	 * The file can be an actual uploaded file object or the path to
 	 * a resized image file on disk.
 	 *
-	 * @param  UploadedFile $file 
+	 * @param  UploadedFile $file
 	 * @param  string $filePath
-	 * @return void 
+	 * @return void
 	 */
 	public function move($file, $filePath)
 	{
@@ -84,7 +84,7 @@ class Filesystem implements StorageInterface
 	protected function buildDirectory($filePath)
 	{
 		$directory = dirname($filePath);
-		
+
 		if (!is_dir($directory)) {
 			mkdir($directory, 0777, true);
 		}
@@ -93,7 +93,7 @@ class Filesystem implements StorageInterface
 	/**
 	 * Set the file permissions of a file upload
 	 * Does not ignore umask.
-	 * 
+	 *
 	 * @param string $filePath
 	 * @param integer $overrideFilePermissions
 	 */
@@ -109,10 +109,10 @@ class Filesystem implements StorageInterface
 
 	/**
 	 * Attempt to move and uploaded file to it's intended location on disk.
-	 * 
-	 * @param  string $file   
+	 *
+	 * @param  string $file
 	 * @param  string $filePath
-	 * @return void           
+	 * @return void
 	 */
 	protected function moveFile($file, $filePath)
 	{
@@ -135,8 +135,8 @@ class Filesystem implements StorageInterface
 		if (!is_dir($directory) || !($directoryHandle = opendir($directory))) {
 			return;
 		}
-		
-		while (false !== ($object = readdir($directoryHandle))) 
+
+		while (false !== ($object = readdir($directoryHandle)))
 		{
 			if ($object == '.' || $object == '..') {
 				continue;
@@ -149,7 +149,7 @@ class Filesystem implements StorageInterface
 				$this->emptyDirectory($directory.'/'.$object, true);	// The object is a folder, recurse through it.
 			}
 		}
-		
+
 		if ($deleteDirectory)
 		{
 			closedir($directoryHandle);
