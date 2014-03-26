@@ -2,6 +2,7 @@
 
 use Codesleeve\Stapler\Storage\StorageInterface;
 use Codesleeve\Stapler\File\Image\Resizer;
+use Codesleeve\Stapler\Factories\File as FileFactory;
 
 class Attachment
 {
@@ -48,14 +49,6 @@ class Attachment
 	protected $resizer;
 
 	/**
-	 * An IOWrapper instance for converting file input formats (symfony uploaded file object
-	 * arrays, string, etc) into an instance of Codesleeve\Stapler\UploadedFile.
-	 *
-	 * @var Codesleeve\Stapler\IOWrapper
-	 */
-	protected $IOWrapper;
-
-	/**
 	 * The uploaded/resized files that have been queued up for deletion.
 	 *
 	 * @var array
@@ -75,14 +68,12 @@ class Attachment
 	 * @param Codesleeve\Stapler\Config $config
 	 * @param Codesleeve\Stapler\Interpolator $interpolator
 	 * @param Codesleeve\Stapler\File\Image\Resizer $resizer
-	 * @param Codesleeve\Stapler\IOWrapper $IOWrapper
 	 */
-	function __construct(Config $config, Interpolator $interpolator, Resizer $resizer, IOWrapper $IOWrapper)
+	function __construct(Config $config, Interpolator $interpolator, Resizer $resizer)
 	{
 		$this->config = $config;
 		$this->interpolator = $interpolator;
 		$this->resizer = $resizer;
-		$this->IOWrapper = $IOWrapper;
 	}
 
 	/**
@@ -126,7 +117,7 @@ class Attachment
 			return;
 		}
 
-		$this->uploadedFile = $this->IOWrapper->make($uploadedFile);
+		$this->uploadedFile = FileFactory::create($uploadedFile);
 		$this->instanceWrite('file_name', $this->uploadedFile->getFilename());
 		$this->instanceWrite('file_size', $this->uploadedFile->getSize());
 		$this->instanceWrite('content_type', $this->uploadedFile->getMimeType());
@@ -241,16 +232,6 @@ class Attachment
 	public function getConfig()
 	{
 		return $this->config;
-	}
-
-	/**
-	 * Mutator method for the IOWrapper property.
-	 *
-	 * @param Codesleeve\Stapler\IOWrapper $IOWrapper
-	 */
-	public function setIOWrapper($IOWrapper)
-	{
-		$this->IOWrapper = $IOWrapper;
 	}
 
 	/**
@@ -473,7 +454,7 @@ class Attachment
 		foreach ($this->styles as $style)
 		{
 			$fileLocation = $this->storage == 'filesystem' ? $this->path('original') : $this->url('original');
-			$file = $this->IOWrapper->make($fileLocation);
+			$file = FileFactory::create($fileLocation);
 
 			if ($style->value && $file->isImage()) {
 				$file = $this->resizer->resize($file, $style);

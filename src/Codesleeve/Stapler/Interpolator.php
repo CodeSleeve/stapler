@@ -1,21 +1,23 @@
 <?php namespace Codesleeve\Stapler;
 
+use ICanBoogie\Inflector;
+
 class Interpolator
 {
 	/**
-	 * The string manipulation library for pluralizing strings, etc.
-	 * 
+	 * An string inflector object for pluralizing words.
+	 *
 	 * @var mixed
 	 */
-	protected $string;
+	protected $inflector;
 
 	/**
 	 * Constructor method.
-	 * 
-	 * @param mixed $string 
+	 *
+	 * @param ICanBoogie\Inflector $inflector
 	 */
-	function __construct($string) {
-		$this->string = $string;
+	function __construct(Inflector $inflector) {
+		$this->inflector = $inflector;
 	}
 
 	/**
@@ -44,7 +46,7 @@ class Interpolator
 	 *
 	 * @return array
 	*/
-	protected function interpolations() 
+	protected function interpolations()
 	{
 		return [
 			':filename' => 'filename',
@@ -68,7 +70,7 @@ class Interpolator
 	 * @param string $styleName
 	 * @return string
 	*/
-	protected function filename($attachment, $styleName = '') 
+	protected function filename($attachment, $styleName = '')
 	{
 		return $attachment->originalFilename();
 	}
@@ -92,7 +94,7 @@ class Interpolator
 	 * @param string $styleName
 	 * @return string
 	*/
-	protected function laravelRoot($attachment, $styleName = '') 
+	protected function laravelRoot($attachment, $styleName = '')
 	{
 		return realpath(base_path());
 	}
@@ -105,7 +107,7 @@ class Interpolator
 	 * @param string $styleName
 	 * @return string
 	*/
-    protected function getClass($attachment, $styleName = '') 
+    protected function getClass($attachment, $styleName = '')
     {
     	return $this->handleBackslashes($attachment->getInstanceClass());
     }
@@ -117,7 +119,7 @@ class Interpolator
 	 * @param string $styleName
 	 * @return string
 	*/
-	protected function basename($attachment, $styleName = '') 
+	protected function basename($attachment, $styleName = '')
 	{
 		return pathinfo($attachment->originalFilename(), PATHINFO_FILENAME);
 	}
@@ -129,7 +131,7 @@ class Interpolator
 	 * @param string $styleName
 	 * @return string
 	*/
-	protected function extension($attachment, $styleName = '') 
+	protected function extension($attachment, $styleName = '')
 	{
 		return pathinfo($attachment->originalFilename(), PATHINFO_EXTENSION);
 	}
@@ -141,7 +143,7 @@ class Interpolator
 	 * @param string $styleName
 	 * @return string
 	*/
-    protected function id($attachment, $styleName = '') 
+    protected function id($attachment, $styleName = '')
     {
      	return $attachment->getInstance()->getKey();
     }
@@ -150,7 +152,7 @@ class Interpolator
 	 * Return a Bcrypt hash of the attachment's corresponding instance id.
 	 *
 	 * @param Attachment $attachment
-	 * @param  string $styleName 
+	 * @param  string $styleName
 	 * @return void
 	 */
 	protected function hash($attachment, $styleName = '')
@@ -192,9 +194,9 @@ class Interpolator
 	 * @param string $styleName
 	 * @return string
 	*/
-	protected function attachment($attachment, $styleName = '') 
+	protected function attachment($attachment, $styleName = '')
 	{
-		return $this->string->plural($attachment->name);
+		return $this->inflector->pluralize($attachment->name);
 	}
 
 	/**
@@ -204,7 +206,7 @@ class Interpolator
 	 * @param string $styleName
 	 * @return string
 	*/
-	protected function style($attachment, $styleName = '') 
+	protected function style($attachment, $styleName = '')
 	{
 		return $styleName ?: $attachment->default_style;
 	}
@@ -216,7 +218,7 @@ class Interpolator
 	 * @param string $string
 	 * @return string
 	 */
-	protected function handleBackslashes($string) 
+	protected function handleBackslashes($string)
 	{
 		return str_replace('\\', '/', ltrim($string, '\\'));
 	}
