@@ -1,7 +1,7 @@
 {
     "name": "codesleeve/stapler",
-    "description": "Easy file attachment management using Eloquent in Laravel 4",
-    "keywords": ["laravel", "file", "upload", "S3", "AWS", "paperclip", "lpm"],
+    "description": "Easy file attachment management for your favorite ORM",
+    "keywords": ["ORM", "file", "upload", "S3", "AWS", "paperclip"],
     "license": "MIT",
     "authors": [
         {
@@ -12,7 +12,7 @@
     "require": {
         "php": ">=5.4",
         "imagine/imagine": "~0.5.0",
-        "laravel/framework": "~4"
+        "icanboogie/inflector": "*"
     },
     "require-dev": {
         "mikey179/vfsStream": "1.2.0",
@@ -20,9 +20,6 @@
         "aws/aws-sdk-php": "2.4.*@dev"
     },
     "autoload": {
-        "classmap": [
-            "src/migrations"
-        ],
         "psr-0": {
             "Codesleeve\\Stapler": "src/"
         }
