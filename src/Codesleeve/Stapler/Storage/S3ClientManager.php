@@ -95,7 +95,10 @@ class S3ClientManager
 			'key' => $attachedFile->key, 
 			'secret' => $attachedFile->secret, 
 			'region' => $attachedFile->region, 
-			'scheme' => $attachedFile->scheme
+			'scheme' => $attachedFile->scheme,
+			'request.options' => array(
+                		'proxy' => $attachedFile->proxy
+            		)
 		]);
 	}
 }
