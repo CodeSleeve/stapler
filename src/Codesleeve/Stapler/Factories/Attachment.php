@@ -1,28 +1,31 @@
 <?php namespace Codesleeve\Stapler\Factories;
 
+use Codesleeve\Stapler\Stapler;
+use Codesleeve\Stapler\AttachmentConfig;
+use Codesleeve\Stapler\Attachment as AttachmentObject;
 use Codesleeve\Stapler\Factories\Resizer as ResizerFactory;
+use Codesleeve\Stapler\Factories\Storage as StorageFactory;
 
 class Attachment
 {
-	/**
-	 * An instance of the interpolator class for processing interpolations.
-	 *
-	 * @var Codesleeve\Stapler\Interpolator
-	 */
-	protected static $interpolator;
-
 	/**
 	 * Create a new attachment object.
 	 *
 	 * @param string $name
 	 * @param array $options
-	 * @return Attachment
+	 * @return \Codesleeve\Stapler\Attachment
 	 */
 	public static function create($name, $options)
     {
-        list($config, $interpolator, $resizer) = $this->buildDependencies($name, $options);
+        $options = static::mergeOptions($options);
+        Stapler::getValidatorInstance()->validateOptions($options);
+        list($config, $interpolator, $resizer) = static::buildDependencies($name, $options);
 
-        return new Attachment($config, $interpolator, $resizer);
+        $attachment = new AttachmentObject($config, $interpolator, $resizer);
+        $storageDriver = StorageFactory::create($attachment);
+        $attachment->setStorageDriver($storageDriver);
+
+        return $attachment;
     }
 
     /**
@@ -33,42 +36,33 @@ class Attachment
 	 * @param array $options
      * @return array
      */
-    protected function buildDependencies($name, $options)
+    protected static function buildDependencies($name, $options)
     {
     	return [
-    		$this->buildConfig($name, $options),
-    		$this->buildInterpolator(),
-            ResizerFactory::create($options['image_processing_library'])
+            new AttachmentConfig($name, $options),
+    		Stapler::getInterpolatorInstance(),
+            Stapler::getResizerInstance($options['image_processing_library'])
     	];
     }
 
     /**
-     * Return a new configuration object.
+     * Merge configuration options.
+     * Here we'll merge user defined options with the stapler defaults in a cascading manner.
+     * We start with overall stapler options.  Next we merge in storage driver specific options.
+     * Finally we'll merge in attachment specific options on top of that.
      *
-     * @param string $name
-	 * @param array $options
-     * @return Config
+     * @param  array $options
+     * @return array
      */
-    protected function buildConfig($name, $options)
+    protected static function mergeOptions($options)
     {
-        return new Config($name, $options);
-    }
+        $config = Stapler::getConfigInstance();
+        $defaultOptions = $config->get('stapler');
+        $options = array_merge($defaultOptions, (array) $options);
+        $storage = $options['storage'];
+        $options = array_merge($config->get($storage), $options);
+        $options['styles'] = array_merge( (array) $options['styles'], ['original' => '']);
 
-    /**
-     * Return a shared of instance of the Interpolator class.
-     * If there's currently no instance in memory we'll create one
-     * and then hang it as a property on this factory.
-     *
-     * @return Interpolator
-     */
-    protected function buildInterpolator()
-    {
-    	if (static::$interpolator === null)
-    	{
-            $inflector = new ICanBoogie\Inflector;
-            static::$interpolator = new Interpolator($inflector);
-        }
-
-        return static::$interpolator;
+        return $options;
     }
 }

@@ -10,33 +10,33 @@ class File
 	 * Build a Codesleeve\Stapler\UploadedFile object using various file input types.
 	 *
 	 * @param  mixed $file
-	 * @return Codesleeve\Stapler\File\UploadedFile
+	 * @return \Codesleeve\Stapler\File\UploadedFile
 	 */
 	public static function create($file)
 	{
 		if ($file instanceof SymfonyUploadedFile) {
-			return $this->createFromObject($file);
+			return static::createFromObject($file);
 		}
 
 		if (is_array($file)) {
-			return $this->createFromArray($file);
+			return static::createFromArray($file);
 		}
 
 		if (substr($file, 0, 7) == "http://" || substr($file, 0, 8) == "https://") {
-			return $this->createFromUrl($file);
+			return static::createFromUrl($file);
 		}
 
-		return $this->createFromString($file);
+		return static::createFromString($file);
 	}
 
 	/**
-	 * Compose a Codesleeve\Stapler\File\UploadedFile object from
-	 * a symfony\Component\HttpFoundation\File\UploadedFile object.
+	 * Compose a \Codesleeve\Stapler\File\UploadedFile object from
+	 * a \Symfony\Component\HttpFoundation\File\UploadedFile object.
 	 *
-	 * @param  symfony\Component\HttpFoundation\File\UploadedFile $file
-	 * @return Codesleeve\Stapler\File\UploadedFile
+	 * @param  \Symfony\Component\HttpFoundation\File\UploadedFile $file
+	 * @return \Codesleeve\Stapler\File\UploadedFile
 	 */
-	protected function createFromObject(SymfonyUploadedFile $file)
+	protected static function createFromObject(SymfonyUploadedFile $file)
 	{
 		$staplerFile = new StaplerUploadedFile($file);
 		$staplerFile->validate();
@@ -50,13 +50,13 @@ class File
 	 * has been formated using the Stapler::arrangeFiles utility method.
 	 *
 	 * @param  array $file
-	 * @return Codesleeve\Stapler\File\File
+	 * @return \Codesleeve\Stapler\File\File
 	 */
-	protected function createFromArray($file)
+	protected static function createFromArray($file)
 	{
 		$file = new SymfonyUploadedFile($file['tmp_name'], $file['name'], $file['type'], $file['size'], $file['error']);
 
-		return $this->createFromObject($file);
+		return static::createFromObject($file);
 	}
 
 	/**
@@ -64,9 +64,9 @@ class File
 	 * an instance of Codesleeve\Stapler\File\File.
 	 *
 	 * @param  string $file
-	 * @return Codesleeve\Stapler\File\File
+	 * @return \Codesleeve\Stapler\File\File
 	 */
-	protected function createFromUrl($file)
+	protected static function createFromUrl($file)
 	{
 		$ch = curl_init ($file);
 		curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -86,12 +86,12 @@ class File
 
 	/**
 	 * Fetch a local file using a string location and convert it into
-	 * an instance of Codesleeve\Stapler\File\File.
+	 * an instance of \Codesleeve\Stapler\File\File.
 	 *
 	 * @param  string $file
-	 * @return Codesleeve\Stapler\File\File
+	 * @return \Codesleeve\Stapler\File\File
 	 */
-	protected function createFromString($file)
+	protected static function createFromString($file)
 	{
 		return new StaplerFile($file, pathinfo($file)['basename']);
 	}
