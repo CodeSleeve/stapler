@@ -1,5 +1,6 @@
 <?php namespace Codesleeve\Stapler\File\Image;
 
+use Imagine\Image\ImagineInterface;
 use Imagine\Image\Box;
 use Imagine\Image\Point;
 
@@ -8,24 +9,24 @@ class Resizer
 	/**
 	 * Instance of Imagine Interface.
 	 *
-	 * @var mixed
+	 * @var \Imagine\Image\ImagineInterface
 	 */
 	protected $imagine;
 
 	/**
 	 * Constructor method
 	 *
-	 * @param mixed $imagine
+	 * @param \Imagine\Image\ImagineInterface $imagine
 	 */
-	function __construct($imagine) {
+	function __construct(ImagineInterface $imagine) {
 		$this->imagine = $imagine;
 	}
 
 	/**
 	 * Resize an image using the computed settings.
 	 *
-	 * @param  UploadedFile $file
-	 * @param  Style $style
+	 * @param  \Codesleeve\Stapler\File\UploadedFile $file
+	 * @param  \Codesleeve\Stapler\Style $style
 	 * @return void
 	 */
 	public function resize($file, $style)
@@ -54,13 +55,22 @@ class Resizer
 		return $filePath;
 	}
 
+    /**
+     * Accessor method for the $imagine property.
+     *
+     * @param ImagineInterface $imagine
+     */
+    public function setImagine(ImagineInterface $imagine){
+        $this->imagine = $imagine;
+    }
+
 	/**
 	 * parseStyleDimensions method
 	 *
 	 * Parse the given style dimensions to extract out the file processing options,
 	 * perform any necessary image resizing for a given style.
 	 *
-	 * @param  Style $style
+	 * @param  \Codesleeve\Stapler\Style $style
 	 * @return array
 	 */
 	protected function parseStyleDimensions($style)
@@ -112,10 +122,10 @@ class Resizer
 	/**
 	 * Resize an image as a landscape (width only)
 	 *
-	 * @param  Imagine\Image\ImageInterface $image
+	 * @param  \Imagine\Image\ImageInterface $image
 	 * @param  string $width - The image's new width.
 	 * @param  string $height - The image's new height.
-	 * @return Imagine\Image
+	 * @return \Imagine\Image\ImageInterface
 	 */
 	protected function resizeLandscape($image, $width, $height)
 	{
@@ -130,10 +140,10 @@ class Resizer
 	/**
 	 * Resize an image as a portrait (height only)
 	 *
-	 * @param  Imagine\Image\ImageInterface $image
+	 * @param  \Imagine\Image\ImageInterface $image
 	 * @param  string $width - The image's new width.
 	 * @param  string $height - The image's new height.
-	 * @return Imagine\Image
+	 * @return \Imagine\Image\ImageInterface
 	 */
 	protected function resizePortrait($image, $width, $height)
 	{
@@ -148,10 +158,10 @@ class Resizer
 	/**
 	 * Resize an image and then center crop it.
 	 *
-	 * @param  Imagine\Image\ImageInterface $image
+	 * @param  \Imagine\Image\ImageInterface $image
 	 * @param  string $width - The image's new width.
 	 * @param  string $height - The image's new height.
-	 * @return Imagine\Image
+	 * @return \Imagine\Image\ImageInterface
 	 */
 	protected function resizeCrop($image, $width, $height)
   	{
@@ -168,10 +178,10 @@ class Resizer
 	/**
 	 * Resize an image to an exact width and height.
 	 *
-	 * @param  Imagine\Image\ImageInterface $image
+	 * @param  \Imagine\Image\ImageInterface $image
 	 * @param  string $width - The image's new width.
 	 * @param  string $height - The image's new height.
-	 * @return Imagine\Image
+	 * @return \Imagine\Image\ImageInterface
 	 */
 	protected function resizeExact($image, $width, $height)
 	{
@@ -190,10 +200,10 @@ class Resizer
 	 * the new dimensions are both equal since at this point we'll have a square
 	 * image being resized to a square).
 	 *
-	 * @param  Imagine\Image\ImageInterface $image
+	 * @param  \Imagine\Image\ImageInterface $image
 	 * @param  string $width - The image's new width.
 	 * @param  string $height - The image's new height.
-	 * @return Imagine\Image
+	 * @return \Imagine\Image\ImageInterface
 	 */
 	protected function resizeAuto($image, $width, $height)
 	{
@@ -225,7 +235,7 @@ class Resizer
 	 *
 	 * @param  UploadedFile $file
 	 * @param  $callable
-	 * @return Imagine\Image
+	 * @return \Imagine\Image\ImageInterface
 	 */
 	protected function resizeCustom($file, $callable)
 	{
@@ -236,7 +246,7 @@ class Resizer
 	 * Attempts to find the best way to crop.
 	 * Takes into account the image being a portrait or landscape.
 	 *
-	 * @param  Imagine\Image\Box $size - The image's current size.
+	 * @param  \Imagine\Image\Box $size - The image's current size.
 	 * @param  string $width - The image's new width.
 	 * @param  string $height - The image's new height.
 	 * @return array
@@ -266,8 +276,8 @@ class Resizer
 	 * 3. Strip the Exif data from the image so that there can be no attempt to 'correct' it again.
 	 *
 	 * @param  string $path
-	 * @param  Imagine\Image\ImageInterface $image
-	 * @return Imagine\Image\ImageInterface $image
+	 * @param  \Imagine\Image\ImageInterface $image
+	 * @return \Imagine\Image\ImageInterface $image
 	 */
 	protected function autoOrient($path, $image)
 	{

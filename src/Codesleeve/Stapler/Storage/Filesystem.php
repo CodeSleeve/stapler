@@ -9,14 +9,14 @@ class Filesystem implements StorageInterface
 	/**
 	 * The current attachedFile object being processed.
 	 *
-	 * @var Codesleeve\Stapler\Attachment
+	 * @var \Codesleeve\Stapler\Attachment
 	 */
 	public $attachedFile;
 
 	/**
 	 * Constructor method
 	 *
-	 * @param Codesleeve\Stapler\Attachment $attachedFile
+	 * @param \Codesleeve\Stapler\Attachment $attachedFile
 	 */
 	function __construct($attachedFile)
 	{
@@ -112,11 +112,13 @@ class Filesystem implements StorageInterface
 	 *
 	 * @param  string $file
 	 * @param  string $filePath
+     * @throws Exceptions\FileException
 	 * @return void
 	 */
 	protected function moveFile($file, $filePath)
 	{
-		if (!rename($file, $filePath)) {
+		if (!rename($file, $filePath))
+        {
             $error = error_get_last();
             throw new Exceptions\FileException(sprintf('Could not move the file "%s" to "%s" (%s)', $file, $filePath, strip_tags($error['message'])));
         }

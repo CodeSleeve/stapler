@@ -9,42 +9,42 @@ class Attachment
 	/**
 	 * The model the attachment belongs to.
 	 *
-	 * @var string
+	 * @var mixed
 	 */
 	protected $instance;
 
 	/**
 	 * An instance of the configuration class.
 	 *
-	 * @var Codesleeve\Stapler\Config
+	 * @var AttachmentConfig
 	 */
 	protected $config;
 
 	/**
 	 * An instance of the underlying storage driver that is being used.
 	 *
-	 * @var Codesleeve\Stapler\Storage\StorageInterface.
+	 * @var \Codesleeve\Stapler\Storage\StorageInterface.
 	 */
 	protected $storageDriver;
 
 	/**
 	 * An instance of the interpolator class for processing interpolations.
 	 *
-	 * @var Codesleeve\Stapler\Interpolator
+	 * @var \Codesleeve\Stapler\Interpolator
 	 */
 	protected $interpolator;
 
 	/**
 	 * The uploaded file object for the attachment.
 	 *
-	 * @var Codesleeve\Stapler\UploadedFile
+	 * @var \Codesleeve\Stapler\File\UploadedFile
 	 */
 	protected $uploadedFile;
 
 	/**
 	 * An instance of the resizer library that's being used for image processing.
 	 *
-	 * @var Codesleeve\Stapler\File\Image\Resizer
+	 * @var \Codesleeve\Stapler\File\Image\Resizer
 	 */
 	protected $resizer;
 
@@ -65,11 +65,11 @@ class Attachment
 	/**
 	 * Constructor method
 	 *
-	 * @param Codesleeve\Stapler\Config $config
-	 * @param Codesleeve\Stapler\Interpolator $interpolator
-	 * @param Codesleeve\Stapler\File\Image\Resizer $resizer
+	 * @param AttachmentConfig $config
+	 * @param Interpolator $interpolator
+	 * @param Resizer $resizer
 	 */
-	function __construct(Config $config, Interpolator $interpolator, Resizer $resizer)
+	function __construct(AttachmentConfig $config, Interpolator $interpolator, Resizer $resizer)
 	{
 		$this->config = $config;
 		$this->interpolator = $interpolator;
@@ -104,7 +104,7 @@ class Attachment
 	 * Accepts the following inputs:
 	 * - An absolute string url (for fetching remote files).
 	 * - An array (data parsed from the $_FILES array),
-	 * - A symfony uploaded file object.
+	 * - A Symfony uploaded file object.
 	 *
 	 * @param mixed $uploadedFile
 	 * @return void
@@ -128,7 +128,7 @@ class Attachment
 	/**
 	 * Accessor method for the uploadedFile property.
 	 *
-	 * @return Symfony\Component\HttpFoundation\File\UploadedFile
+	 * @return \Symfony\Component\HttpFoundation\File\UploadedFile
 	 */
 	public function getUploadedFile()
 	{
@@ -138,7 +138,7 @@ class Attachment
 	/**
 	 * Mutator method for the interpolator property.
 	 *
-	 * @param Codesleeve\Stapler\Interpolator $interpolator
+	 * @param Interpolator $interpolator
 	 * @return void
 	 */
 	public function setInterpolator(Interpolator $interpolator)
@@ -149,7 +149,7 @@ class Attachment
 	/**
 	 * Accessor method for the interpolator property.
 	 *
-	 * @return Codesleeve\Stapler\Interpolator
+	 * @return Interpolator
 	 */
 	public function getInterpolator()
 	{
@@ -159,7 +159,7 @@ class Attachment
 	/**
 	 * Mutator method for the resizer property.
 	 *
-	 * @param Codesleeve\Stapler\File\Image\Resizer $resizer
+	 * @param Resizer $resizer
 	 * @return  void
 	 */
 	public function setResizer(Resizer $resizer)
@@ -170,7 +170,7 @@ class Attachment
 	/**
 	 * Accessor method for the uploadedFile property.
 	 *
-	 * @return Codesleeve\Stapler\File\Image\Resizer
+	 * @return Resizer
 	 */
 	public function getResizer()
 	{
@@ -180,7 +180,7 @@ class Attachment
 	/**
 	 * Mutator method for the storageDriver property.
 	 *
-	 * @param  Codesleeve\Stapler\Storage\StorageInterface $storageDriver
+	 * @param  StorageInterface $storageDriver
 	 * @return void
 	 */
 	public function setStorageDriver(StorageInterface $storageDriver)
@@ -193,7 +193,7 @@ class Attachment
 	 * This provides a mechanism for the attachment to access properties of the
 	 * corresponding model instance it's attached to.
 	 *
-	 * @param  Eloquent $instance
+	 * @param mixed $instance
 	 * @return void
 	 */
 	public function setInstance($instance)
@@ -202,11 +202,11 @@ class Attachment
 	}
 
 	/**
-	 * Accessore method for the underlying
-	 * instance (Eloquent model) object this attachment
+	 * Accessor method for the underlying
+	 * instance (model) object this attachment
 	 * is defined on.
 	 *
-	 * @return Eloquent
+	 * @return mixed
 	 */
 	public function getInstance()
 	{
@@ -216,7 +216,7 @@ class Attachment
 	/**
 	 * Mutator method for the config property.
 	 *
-	 * @param  Codesleeve\Stapler\Config $config
+	 * @param  AttachmentConfig $config
 	 * @return void
 	 */
 	public function setConfig($config)
@@ -308,7 +308,7 @@ class Attachment
 	 * Lives in the <attachment>_created_at attribute of the model.
 	 * This attribute may conditionally exist on the model, it is not one of the four required fields.
      *
-	 * @return datetime
+	 * @return string
 	 */
 	public function createdAt()
 	{
@@ -319,7 +319,7 @@ class Attachment
 	 * Returns the last modified time of the file as originally assigned to this attachment's model.
 	 * Lives in the <attachment>_updated_at attribute of the model.
      *
-	 * @return datetime
+	 * @return string
 	 */
 	public function updatedAt()
 	{
@@ -362,7 +362,7 @@ class Attachment
 	/**
 	 * Process the write queue.
 	 *
-	 * @param  Eloquent $instance
+	 * @param  mixed $instance
 	 * @return void
 	*/
 	public function afterSave($instance)
@@ -374,7 +374,7 @@ class Attachment
 	/**
 	 * Queue up this attachments files for deletion.
 	 *
-	 * @param  Eloquent $instance
+	 * @param  mixed $instance
 	 * @return void
 	 */
 	public function beforeDelete($instance)
@@ -386,7 +386,7 @@ class Attachment
 	/**
 	 * Process the delete queue.
 	 *
-	 * @param  Eloquent $instance
+	 * @param  mixed $instance
 	 * @return void
 	*/
 	public function afterDelete($instance)

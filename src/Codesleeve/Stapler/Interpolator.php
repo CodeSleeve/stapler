@@ -1,6 +1,6 @@
 <?php namespace Codesleeve\Stapler;
 
-use ICanBoogie\Inflector;
+use Doctrine\Common\Inflector\Inflector;
 
 class Interpolator
 {
@@ -12,19 +12,11 @@ class Interpolator
 	protected $inflector;
 
 	/**
-	 * Constructor method.
-	 *
-	 * @param ICanBoogie\Inflector $inflector
-	 */
-	function __construct(Inflector $inflector) {
-		$this->inflector = $inflector;
-	}
-
-	/**
 	 * Interpolate a string.
 	 *
 	 * @param  string $string
-	 * @param  string $styleName
+	 * @param  string $attachment
+     * @param  string $styleName
 	 * @return string
 	*/
 	public function interpolate($string, $attachment, $styleName = '')
@@ -196,7 +188,7 @@ class Interpolator
 	*/
 	protected function attachment($attachment, $styleName = '')
 	{
-		return $this->inflector->pluralize($attachment->name);
+		return Inflector::pluralize($attachment->name);
 	}
 
 	/**

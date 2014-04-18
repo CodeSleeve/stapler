@@ -1,5 +1,6 @@
 <?php namespace Codesleeve\Stapler\Storage;
 
+use Aws\S3\S3Client;
 use Codesleeve\Stapler\Attachment;
 
 class S3 implements StorageInterface
@@ -7,16 +8,16 @@ class S3 implements StorageInterface
 	/**
 	 * The current attachedFile object being processed.
 	 *
-	 * @var Codesleeve\Stapler\Attachment
+	 * @var \Codesleeve\Stapler\Attachment
 	 */
 	public $attachedFile;
 
-	/**
-	 * An instance of the S3Client manager.
-	 *
-	 * @var S3Client
-	 */
-	protected $s3ClientManager;
+    /**
+     * The AWS S3Client instance.
+     *
+     * @var S3Client
+     */
+    protected $s3Client;
 
 	/**
 	 * Boolean flag indicating if this attachment's bucket currently exists.
@@ -28,13 +29,13 @@ class S3 implements StorageInterface
 	/**
 	 * Constructor method
 	 *
-	 * @param Codesleeve\Stapler\Attachment $attachedFile
-	 * @param Codesleeve\Stapler\Storage\S3ClientManager $s3ClientManager
+	 * @param \Codesleeve\Stapler\Attachment $attachedFile
+     * @param S3Client $s3Client
 	 */
-	function __construct(Attachment $attachedFile, S3ClientManager $s3ClientManager)
+	function __construct(Attachment $attachedFile, S3Client $s3Client)
 	{
 		$this->attachedFile = $attachedFile;
-		$this->s3ClientManager = $s3ClientManager;
+        $this->s3Client = $s3Client;
 	}
 
 	/**
@@ -45,7 +46,7 @@ class S3 implements StorageInterface
 	 */
 	public function url($styleName)
 	{
-		return $this->getS3Client()->getObjectUrl($this->getBucket(), $this->path($styleName));
+		return $this->s3Client->getObjectUrl($this->getBucket(), $this->path($styleName));
 	}
 
 	/**
@@ -68,7 +69,7 @@ class S3 implements StorageInterface
 	public function remove($filePaths)
 	{
 		if ($filePaths) {
-			$this->getS3Client()->deleteObjects(['Bucket' => $this->getBucket(), 'Objects' => $this->getKeys($filePaths)]);
+			$this->s3Client->deleteObjects(['Bucket' => $this->getBucket(), 'Objects' => $this->getKeys($filePaths)]);
 		}
 	}
 
@@ -77,13 +78,13 @@ class S3 implements StorageInterface
 	 * The file can be an actual uploaded file object or the path to
 	 * a resized image file on disk.
 	 *
-	 * @param  UploadedFile $file
+	 * @param  \Codesleeve\Stapler\File\UploadedFile $file
 	 * @param  string $filePath
 	 * @return void
 	 */
 	public function move($file, $filePath)
 	{
- 		$this->getS3Client()->putObject(['Bucket' => $this->getBucket(), 'Key' => $filePath, 'SourceFile' => $file, 'ContentType' => $this->attachedFile->contentType(), 'ACL' => $this->attachedFile->ACL]);
+ 		$this->s3Client->putObject(['Bucket' => $this->getBucket(), 'Key' => $filePath, 'SourceFile' => $file, 'ContentType' => $this->attachedFile->contentType(), 'ACL' => $this->attachedFile->ACL]);
 	}
 
 	/**
@@ -128,22 +129,10 @@ class S3 implements StorageInterface
 	 */
 	protected function buildBucket($bucketName)
 	{
-		if (!$this->getS3Client()->doesBucketExist($bucketName, true)) {
-			$this->getS3Client()->createBucket(['ACL' => $this->attachedFile->ACL, 'Bucket' => $bucketName, 'LocationConstraint' => $this->attachedFile->region]);
+		if (!$this->s3Client->doesBucketExist($bucketName, true)) {
+			$this->s3Client->createBucket(['ACL' => $this->attachedFile->ACL, 'Bucket' => $bucketName, 'LocationConstraint' => $this->attachedFile->region]);
 		}
 
 		$this->bucketExists = true;
-	}
-
-	/**
-	 * Use the s3ClientManager to return the S3Client object this class is using.
-	 * Redirecting all requests for an S3Client through this method
-	 * allows us to lazy load S3Client instances.
-	 *
-	 * @return S3Client
-	 */
-	protected function getS3Client()
-	{
-		return $this->s3ClientManager->getS3Client($this->attachedFile);
 	}
 }
