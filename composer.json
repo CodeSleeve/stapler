@@ -11,8 +11,9 @@
     ],
     "require": {
         "php": ">=5.4",
+        "symfony/http-foundation": "~2.3",
         "imagine/imagine": "~0.5.0",
-        "icanboogie/inflector": "*"
+        "doctrine/inflector": "v1.0"
     },
     "require-dev": {
         "mikey179/vfsStream": "1.2.0",
