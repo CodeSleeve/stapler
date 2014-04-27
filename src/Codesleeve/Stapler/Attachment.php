@@ -398,8 +398,11 @@ class Attachment
 	 */
 	public function beforeDelete($instance)
 	{
-		$this->instance = $instance;
-		$this->clear();
+	        if(!$instance->softDelete)
+	        {
+	            $this->instance = $instance;
+	            $this->clear();
+	        }
 	}
 
 	/**
