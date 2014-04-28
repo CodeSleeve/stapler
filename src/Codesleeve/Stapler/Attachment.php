@@ -398,10 +398,10 @@ class Attachment
 	 */
 	public function beforeDelete($instance)
 	{
+		if (!$instance->isSoftDeleting())
+			$this->clear();
 		$this->instance = $instance;
-		$this->clear();
 	}
-
 	/**
 	 * Process the delete queue.
 	 *
@@ -411,8 +411,10 @@ class Attachment
 	public function afterDelete($instance)
 	{
 		$this->instance = $instance;
-		$this->flushDeletes();
+		if (!$instance->isSoftDeleting())
+			$this->flushDeletes();
 	}
+
 
 	/**
 	 * Destroys the attachment.  Has the same effect as previously assigning
