@@ -1,8 +1,13 @@
 <?php namespace Codesleeve\Stapler;
 
+use PHPUnit_Framework_TestCase;
 use Mockery as m;
+use Codesleeve\Stapler\Attachment;
+use Codesleeve\Stapler\Interpolator;
+use Codesleeve\Stapler\File\UploadedFile as StaplerUploadedFile;
+use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
 
-class AttachmentTest extends TestCase
+class AttachmentTest extends PHPUnit_Framework_TestCase
 {
 	/**
 	 * Setup method.
@@ -25,369 +30,171 @@ class AttachmentTest extends TestCase
 	}
 
 	/**
-	 * Test that the setUploadedFile method is working correctly.
+	 * When calling the setUploadedFile method with a value
+	 * of STAPLER_NULL, setUploadedFile() should return null.
 	 *
+	 * @test
 	 * @return void
 	 */
-	public function testSetUploadedFile()
+	public function it_should_return_null_when_setting_an_uploaded_file_that_is_equal_to_stapler_null()
 	{
-		$IOWrapper = $this->buildMockIOWrapper();
+		$attachment = $this->build_mock_instance()->photo;
+		
+		$staplerUploadedFile = $attachment->setUploadedFile(STAPLER_NULL);
 
-		$config = m::mock('Codesleeve\Stapler\Config', ['mockAttachment', ['styles' => []]]);
-
-		$instance = m::mock();
-		$instance->shouldReceive('setAttribute')->once()->with('mockAttachment_file_name', '');
-		$instance->shouldReceive('setAttribute')->once()->with('mockAttachment_file_size', '');
-		$instance->shouldReceive('setAttribute')->once()->with('mockAttachment_content_type', '');
-		$instance->shouldReceive('setAttribute')->once()->with('mockAttachment_updated_at', date('Y-m-d H:i:s'));
-
-		$attachment = m::mock('Codesleeve\Stapler\Attachment')->makePartial();
-		$attachment->shouldReceive('clear')->once();
-		$attachment->setIOWrapper($IOWrapper);
-		$attachment->setConfig($config);
-		$attachment->setInstance($instance);
-
-		$attachment->setUploadedFile('bar');
+		$this->assertNull($staplerUploadedFile);
 	}
 
 	/**
-	 * Test that the url method returns the url to a file that has been uploaded.
-	 *
+	 * Calling the url method with a style parameter should
+	 * return the url for that style.
+	 * 
+	 * @test
 	 * @return void
 	 */
-	public function testUrlReturnsAUrl()
+	public function it_should_be_able_to_return_an_attachment_url_for_a_style()
 	{
-		$storageDriver = m::mock('Codesleeve\Stapler\Storage\StorageInterface');
-		$storageDriver->shouldReceive('url')->once()->andReturn('foo');
+		$attachment = $this->build_mock_instance()->photo;
+		$symfonyUploadedFile = new SymfonyUploadedFile(__DIR__ . '/Fixtures/empty.gif', 'empty.gif', null, null, null, true);
+		$staplerUploadedFile = $attachment->setUploadedFile($symfonyUploadedFile);
+		
+		$url = $attachment->url('thumbnail');
 
-		$attachment = m::mock('Codesleeve\Stapler\Attachment')->makePartial();
-		$attachment->shouldReceive('originalFilename')->once()->andReturn(true);
-		$attachment->shouldReceive('defaultUrl')->never();
-		$attachment->setStorageDriver($storageDriver);
-
-		$this->assertEquals('foo', $attachment->url());
+		$this->assertEquals('/system/photos/000/000/001/thumbnail/empty.gif', $url);
 	}
 
 	/**
-	 * Test that the url method returns the default url when no file has been uploaded.
-	 *
+	 * Calling the url method without a style parameter should
+	 * return the url for the default style.
+	 * 
+	 * @test
 	 * @return void
 	 */
-	public function testUrlReturnsTheDefaultUrl()
+	public function it_should_be_able_to_return_the_default_url_for_an_attachment_if_no_style_is_given()
 	{
-		$config = m::mock('Codesleeve\Stapler\Config', ['mockAttachment', ['styles' => []]]);
+		$attachment = $this->build_mock_instance()->photo;
+		$symfonyUploadedFile = new SymfonyUploadedFile(__DIR__ . '/Fixtures/empty.gif', 'empty.gif', null, null, null, true);
+		$staplerUploadedFile = $attachment->setUploadedFile($symfonyUploadedFile);
+		
+		$url = $attachment->url();
 
-		$attachment = m::mock('Codesleeve\Stapler\Attachment')->makePartial();
-		$attachment->shouldReceive('originalFilename')->once()->andReturn(false);
-		$attachment->setConfig($config);
-
-		$this->assertEquals('', $attachment->url());
+		$this->assertEquals('/system/photos/000/000/001/original/empty.gif', $url);
 	}
 
 	/**
-	 * Test that the path method returns the path to a file that has been uploaded.
-	 *
+	 * Calling the path method with a style parameter should
+	 * return the path for that style.
+	 * 
+	 * @test
 	 * @return void
 	 */
-	public function testPathReturnsAPath()
+	public function it_should_be_able_to_return_an_attachment_path_for_a_style()
 	{
-		$storageDriver = m::mock('Codesleeve\Stapler\Storage\StorageInterface');
-		$storageDriver->shouldReceive('path')->once()->andReturn('foo');
+		$attachment = $this->build_mock_instance()->photo;
+		$symfonyUploadedFile = new SymfonyUploadedFile(__DIR__ . '/Fixtures/empty.gif', 'empty.gif', null, null, null, true);
+		$staplerUploadedFile = $attachment->setUploadedFile($symfonyUploadedFile);
+		
+		$path = $attachment->path('thumbnail');
 
-		$attachment = m::mock('Codesleeve\Stapler\Attachment')->makePartial();
-		$attachment->shouldReceive('originalFilename')->once()->andReturn(true);
-		$attachment->shouldReceive('defaultPath')->never();
-		$attachment->setStorageDriver($storageDriver);
-
-		$this->assertEquals('foo', $attachment->path());
+		$this->assertEquals('/public/system/photos/000/000/001/thumbnail/empty.gif', $path);
 	}
 
 	/**
-	 * Test that the path method returns the default path when no file has been uploaded.
-	 *
+	 * Calling the path method without a style parameter should
+	 * return the path for the default style.
+	 * 
+	 * @test
 	 * @return void
 	 */
-	public function testPathReturnsTheDefaultPath()
+	public function it_should_be_able_to_return_the_default_path_for_an_attachment_if_no_style_is_given($value='')
 	{
-		$config = m::mock('Codesleeve\Stapler\Config', ['mockAttachment', ['styles' => [], 'public_path' => '/public']]);
+		$attachment = $this->build_mock_instance()->photo;
+		$symfonyUploadedFile = new SymfonyUploadedFile(__DIR__ . '/Fixtures/empty.gif', 'empty.gif', null, null, null, true);
+		$staplerUploadedFile = $attachment->setUploadedFile($symfonyUploadedFile);
+		
+		$path = $attachment->path();
 
-		$attachment = m::mock('Codesleeve\Stapler\Attachment')->makePartial();
-		$attachment->shouldReceive('originalFilename')->once()->andReturn(false);
-		$attachment->setConfig($config);
-
-		$this->assertEquals('/public', $attachment->path());
+		$this->assertEquals('/public/system/photos/000/000/001/original/empty.gif', $path);
 	}
 
 	/**
-	 * Test that the createdAt method is working correctly.
+	 * Calling the contentType method should return the
+	 * content type of the original uploaded file.
 	 *
+	 * @test
 	 * @return void
 	 */
-	public function testCreatedAt()
+	public function it_should_be_able_to_return_the_content_type()
 	{
-		$config = m::mock('Codesleeve\Stapler\Config', ['mockAttachment', ['styles' => []]]);
+		$attachment = $this->build_mock_instance()->photo;
+		$symfonyUploadedFile = new SymfonyUploadedFile(__DIR__ . '/Fixtures/empty.gif', 'empty.gif', null, null, null, true);
+		$staplerUploadedFile = $attachment->setUploadedFile($symfonyUploadedFile);
 
-		$instance = m::mock();
-		$instance->shouldReceive('getAttribute')->once()->with('mockAttachment_created_at')->andReturn('foo');
+		$contentType = $attachment->contentType();
 
-		$attachment = m::mock('Codesleeve\Stapler\Attachment')->makePartial();
-		$attachment->setConfig($config);
-		$attachment->setInstance($instance);
-
-		$this->assertEquals('foo', $attachment->createdAt());
+		$this->assertEquals('image/gif', $contentType);
 	}
 
 	/**
-	 * Test that the updatedAt method is working correctly.
+	 * Calling the size method should return the size of the
+	 * original uploaded file.
 	 *
+	 * @test
 	 * @return void
 	 */
-	public function testUpdatedAt()
+	public function it_should_be_able_to_return_the_originaL_file_size()
 	{
-		$config = m::mock('Codesleeve\Stapler\Config', ['mockAttachment', ['styles' => []]]);
+		$attachment = $this->build_mock_instance()->photo;
+		$symfonyUploadedFile = new SymfonyUploadedFile(__DIR__ . '/Fixtures/empty.gif', 'empty.gif', null, null, null, true);
+		$staplerUploadedFile = $attachment->setUploadedFile($symfonyUploadedFile);
 
-		$instance = m::mock();
-		$instance->shouldReceive('getAttribute')->once()->with('mockAttachment_updated_at')->andReturn('foo');
+		$size = $attachment->size();
 
-		$attachment = m::mock('Codesleeve\Stapler\Attachment')->makePartial();
-		$attachment->setConfig($config);
-		$attachment->setInstance($instance);
-
-		$this->assertEquals('foo', $attachment->updatedAt());
+		$this->assertEquals(0, $size);
 	}
 
 	/**
-	 * Test that the contentType method is working correctly.
+	 * Calling the originalFilename method should return the name
+	 * of the original uploaded file.
 	 *
+	 * @test
 	 * @return void
 	 */
-	public function testContentType()
+	public function it_should_be_able_to_return_the_original_file_name()
 	{
-		$config = m::mock('Codesleeve\Stapler\Config', ['mockAttachment', ['styles' => []]]);
+		$attachment = $this->build_mock_instance()->photo;
+		$symfonyUploadedFile = new SymfonyUploadedFile(__DIR__ . '/Fixtures/empty.gif', 'empty.gif', null, null, null, true);
+		$staplerUploadedFile = $attachment->setUploadedFile($symfonyUploadedFile);
 
-		$instance = m::mock();
-		$instance->shouldReceive('getAttribute')->once()->with('mockAttachment_content_type')->andReturn('foo');
+		$filename = $attachment->originalFilename();
 
-		$attachment = m::mock('Codesleeve\Stapler\Attachment')->makePartial();
-		$attachment->setConfig($config);
-		$attachment->setInstance($instance);
+		$this->assertEquals('empty.gif', $filename);
+	}
 
-		$this->assertEquals('foo', $attachment->contentType());
+	public function it_should_be_able_to_register_an_after_save_observer()
+	{
+		# code...
+	}
+
+	public function it_should_be_able_to_register_a_before_delete_observer()
+	{
+		# code...
+	}
+
+	public function it_should_be_able_to_register_an_after_delete_observer()
+	{
+		# code...
 	}
 
 	/**
-	 * Test that the size method is working correctly.
-	 *
-	 * @return void
+	 * Build a mock attachment instance.
+	 * 
+	 * @return Attachment
 	 */
-	public function testSize()
+	protected function build_mock_instance()
 	{
-		$config = m::mock('Codesleeve\Stapler\Config', ['mockAttachment', ['styles' => []]]);
+		Stapler::boot();
 
-		$instance = m::mock();
-		$instance->shouldReceive('getAttribute')->once()->with('mockAttachment_file_size')->andReturn('foo');
-
-		$attachment = m::mock('Codesleeve\Stapler\Attachment')->makePartial();
-		$attachment->setConfig($config);
-		$attachment->setInstance($instance);
-
-		$this->assertEquals('foo', $attachment->size());
-	}
-
-	/**
-	 * Test that the originalFilename method is working correctly.
-	 *
-	 * @return void
-	 */
-	public function testOriginalFilename()
-	{
-		$config = m::mock('Codesleeve\Stapler\Config', ['mockAttachment', ['styles' => []]]);
-
-		$instance = m::mock();
-		$instance->shouldReceive('getAttribute')->once()->with('mockAttachment_file_name')->andReturn('foo');
-
-		$attachment = m::mock('Codesleeve\Stapler\Attachment')->makePartial();
-		$attachment->setConfig($config);
-		$attachment->setInstance($instance);
-
-		$this->assertEquals('foo', $attachment->originalFilename());
-	}
-
-	/**
-	 * Test that the afterSave method is working correctly.
-	 *
-	 * @return void
-	 */
-	public function testAfterSave()
-	{
-		$instance = m::mock();
-
-		$attachment = m::mock('Codesleeve\Stapler\Attachment')->makePartial();
-		$attachment->shouldReceive('save')->once();
-
-		$attachment->afterSave($instance);
-
-		$this->assertEquals($instance, $attachment->getInstance());
-	}
-
-	/**
-	 * Test that the beforeDelelete method is functioning properly.
-	 *
-	 * @return void
-	 */
-	public function testBeforeDelete()
-	{
-		$instance = m::mock();
-
-		$attachment = m::mock('Codesleeve\Stapler\Attachment')->makePartial();
-		$attachment->shouldReceive('clear')->once();
-
-		$attachment->beforeDelete($instance);
-
-		$this->assertEquals($instance, $attachment->getInstance());
-	}
-
-	/**
-	 * Test the the afterDelete method is working correctly.
-	 *
-	 * @return void
-	 */
-	/*public function testAfterDelete()
-	{
-		$instance = m::mock();
-
-		$storageDriver = m::mock('Codesleeve\Stapler\Storage\StorageInterface');
-		$storageDriver->shouldReceive('remove')->once()->with(['foo']);
-
-		$attachment = m::mock('Codesleeve\Stapler\Attachment')->makePartial();
-		$attachment->setStorageDriver($storageDriver);
-		$attachment->setQueuedForDeletion(['foo']);
-
-		$attachment->afterDelete($instance);
-
-		$this->assertEquals($attachment->getQueuedForDeletion(), []);
-		$this->assertEquals($instance, $attachment->getInstance());
-	}*/
-
-	/**
-	 * Test that the destroy method is functioning correctly.
-	 *
-	 * @return void
-	 */
-	public function testDestroy()
-	{
-		$attachment = m::mock('Codesleeve\Stapler\Attachment')->makePartial();
-		$attachment->shouldReceive('clear')->once()->with(['foo']);
-		$attachment->shouldReceive('save')->once();
-
-		$attachment->destroy(['foo']);
-	}
-
-	/**
-	 * Test that the clear method is working correctly when passed a
-	 * specific set of styles to clear.
-	 *
-	 * @return void
-	 */
-	public function testClearWithStyles()
-	{
-		$attachment = m::mock('Codesleeve\Stapler\Attachment')->makePartial();
-		$attachment->shouldReceive('path')->once()->with('foo')->andReturn('bar');
-
-		$attachment->clear(['foo']);
-
-		$this->assertEquals(['bar'], $attachment->getQueuedForDeletion());
-	}
-
-	/**
-	 * Test that the clear method is working correctly when no styles are passed
-	 * and a file has already been uploaded and preserve files is set to false.
-	 *
-	 * @return void
-	 */
-	public function testClearWithoutStylesAndWithUploadedFile()
-	{
-		$config = m::mock('Codesleeve\Stapler\Config', [
-			'mockAttachment', [
-				'preserve_files' => false,
-				'styles' => ['foo' => ''],
-				'convert_options' => []
-			]
-		])->makePartial();
-
-		$instance = m::mock();
-		$instance->shouldReceive('setAttribute')->once()->with('mockAttachment_file_name', null);
-		$instance->shouldReceive('setAttribute')->once()->with('mockAttachment_file_size', null);
-		$instance->shouldReceive('setAttribute')->once()->with('mockAttachment_content_type', null);
-		$instance->shouldReceive('setAttribute')->once()->with('mockAttachment_updated_at', null);
-
-		$attachment = m::mock('Codesleeve\Stapler\Attachment')->makePartial();
-		$attachment->shouldReceive('originalFilename')->once()->andReturn(true);
-		$attachment->shouldReceive('path')->once()->with('foo')->andReturn('bar');
-		$attachment->setConfig($config);
-		$attachment->setInstance($instance);
-
-		$attachment->clear();
-
-		$this->assertEquals($attachment->getQueuedForDeletion(), ['bar']);
-	}
-
-	/**
-	 * Test that the clear method is working correctly when no styles are passed
-	 * and a file has already been uploaded and preserve files is set to true.
-	 *
-	 * @return void
-	 */
-	public function testClearWithoutStylesAndWithUploadedFileAndPreserveFiles()
-	{
-		$config = m::mock('Codesleeve\Stapler\Config', ['mockAttachment', ['styles' => [], 'preserve_files' => true]]);
-
-		$instance = m::mock();
-		$instance->shouldReceive('setAttribute')->once()->with('mockAttachment_file_name', null);
-		$instance->shouldReceive('setAttribute')->once()->with('mockAttachment_file_size', null);
-		$instance->shouldReceive('setAttribute')->once()->with('mockAttachment_content_type', null);
-		$instance->shouldReceive('setAttribute')->once()->with('mockAttachment_updated_at', null);
-
-		$attachment = m::mock('Codesleeve\Stapler\Attachment')->makePartial();
-		$attachment->shouldReceive('originalFilename')->once()->andReturn(true);
-		$attachment->setConfig($config);
-		$attachment->setInstance($instance);
-
-		$attachment->clear();
-
-		$this->assertEquals($attachment->getQueuedForDeletion(), []);
-	}
-
-	/**
-	 * Test that the getInstanceClass method is working correctly.
-	 *
-	 * @return void
-	 */
-	public function testGetInstanceClass()
-	{
-		$instance = m::mock();
-
-		$attachment = m::mock('Codesleeve\Stapler\Attachment')->makePartial();
-		$attachment->setInstance($instance);
-
-		$this->assertEquals(get_class($instance), $attachment->getInstanceClass());
-	}
-
-	/**
-	 * Build a mock IOWrapper object.
-	 *
-	 * @return IOWrapper
-	 */
-	protected function buildMockIOWrapper()
-	{
-		$mockUploadedFile = m::mock('Codesleeve\Stapler\File\UploadedFile');
-		$mockUploadedFile->shouldReceive('getFilename')->once();
-		$mockUploadedFile->shouldReceive('getSize')->once();
-		$mockUploadedFile->shouldReceive('getMimeType')->once();
-
-		$IOWrapper = m::mock('Codesleeve\Stapler\IOWrapper');
-		$IOWrapper->shouldReceive('make')->once()->andReturn($mockUploadedFile);
-
-		return $IOWrapper;
+		return new \Codesleeve\Stapler\Fixtures\Models\Photo(['id' => 1]);
 	}
 }

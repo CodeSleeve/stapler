@@ -1,11 +1,10 @@
 <?php namespace Codesleeve\Stapler\Tests\File;
 
-use Codesleeve\Stapler\Testcase;
-use Codesleeve\Stapler\File\UploadedFile;
+use PHPUnit_Framework_TestCase;use Codesleeve\Stapler\File\UploadedFile;
 use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
 use Mockery as m;
 
-class UploadedFileTest extends TestCase
+class UploadedFileTest extends PHPUnit_Framework_TestCase
 {
 	/**
 	 * Setup method.

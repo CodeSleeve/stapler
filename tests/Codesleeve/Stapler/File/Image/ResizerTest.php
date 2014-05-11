@@ -1,15 +1,34 @@
 <?php namespace Codesleeve\Stapler\File\Image;
 
-use Codesleeve\Stapler\Testcase;
+use PHPUnit_Framework_TestCase;
 use Codesleeve\Stapler\File\UploadedFile;
 use Codesleeve\Stapler\Style;
 use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
 use Imagine\Image\Box;
 use Imagine\Image\Point;
-use stdClass;
+use Mockery as m;
 
-class ResizerTest extends TestCase
+class ResizerTest extends PHPUnit_Framework_TestCase
 {
+	/**
+	 * Setup method.
+	 *
+	 * @return void
+	 */
+	public function setUp()
+	{
+	}
+
+	/**
+	 * Teardown method.
+	 *
+	 * @return void
+	 */
+	public function tearDown()
+	{
+		m::close();
+	}
+
 	/**
 	 * Test the resize crop method.
 	 *
@@ -78,24 +97,11 @@ class ResizerTest extends TestCase
 	protected function mockImage($originalSize, $expectedResize, $expectedCropPoint = null, $expectedCropBox = null)
 	{
 		$image = $this->getMock('Image', ['getSize', 'resize', 'crop', 'save']);
-
-		$image->expects($this->once())
-			->method('getSize')
-			->will($this->returnValue($originalSize));
-
-		$image->expects($this->once())
-			->method('resize')
-			->with($expectedResize)
-			->will($this->returnValue($image));
-
-		$image->expects($this->once())
-			->method('crop')
-			->with($expectedCropPoint, $expectedCropBox)
-			->will($this->returnValue($image));
-
-		$image->expects($this->once())
-			->method('save');
-
+		$image->expects($this->once())->method('getSize')->will($this->returnValue($originalSize));
+		$image->expects($this->once())->method('resize')->with($expectedResize)->will($this->returnValue($image));
+		$image->expects($this->once())->method('crop')->with($expectedCropPoint, $expectedCropBox)->will($this->returnValue($image));
+		$image->expects($this->once())->method('save');
+		
 		return $image;
 	}
 
@@ -107,11 +113,8 @@ class ResizerTest extends TestCase
 	 */
 	protected function mockImageProcessor($image)
 	{
-		$imageProcessor = $this->getMock('Imagine', ['open']);
-
-		$imageProcessor->expects($this->once())
-			->method('open')
-			->will($this->returnValue($image));
+		$imageProcessor = m::mock('Imagine\Image\ImagineInterface');
+		$imageProcessor->shouldReceive('open')->once()->andReturn($image);
 
 		return $imageProcessor;
 	}
