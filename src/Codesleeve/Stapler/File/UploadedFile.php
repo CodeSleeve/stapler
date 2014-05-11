@@ -3,7 +3,7 @@
 use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
 use Codesleeve\Stapler\Exceptions\FileException;
 
-class UploadedFile
+class UploadedFile implements FileInterface
 {
 	/**
 	 * The underlying uploaded file object that acts
