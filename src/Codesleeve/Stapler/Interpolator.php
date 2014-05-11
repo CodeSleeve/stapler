@@ -15,7 +15,7 @@ class Interpolator
 	 * Interpolate a string.
 	 *
 	 * @param  string $string
-	 * @param  string $attachment
+	 * @param  Attachment $attachment
      * @param  string $styleName
 	 * @return string
 	*/
@@ -88,7 +88,7 @@ class Interpolator
 	*/
 	protected function laravelRoot($attachment, $styleName = '')
 	{
-		return realpath(base_path());
+		return $attachment->base_path;
 	}
 
 	/**

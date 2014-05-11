@@ -33,7 +33,7 @@ class UploadedFile
 	/**
 	 * Constructor method.
 	 *
-	 * @param symfony\Component\HttpFoundation\File\UploadedFile $uploadedFile
+	 * @param Symfony\Component\HttpFoundation\File\UploadedFile $uploadedFile
 	 */
 	function __construct(SymfonyUploadedFile $uploadedFile) {
 		$this->uploadedFile = $uploadedFile;
