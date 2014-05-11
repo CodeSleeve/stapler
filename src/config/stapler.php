@@ -7,12 +7,22 @@ return [
 	| Stapler Public Path Location
 	|--------------------------------------------------------------------------
 	|
-	| The location of the web application's document root.  Defaults to Laravel's
-	| public folder.
+	| The location of the web application's document root.
 	|
 	*/
 
-	'public_path' => realPath(public_path()),
+	'public_path' => '',
+
+	/*
+	|--------------------------------------------------------------------------
+	| Stapler Base Path Location
+	|--------------------------------------------------------------------------
+	|
+	| The path to the base of the web application.
+	|
+	*/
+
+	'base_path' => '',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -31,12 +41,12 @@ return [
 	| Stapler Image Processing Library
 	|--------------------------------------------------------------------------
 	|
-	| The default library used for image processing.  Can be one GD, Imagick, or
-	| Gmagick.
+	| The default library used for image processing.  Can be one of the following:
+	| Imagine\Gd\Imagine, Imagine\Imagick\Imagine, or Imagine\Gmagick\Imagine.
 	|
 	*/
 
-	'image_processing_library' => 'GD',
+	'image_processing_library' => 'Imagine\Gd\Imagine',
 
 
 	/*
