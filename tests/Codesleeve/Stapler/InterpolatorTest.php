@@ -28,8 +28,8 @@ class InterpolatorTest extends PHPUnit_Framework_TestCase
 	 */
 	public function setUp()
 	{
-		$this->attachment = $this->attachment ?: $this->build_mock_attachment();
 		$this->interpolator = $this->interpolator ?: new Interpolator;
+		$this->attachment = $this->attachment ?: $this->build_mock_attachment($this->interpolator);
 	}
 
 	/**
@@ -93,21 +93,36 @@ class InterpolatorTest extends PHPUnit_Framework_TestCase
 	/**
 	 * Build a mock attachment object.
 	 *
+	 * @param  \Codesleeve\Stapler\Interpolator
 	 * @return \Codesleeve\Stapler\Attachment
 	 */
-	protected function build_mock_attachment()
+	protected function build_mock_attachment($interpolator)
 	{
-		$instance = m::mock();
-		$instance->shouldReceive('getKey')->andReturn(1);
-
+		$instance = $this->build_mock_instance();
 		$attachmentConfig = new AttachmentConfig('photo', ['styles' => [], 'default_style' => 'original']);
-
-		$attachment = m::mock('Codesleeve\Stapler\Attachment[originalFilename, getInstanceClass]');
-		$attachment->shouldReceive('originalFilename')->andReturn('test.jpg');
+		$imagine = m::mock('Imagine\Image\ImagineInterface');
+		$resizer = new \Codesleeve\Stapler\File\Image\Resizer($imagine);
+		
+		$attachment = m::mock('Codesleeve\Stapler\Attachment[getInstanceClass]', [$attachmentConfig, $interpolator, $resizer]);
 		$attachment->shouldReceive('getInstanceClass')->andReturn('TestModel');
 		$attachment->setInstance($instance);
-		$attachment->setConfig($attachmentConfig);
 
 		return $attachment;
+	}
+
+	/**
+	 * Build a mock model instance.
+	 * 
+	 * @return mixed
+	 */
+	protected function build_mock_instance()
+	{
+		$instance = m::mock('Codesleeve\Stapler\Fixtures\Model\Photo');
+		$instance->shouldReceive('getKey')->andReturn(1);
+		$instance->shouldReceive('getAttribute')->with('photo_file_name')->andReturn('test.jpg');
+		$instance->shouldReceive('getAttribute')->with('photo_file_size')->andReturn(0);
+		$instance->shouldReceive('getAttribute')->with('photo_content_type')->andReturn('image/jpeg');
+
+		return $instance;
 	}
 }

@@ -32,42 +32,44 @@ class ResizerTest extends PHPUnit_Framework_TestCase
 	/**
 	 * Test the resize crop method.
 	 *
+	 * @test
 	 * @return void
 	 */
-	public function testResizeCrop()
+	public function it_should_be_able_to_resize_and_crop_an_image()
 	{
-		$uploadedFile = $this->uploadedFile();
+		$uploadedFile = $this->buildUploadedFile();
 		$originalSize = new Box(600, 400);
 		$expectedResize = new Box(768, 512);
 		$expectedCropPoint = new Point(128, 0);
 		$expectedCropBox = new Box(512, 512);
 
-		$image = $this->mockImage($originalSize, $expectedResize, $expectedCropPoint, $expectedCropBox);
-		$imageProcessor = $this->mockImageProcessor($image);
+		$image = $this->buildMockImage($originalSize, $expectedResize, $expectedCropPoint, $expectedCropBox);
+		$imageProcessor = $this->buildMockImageProcessor($image);
 		$resizer = new Resizer($imageProcessor);
 
-		$style = $this->styleObject('thumbnail', '512x512#');
+		$style = $this->buildMockStyleObject('thumbnail', '512x512#');
 		$file = $resizer->resize($uploadedFile, $style);
 	}
 
 	/**
 	 * Test resize cropping edge case.
 	 *
+	 * @test
 	 * @return void
 	 */
-	public function testResizeCropEdgecase()
+	public function it_should_be_able_to_resize_and_crop_an_edge_case()
 	{
-		$uploadedFile = $this->uploadedFile();
+		$uploadedFile = $this->buildUploadedFile();
 		$originalSize = new Box(1000, 653);
 		$expectedResize = new Box(440, 287.32);
 		$expectedCropPoint = new Point(0, 21.66);
 		$expectedCropBox = new Box(440, 244);
 
-		$image = $this->mockImage($originalSize, $expectedResize, $expectedCropPoint, $expectedCropBox);
-		$imageProcessor = $this->mockImageProcessor($image);
+		$image = $this->buildMockImage($originalSize, $expectedResize, $expectedCropPoint, $expectedCropBox);
+		$imageProcessor = $this->buildMockImageProcessor($image);
 		$resizer = new Resizer($imageProcessor);
 
-		$style = $this->styleObject('thumbnail', '440x244#');
+		$style = $this->buildMockStyleObject('thumbnail', '440x244#');
 		$file = $resizer->resize($uploadedFile, $style);
 	}
 
@@ -76,7 +78,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase
 	*
 	* @return UploadedFile
 	*/
-	protected function uploadedFile()
+	protected function buildUploadedFile()
 	{
 		$path = __DIR__.'/../../Fixtures/empty.gif';
 		$originalName = 'Test.gif';
@@ -94,7 +96,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase
 	* @param  integer $expectedCropBox
 	* @return Image
 	*/
-	protected function mockImage($originalSize, $expectedResize, $expectedCropPoint = null, $expectedCropBox = null)
+	protected function buildMockImage($originalSize, $expectedResize, $expectedCropPoint = null, $expectedCropBox = null)
 	{
 		$image = $this->getMock('Image', ['getSize', 'resize', 'crop', 'save']);
 		$image->expects($this->once())->method('getSize')->will($this->returnValue($originalSize));
@@ -111,7 +113,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase
 	 * @param  Image $image
 	 * @return Imagine
 	 */
-	protected function mockImageProcessor($image)
+	protected function buildMockImageProcessor($image)
 	{
 		$imageProcessor = m::mock('Imagine\Image\ImagineInterface');
 		$imageProcessor->shouldReceive('open')->once()->andReturn($image);
@@ -127,7 +129,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase
 	 * @param  array $convertOptions
 	 * @return Object
 	 */
-	protected function styleObject($name, $value, $convertOptions = [])
+	protected function buildMockStyleObject($name, $value, $convertOptions = [])
 	{
 		return new Style($name, $value, $convertOptions);
 	}

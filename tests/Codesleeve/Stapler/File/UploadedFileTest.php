@@ -1,6 +1,7 @@
 <?php namespace Codesleeve\Stapler\Tests\File;
 
-use PHPUnit_Framework_TestCase;use Codesleeve\Stapler\File\UploadedFile;
+use PHPUnit_Framework_TestCase;
+use Codesleeve\Stapler\File\UploadedFile;
 use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
 use Mockery as m;
 
@@ -13,7 +14,6 @@ class UploadedFileTest extends PHPUnit_Framework_TestCase
 	 */
 	public function setUp()
 	{
-		# code...
 	}
 
 	/**
@@ -27,26 +27,14 @@ class UploadedFileTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * Test that the validate method is working correctly when
-	 * a valid file upload object is passed in.
-	 *
-	 * @return void
-	 */
-	public function testValidate()
-	{
-		$staplerUploadedFile = $this->buildValidStaplerUploadedFile();
-
-		$staplerUploadedFile->validate();
-	}
-
-	/**
-	 * Test that the validate method will throw an exception
+	 * The validate method should throw an exception
 	 * when passed an invalid file upload object.
 	 *
+	 * @test
 	 * @expectedException Codesleeve\Stapler\Exceptions\FileException
 	 * @return void
 	 */
-	public function testValidateThrowsExceptions()
+	public function it_should_throw_an_exception_if_the_file_upload_is_invalid()
 	{
 		$staplerUploadedFile = $this->buildInvalidStaplerUploadedFile();
 
@@ -54,11 +42,75 @@ class UploadedFileTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
+	 * An uploaded file shoudl be able to detect if the
+	 * file type that has been uploaded is an image.
+	 *
+	 * @test
+	 * @return void
+	 */
+	public function it_should_be_able_to_detect_the_if_the_file_is_an_image()
+	{
+		$staplerUploadedFile = $this->buildValidStaplerUploadedFile();
+
+		$isImage = $staplerUploadedFile->isImage();
+
+		$this->assertEquals(true, $isImage);
+	}
+
+	/**
+	 * An uploaded file object should be able to return the 
+	 * name of the underlying uploaded file.
+	 *
+	 * @test
+	 * @return void
+	 */
+	public function it_should_be_able_to_get_the_name_of_the_uploaded_file()
+	{
+		$staplerUploadedFile = $this->buildValidStaplerUploadedFile();
+
+		$filename = $staplerUploadedFile->getFilename();
+
+		$this->assertEquals('empty.gif', $filename);
+	}
+
+	/**
+	 * An uploaded file object should be able to return the size of the
+	 * underlying uploaded file.
+	 *
+	 * @test
+	 * @return void
+	 */
+	public function it_should_be_able_to_get_the_size_of_the_uploaded_file()
+	{
+		$staplerUploadedFile = $this->buildValidStaplerUploadedFile();
+
+		$size = $staplerUploadedFile->getSize();
+
+		$this->assertEquals(null, $size);
+	}
+
+	/**
+	 * An uploaded file object should be able to return the mime type 
+	 * of the underlyjng uploaded file.
+	 *
+	 * @test
+	 * @return void
+	 */
+	public function it_should_be_able_to_get_the_mime_type_of_the_uploaded_file()
+	{
+		$staplerUploadedFile = $this->buildValidStaplerUploadedFile();
+
+		$mime = $staplerUploadedFile->getMimeType();
+
+		$this->assertEquals('image/gif', $mime);
+	}
+
+	/**
 	 * Helper method to build an valid Codesleeve\Stapler\File\UploadedFile object.
 	 *
 	 * @return UploadedFile
 	 */
-	public function buildValidStaplerUploadedFile()
+	protected function buildValidStaplerUploadedFile()
 	{
 		$symfonyUploadedFile = $this->buildSymfonyUploadedFile();
 
@@ -70,7 +122,7 @@ class UploadedFileTest extends PHPUnit_Framework_TestCase
 	 *
 	 * @return UploadedFile
 	 */
-	public function buildInvalidStaplerUploadedFile()
+	protected function buildInvalidStaplerUploadedFile()
 	{
 		$symfonyUploadedFile = $this->buildSymfonyUploadedFile(false);
 
@@ -86,7 +138,7 @@ class UploadedFileTest extends PHPUnit_Framework_TestCase
 	protected function buildSymfonyUploadedFile($test = true)
 	{
 		$path = __DIR__.'/../fixtures/empty.gif';
-		$originalName = 'Test.gif';
+		$originalName = 'empty.gif';
 
 		return new SymfonyUploadedFile($path, $originalName, null, null, null, $test);
 	}
