@@ -16,14 +16,12 @@
         "aws/aws-sdk-php": "2.6.*@dev"
     },
     "require-dev": {
-        "illuminate/foundation": "4.0.*@dev",
         "mikey179/vfsStream": "1.2.0",
         "mockery/mockery": "0.8.0"
     },
     "autoload": {
         "classmap": [
-            "src/migrations",
-            "tests/TestCase.php"
+            "src/migrations"
         ],
         "psr-0": {
             "Codesleeve\\Stapler": "src/"
