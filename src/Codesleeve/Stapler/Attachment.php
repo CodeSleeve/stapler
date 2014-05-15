@@ -131,6 +131,11 @@ class Attachment
 		$this->instanceWrite('file_size', $this->uploadedFile->getSize());
 		$this->instanceWrite('content_type', $this->uploadedFile->getMimeType());
 		$this->instanceWrite('updated_at', date('Y-m-d H:i:s'));
+
+		if (!$this->uploadedFile->isImage()) {
+			$this->styles = ['original'];
+		}
+
 		$this->queueAllForWrite();
 	}
 
