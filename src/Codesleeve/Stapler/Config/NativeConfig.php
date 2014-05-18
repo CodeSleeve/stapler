@@ -23,7 +23,7 @@ class NativeConfig implements ConfigInterface
         ],
         'filesystem' => [
             'url' => '/system/:class/:attachment/:id_partition/:style/:filename',
-            'path' => ':laravel_root/public:url',
+            'path' => ':app_root/public:url',
             'override_file_permissions' => null,
         ],
         's3' => [

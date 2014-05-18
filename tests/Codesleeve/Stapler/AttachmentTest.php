@@ -214,7 +214,7 @@ class AttachmentTest extends PHPUnit_Framework_TestCase
 			'styles' => [], 
 			'default_style' => 'original',
 			'url' => '/system/:attachment/:id_partition/:style/:filename',
-			'path' => ':laravel_root/public:url',
+			'path' => ':app_root/public:url',
 		]);
 		
 		$imagine = m::mock('Imagine\Image\ImagineInterface');

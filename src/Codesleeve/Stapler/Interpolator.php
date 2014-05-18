@@ -43,7 +43,7 @@ class Interpolator
 		return [
 			':filename' => 'filename',
 			':url' => 'url',
-			':laravel_root' => 'laravelRoot',
+			':app_root' => 'appRoot',
 			':class' => 'getClass',
 			':basename' => 'basename',
 			':extension' => 'extension',
@@ -80,13 +80,13 @@ class Interpolator
 	}
 
 	/**
-	 * Returns the root of the Laravel project.
+	 * Returns the application root of the project.
 	 *
 	 * @param Attachment $attachment
 	 * @param string $styleName
 	 * @return string
 	*/
-	protected function laravelRoot($attachment, $styleName = '')
+	protected function appRoot($attachment, $styleName = '')
 	{
 		return $attachment->base_path;
 	}
