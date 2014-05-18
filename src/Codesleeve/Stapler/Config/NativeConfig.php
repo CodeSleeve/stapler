@@ -3,32 +3,49 @@
 class NativeConfig implements ConfigInterface
 {
     /**
-     * The directory where configuration files will be loaded
-     * from.
-     */
-    public $location;
-
-    /**
      * An array of configuration values that have been
      * previously loaded.
      *
      * @var array
      */
-    protected $items = [];
+    protected $items = [
+        'stapler' => [
+            'public_path' => '',
+            'base_path' => '',
+            'storage' => 'filesystem',
+            'image_processing_library' => 'Imagine\Gd\Imagine',
+            'default_url' => '/:attachment/:style/missing.png',
+            'default_style' => 'original',
+            'styles' => [],
+            'convert_options' => [],
+            'keep_old_files' => false,
+            'preserve_files' => false
+        ],
+        'filesystem' => [
+            'url' => '/system/:class/:attachment/:id_partition/:style/:filename',
+            'path' => ':laravel_root/public:url',
+            'override_file_permissions' => null,
+        ],
+        's3' => [
+            'key' => '',
+            'secret' => '',
+            'bucket' => '',
+            'ACL' => 'public-read',
+            'scheme' => 'http',
+            'region' => '',
+            'path' => ':attachment/:id/:style/:filename'
+        ]
+    ];
 
     /**
      * Constructor method.
      *
-     * @param mixed $location
+     * @param array $items
      */
-    function __construct($location = null)
+    function __construct(array $items = null)
     {
-        $this->location = $location ?: realpath(__DIR__ . '/../../..' . '/config');
-
-        $files = glob("{$this->location}/*.php");
-
-        foreach ($files as $file) {
-            $this->loadFile($file);
+        if ($items) {
+            $this->items = $items;
         }
     }
 
@@ -40,13 +57,13 @@ class NativeConfig implements ConfigInterface
      */
     public function get($name)
     {
-        list($file, $item) = array_pad(explode('.', $name), 2, null);
+        list($group, $item) = array_pad(explode('.', $name), 2, null);
 
         if ($item) {
-            return $this->loadItemFromFile($file, $item);
+            return $this->loadItemFromFile($group, $item);
         }
 
-        return $this->loadAllFromFile($file);
+        return $this->loadAllFromFile($group);
     }
 
     /**
@@ -58,52 +75,41 @@ class NativeConfig implements ConfigInterface
      */
     public function set($name, $value)
     {
-        list($file, $item) = array_pad(explode('.', $name), 2, null);
+        list($group, $item) = array_pad(explode('.', $name), 2, null);
 
         if ($item) {
-            $this->items[$file][$item] = $value;
+            $this->items[$group][$item] = $value;
         }
         else {
-            $this->items[$file] = $value;
+            $this->items[$group] = $value;
         }
     }
 
     /**
      * Load a specific configuration item from a specific
-     * configuration file.
+     * configuration group.
      *
-     * @param string $file
+     * @param string $group
      * @param string $item
      */
-    protected function loadItemFromFile($file, $item)
+    protected function loadItemFromFile($group, $item)
     {
-        if (array_key_exists($file, $this->items) && array_key_exists($this->items[$file], $item)) {
-            return $this->items[$file][$item];
+        if (array_key_exists($group, $this->items) && array_key_exists($item, $this->items[$group])) {
+            return $this->items[$group][$item];
         }
     }
 
     /**
      * Load all configuration items from a specific
-     * configuration file
+     * configuration group
      *
-     * @param string $file
+     * @param string $group
      */
-    protected function loadAllFromFile($file)
+    protected function loadAllFromFile($group)
     {
-        if (array_key_exists($file, $this->items)) {
-            return $this->items[$file];
+        if (array_key_exists($group, $this->items)) {
+            return $this->items[$group];
         }
-    }
-
-    /**
-     * Load a configuration file into the items array.
-     *
-     * @param string $file
-     */
-    protected function loadFile($file)
-    {
-        $fileName = basename($file, '.php');
-        $this->items[$fileName] = include $file;
     }
 }
 
