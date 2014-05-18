@@ -80,7 +80,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase
 	*/
 	protected function buildUploadedFile()
 	{
-		$path = __DIR__.'/../../Fixtures/empty.gif';
+		$path = realpath(__DIR__ . '/../../Fixtures/empty.gif');
 		$originalName = 'Test.gif';
 		$symfonyUploadedFile = new SymfonyUploadedFile($path, $originalName, null, null, null, true);
 
