@@ -1,22 +1,22 @@
 <?php namespace Codesleeve\Stapler\Config;
 
-use Illuminate\Config;
+use Illuminate\Config\Repository;
 
 class IlluminateConfig implements ConfigInterface
 {
     /**
      * An instance of Laravel's config class.
      *
-     * @var Config
+     * @var Repository
      */
     protected $config;
 
     /**
 	 * Constructor method.
 	 *
-     * @param Config $config
+     * @param Repository $config
 	 */
-	function __construct(Config $config)
+	function __construct(Repository $config)
 	{
 		$this->config = $config;
 	}

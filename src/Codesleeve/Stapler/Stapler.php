@@ -168,7 +168,7 @@ class Stapler
     public static function getS3ClientInstance($attachedFile)
     {
         $modelName = $attachedFile->getInstanceClass();
-        $attachmentName = $attachedFile->getConfig()->attachmentName;
+        $attachmentName = $attachedFile->getConfig()->name;
         $key = "$modelName.$attachmentName";
 
         if (array_key_exists($key, static::$s3Clients)) {
@@ -182,12 +182,14 @@ class Stapler
 
     /**
      * Return a configuration object instance.
+     * If no instance is currently set, we'll return an instance
+     * of Codesleeve\Stapler\Config\NativeConfig.
      *
      * @return \Codesleeve\Stapler\Config\ConfigInterface
      */
-    public static function getConfigInstance()
+    public static function getConfigInstance($type = null)
     {
-        if (static::$config === null) {
+        if (!static::$config) {
             static::$config = new Config\NativeConfig;
         }
 
