@@ -19,7 +19,8 @@
         "mikey179/vfsStream": "1.2.0",
         "mockery/mockery": "0.8.0",
         "aws/aws-sdk-php": "2.4.*@dev",
-        "illuminate/database": "~4"
+        "illuminate/database": "~4",
+        "illuminate/config": "~4"
     },
     "autoload": {
         "psr-0": {
