@@ -27,7 +27,7 @@ class StaplerServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
-		$this->package('codesleeve/stapler');
+		$this->package('codesleeve/stapler', 'stapler', __DIR__.'/../../');
 	}
 
 	/**
