@@ -214,12 +214,7 @@ class Stapler
      */
     protected static function buildS3Client($attachedFile)
     {
-        return S3Client::factory([
-            'key' => $attachedFile->key,
-            'secret' => $attachedFile->secret,
-            'region' => $attachedFile->region,
-            'scheme' => $attachedFile->scheme
-        ]);
+        return S3Client::factory($attachedFile->s3_client_config);
     }
 
     /**

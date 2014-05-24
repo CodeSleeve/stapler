@@ -111,7 +111,15 @@ class StaplerTest extends PHPUnit_Framework_TestCase
 	 */
 	public function it_should_be_able_to_create_a_singleton_s3_client_instance_for_each_model_attachment_combo()
 	{
-		$dummyConfig = new AttachmentConfig('TestAttachment', ['styles' => [], 'key' => '', 'secret' => '', 'region' => '', 'scheme' => 'http']);
+		$dummyConfig = new AttachmentConfig('TestAttachment', [
+			'styles' => [], 
+			's3_client_config' => [
+				'key' => '', 
+				'secret' => '', 
+				'region' => '', 
+				'scheme' => 'http'
+			]
+		]);
 		$mockAttachment = m::mock('Codesleeve\Stapler\Attachment')->makePartial();
 		$mockAttachment->shouldReceive('getInstanceClass')->twice()->andReturn('TestModel');
 		$mockAttachment->setConfig($dummyConfig);

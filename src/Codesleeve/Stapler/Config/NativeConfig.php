@@ -27,12 +27,14 @@ class NativeConfig implements ConfigInterface
             'override_file_permissions' => null,
         ],
         's3' => [
-            'key' => '',
-            'secret' => '',
+            's3_client_config' => [
+                'key' => '',
+                'secret' => '',
+                'region' => '',
+                'scheme' => 'http',
+            ],
             'bucket' => '',
             'ACL' => 'public-read',
-            'scheme' => 'http',
-            'region' => '',
             'path' => ':attachment/:id/:style/:filename'
         ]
     ];
