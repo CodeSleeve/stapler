@@ -28,7 +28,7 @@ class IlluminateConfig implements ConfigInterface
      * @return mixed
      */
     public function get($name){
-        return $this->config->get("stapler::$name");
+        return $this->config->get("stapler-l4::$name");
     }
 
     /**
@@ -39,6 +39,6 @@ class IlluminateConfig implements ConfigInterface
      * @return mixed
      */
     public function set($name, $value){
-        return $this->config->set("stapler::$name", $value);
+        return $this->config->set("stapler-l4::$name", $value);
     }
 }
