@@ -37,8 +37,16 @@ class Validator
 	 */
 	protected function validateS3Options($options)
 	{
-		if (!$options['bucket']) {
-			throw new Exceptions\InvalidUrlOptionException('Invalid Path: a bucket interpolation is required for s3 storage.', 1);
+		if (!$options['s3_object_config']['Bucket']) {
+			throw new Exceptions\InvalidUrlOptionException('Invalid Path: a bucket is required for s3 storage.', 1);
+		}
+
+		if (!$options['s3_client_config']['secret']) {
+			throw new Exceptions\InvalidUrlOptionException('Invalid Path: a secret is required for s3 storage.', 1);
+		}
+
+		if (!$options['s3_client_config']['key']) {
+			throw new Exceptions\InvalidUrlOptionException('Invalid Path: a key is required for s3 storage.', 1);
 		}
 	}
 }
