@@ -12,14 +12,23 @@ class IlluminateConfig implements ConfigInterface
     protected $config;
 
     /**
-	 * Constructor method.
-	 *
+     * The name of the package this driver is being used with.
+     * 
+     * @var string
+     */
+    protected $packageName;
+
+    /**
+     * Constructor method.
+     *
      * @param Repository $config
-	 */
-	function __construct(Repository $config)
-	{
-		$this->config = $config;
-	}
+     * @param string $packageName
+     */
+    function __construct(Repository $config, $packageName)
+    {
+        $this->config = $config;
+        $this->packageName = $packageName;
+    }
 
     /**
      * Retrieve a configuration value.
@@ -28,7 +37,7 @@ class IlluminateConfig implements ConfigInterface
      * @return mixed
      */
     public function get($name){
-        return $this->config->get("stapler-l4::$name");
+        return $this->config->get("$this->packageName::$name");
     }
 
     /**
@@ -39,6 +48,6 @@ class IlluminateConfig implements ConfigInterface
      * @return mixed
      */
     public function set($name, $value){
-        return $this->config->set("stapler-l4::$name", $value);
+        return $this->config->set("$this->packageName::$name", $value);
     }
 }
