@@ -46,7 +46,7 @@ class S3 implements StorageInterface
 	 */
 	public function url($styleName)
 	{
-		return $this->s3Client->getObjectUrl($this->getBucket(), $this->path($styleName));
+		return $this->s3Client->getObjectUrl($this->attachedFile->s3_object_config['Bucket'], $this->path($styleName));
 	}
 
 	/**
@@ -69,7 +69,7 @@ class S3 implements StorageInterface
 	public function remove($filePaths)
 	{
 		if ($filePaths) {
-			$this->s3Client->deleteObjects(['Bucket' => $this->getBucket(), 'Objects' => $this->getKeys($filePaths)]);
+			$this->s3Client->deleteObjects(['Bucket' => $this->attachedFile->s3_object_config['Bucket'], 'Objects' => $this->getKeys($filePaths)]);
 		}
 	}
 
