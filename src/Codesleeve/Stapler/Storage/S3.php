@@ -75,8 +75,6 @@ class S3 implements StorageInterface
 
 	/**
 	 * Move an uploaded file to it's intended destination.
-	 * The file can be an actual uploaded file object or the path to
-	 * a resized image file on disk.
 	 *
 	 * @param  \Codesleeve\Stapler\File\UploadedFile $file
 	 * @param  string $filePath
@@ -84,7 +82,12 @@ class S3 implements StorageInterface
 	 */
 	public function move($file, $filePath)
 	{
- 		$this->s3Client->putObject(['Bucket' => $this->getBucket(), 'Key' => $filePath, 'SourceFile' => $file, 'ContentType' => $this->attachedFile->contentType(), 'ACL' => $this->attachedFile->ACL]);
+ 		$objectConfig = $this->attachedFile->s3_object_config;
+ 	    $fileSpecificConfig = ['Key' => $filePath, 'SourceFile' => $file, 'ContentType' => $this->attachedFile->contentType()];
+ 	    $mergedConfig = array_merge($objectConfig, $fileSpecificConfig);
+ 	    
+ 	    $this->ensureBucketExists($mergedConfig['Bucket']);
+ 	    $this->s3Client->putObject($mergedConfig);
 	}
 
 	/**
@@ -106,19 +109,16 @@ class S3 implements StorageInterface
 	}
 
 	/**
-	 * This is a wrapper method for returning the name of an attachment's bucket.
-	 * If the bucket doesn't exist we'll build it first before returning it's name.
+	 * Ensure that a given S3 bucket exists.
 	 *
-	 * @return string
+	 * @param  string $bucketName
+	 * @return void
 	 */
-	protected function getBucket()
+	protected function ensureBucketExists($bucketName)
 	{
-		$bucketName = $this->attachedFile->bucket;
 		if (!$this->bucketExists) {
 			$this->buildBucket($bucketName);
 		}
-
-		return $bucketName;
 	}
 
 	/**

@@ -33,8 +33,10 @@ class NativeConfig implements ConfigInterface
                 'region' => '',
                 'scheme' => 'http',
             ],
-            'bucket' => '',
-            'ACL' => 'public-read',
+            's3_object_config' => [
+                'bucket' => '',
+                'ACL' => 'public-read',
+            ],
             'path' => ':attachment/:id/:style/:filename'
         ]
     ];
