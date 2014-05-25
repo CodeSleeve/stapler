@@ -159,7 +159,7 @@ class StaplerTest extends PHPUnit_Framework_TestCase
 	{
 		$loaderInterface = m::mock('Illuminate\Config\loaderInterface');
 		$illuminateConfig = new \Illuminate\Config\Repository($loaderInterface, 'testing');
-		$config1 = new Config\IlluminateConfig($illuminateConfig);
+		$config1 = new Config\IlluminateConfig($illuminateConfig, 'test');
 		
 		Stapler::setConfigInstance($config1);
 		$config2 = Stapler::getConfigInstance();
