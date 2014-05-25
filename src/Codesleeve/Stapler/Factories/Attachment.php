@@ -8,14 +8,14 @@ use Codesleeve\Stapler\Factories\Storage as StorageFactory;
 
 class Attachment
 {
-	/**
-	 * Create a new attachment object.
-	 *
-	 * @param string $name
-	 * @param array $options
-	 * @return \Codesleeve\Stapler\Attachment
-	 */
-	public static function create($name, $options)
+    /**
+     * Create a new attachment object.
+     *
+     * @param string $name
+     * @param array $options
+     * @return \Codesleeve\Stapler\Attachment
+     */
+    public static function create($name, $options)
     {
         $options = static::mergeOptions($options);
         Stapler::getValidatorInstance()->validateOptions($options);
@@ -33,16 +33,16 @@ class Attachment
      * a new attachment object.
      *
      * @param string $name
-	 * @param array $options
+     * @param array $options
      * @return array
      */
     protected static function buildDependencies($name, $options)
     {
-    	return [
+        return [
             new AttachmentConfig($name, $options),
-    		Stapler::getInterpolatorInstance(),
+            Stapler::getInterpolatorInstance(),
             Stapler::getResizerInstance($options['image_processing_library'])
-    	];
+        ];
     }
 
     /**
@@ -60,7 +60,7 @@ class Attachment
         $defaultOptions = $config->get('stapler');
         $options = array_merge($defaultOptions, (array) $options);
         $storage = $options['storage'];
-        $options = array_merge($config->get($storage), $options);
+        $options = array_replace_recursive($config->get($storage), $options);
         $options['styles'] = array_merge( (array) $options['styles'], ['original' => '']);
 
         return $options;
