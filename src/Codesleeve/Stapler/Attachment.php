@@ -111,7 +111,9 @@ class Attachment
 	 */
 	public function setUploadedFile($uploadedFile)
 	{
-		$this->clear();
+		if (!$this->keep_old_files) {
+			$this->clear();
+		}
 
 		if ($uploadedFile == STAPLER_NULL) {
 			return;
@@ -360,87 +362,17 @@ class Attachment
 	}
 
 	/**
-	 * Process the write queue.
-	 *
-	 * @param  mixed $instance
-	 * @return void
-	*/
-	public function afterSave($instance)
-	{
-		$this->instance = $instance;
-		$this->save();
-	}
+     * Return the class type of the attachment's underlying
+     * model instance.
+     *
+     * @return string
+     */
+    public function getInstanceClass()
+    {
+    	return get_class($this->instance);
+    }
 
-	/**
-	 * Queue up this attachments files for deletion.
-	 *
-	 * @param  mixed $instance
-	 * @return void
-	 */
-	public function beforeDelete($instance)
-	{
-		$this->instance = $instance;
-		$this->clear();
-	}
-
-	/**
-	 * Process the delete queue.
-	 *
-	 * @param  mixed $instance
-	 * @return void
-	*/
-	public function afterDelete($instance)
-	{
-		$this->instance = $instance;
-		$this->flushDeletes();
-	}
-
-	/**
-	 * Destroys the attachment.  Has the same effect as previously assigning
-	 * STAPLER_NULL to the attachment and then saving.
-	 *
-	 * @param  array $stylesToClear
-	 * @return void
-	 */
-	public function destroy($stylesToClear = [])
-	{
-		$this->clear($stylesToClear);
-		$this->save();
-	}
-
-	/**
-	 * Clears out the attachment.  Has the same effect as previously assigning
-	 * STAPLER_NULL to the attachment.  Does not save the associated model.
-	 *
-	 * @param  array $stylesToClear
-	 * @return void
-	 */
-	public function clear($stylesToClear = [])
-	{
-		if ($stylesToClear) {
-			$this->queueSomeForDeletion($stylesToClear);
-		}
-		else {
-			$this->queueAllForDeletion();
-		}
-	}
-
-	/**
-	 * Removes the old file upload (if necessary).
-	 * Saves the new file upload.
-	 *
-	 * @return void
-	 */
-	public function save()
-	{
-		if (!$this->keep_old_files) {
-			$this->flushDeletes();
-		}
-
-		$this->flushWrites();
-	}
-
-	/**
+    /**
 	 * Rebuild the images for this attachment.
 	 *
 	 * @return void
@@ -469,17 +401,88 @@ class Attachment
 	}
 
 	/**
-     * Return the class type of the attachment's underlying
-     * model instance.
-     *
-     * @return string
-     */
-    public function getInstanceClass()
-    {
-    	return get_class($this->instance);
-    }
+	 * Process the write queue.
+	 *
+	 * @param  mixed $instance
+	 * @return void
+	*/
+	public function afterSave($instance)
+	{
+		$this->instance = $instance;
+		$this->save();
+	}
 
-    /**
+	/**
+	 * Queue up this attachments files for deletion.
+	 *
+	 * @param  mixed $instance
+	 * @return void
+	 */
+	public function beforeDelete($instance)
+	{
+		$this->instance = $instance;
+		
+		if (!$this->preserve_files) {
+			$this->clear();
+		}
+	}
+
+	/**
+	 * Process the delete queue.
+	 *
+	 * @param  mixed $instance
+	 * @return void
+	*/
+	public function afterDelete($instance)
+	{
+		$this->instance = $instance;
+		$this->flushDeletes();
+	}
+
+	/**
+	 * Destroys the attachment.  Has the same effect as previously assigning
+	 * STAPLER_NULL to the attachment and then saving.
+	 *
+	 * @param  array $stylesToClear
+	 * @return void
+	 */
+	public function destroy($stylesToClear = [])
+	{
+		$this->clear($stylesToClear);
+		$this->clearAttributes();
+		$this->flushDeletes();
+	}
+
+	/**
+	 * Clears out the attachment.  Has the same effect as previously assigning
+	 * STAPLER_NULL to the attachment.  Does not save the associated model.
+	 *
+	 * @param  array $stylesToClear
+	 * @return void
+	 */
+	public function clear($stylesToClear = [])
+	{
+		if ($stylesToClear) {
+			$this->queueSomeForDeletion($stylesToClear);
+		}
+		else {
+			$this->queueAllForDeletion();
+		}
+	}
+
+	/**
+	 * Removes the old file upload (if necessary).
+	 * Saves the new file upload.
+	 *
+	 * @return void
+	 */
+	public function save()
+	{
+		$this->flushDeletes();
+		$this->flushWrites();
+	}
+
+	/**
      * Set an attachment attribute on the underlying model instance.
      *
      * @param  string $property
@@ -491,6 +494,20 @@ class Attachment
     	$fieldName = "{$this->name}_{$property}";
     	$this->instance->setAttribute($fieldName, $value);
     }
+
+	/**
+	 * Clear (set to null) all attachment related model
+	 * attributes.
+	 * 
+	 * @return void
+	 */
+	public function clearAttributes()
+	{
+		$this->instanceWrite('file_name', NULL);
+		$this->instanceWrite('file_size', NULL);
+		$this->instanceWrite('content_type', NULL);
+		$this->instanceWrite('updated_at', NULL);
+	}
 
 	/**
 	 * Process the queuedForWrite que.
@@ -524,32 +541,6 @@ class Attachment
 	{
 		$this->remove($this->queuedForDeletion);
 		$this->queuedForDeletion = [];
-	}
-
-	/**
-	 * Generates the default url if no file attachment is present.
-	 *
-	 * @param string $styleName
-	 * @return string
-	*/
-	protected function defaultUrl($styleName = '')
-	{
-		if ($url = $this->default_url) {
-			return $this->getInterpolator()->interpolate($url, $this, $styleName);
-		}
-
-		return '';
-	}
-
-	/**
-	 * Generates the default path if no file attachment is present.
-	 *
-	 * @param string $styleName
-	 * @return string
-	*/
-	protected function defaultPath($styleName = '')
-	{
-		return $this->public_path . $this->defaultUrl($styleName);
 	}
 
 	/**
@@ -589,20 +580,38 @@ class Attachment
 		if (!$this->originalFilename()) {
 			return;
 		}
-
-		if (!$this->preserve_files)
+		
+		$filePaths = array_map(function($style)
 		{
-			$filePaths = array_map(function($style)
-			{
-				return $this->path($style->name);
-			}, $this->styles);
+			return $this->path($style->name);
+		}, $this->styles);
 
-			$this->queuedForDeletion = array_merge($this->queuedForDeletion, $filePaths);
+		$this->queuedForDeletion = array_merge($this->queuedForDeletion, $filePaths);
+    }
+
+    /**
+	 * Generates the default url if no file attachment is present.
+	 *
+	 * @param string $styleName
+	 * @return string
+	*/
+	protected function defaultUrl($styleName = '')
+	{
+		if ($url = $this->default_url) {
+			return $this->getInterpolator()->interpolate($url, $this, $styleName);
 		}
 
-		$this->instanceWrite('file_name', NULL);
-		$this->instanceWrite('file_size', NULL);
-		$this->instanceWrite('content_type', NULL);
-		$this->instanceWrite('updated_at', NULL);
-    }
+		return '';
+	}
+
+	/**
+	 * Generates the default path if no file attachment is present.
+	 *
+	 * @param string $styleName
+	 * @return string
+	*/
+	protected function defaultPath($styleName = '')
+	{
+		return $this->public_path . $this->defaultUrl($styleName);
+	}
 }
