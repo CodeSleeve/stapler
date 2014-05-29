@@ -31,6 +31,10 @@ class AttachmentConfig
 	 */
 	function __construct($name, $options)
 	{
+		if (!array_key_exists('styles', $options)) {
+			throw new Exceptions\InvalidAttachmentConfigurationException("Attachment configuration options must contain a 'styles' key", 1);
+		}
+
 		$this->name = $name;
 		$this->options = $options;
 		$this->styles = $this->buildStyleObjects($options['styles']);
@@ -79,27 +83,10 @@ class AttachmentConfig
 	{
 		$styleObjects = [];
 
-		foreach ($styles as $styleName => $styleValue)
-		{
-			$convertOptions = $this->getStyleConvertOptions($styleName);
-			$styleObjects[] = new Style($styleName, $styleValue, $convertOptions);
+		foreach ($styles as $styleName => $styleValue) {
+			$styleObjects[] = new Style($styleName, $styleValue);
 		}
 
 		return $styleObjects;
-	}
-
-	/**
-	 * Return the convert options for a styles.
-	 *
-	 * @param  string $styleName
-	 * @return array
-	 */
-	protected function getStyleConvertOptions($styleName)
-	{
-		if (array_key_exists($styleName, $this->options['convert_options'])) {
-			return $this->options['convert_options'][$styleName];
-		}
-
-		return [];
 	}
 }
