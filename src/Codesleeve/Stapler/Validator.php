@@ -15,7 +15,7 @@ class Validator
 	}
 
 	/**
-	 * Validate the attachment optioins for an attachment type when the storage
+	 * Validate the attachment options for an attachment type when the storage
 	 * driver is set to 'filesystem'.
 	 *
 	 * @param  array $options
@@ -29,7 +29,7 @@ class Validator
 	}
 
 	/**
-	 * Validate the attachment optioins for an attachment type when the storage
+	 * Validate the attachment options for an attachment type when the storage
 	 * driver is set to 's3'.
 	 *
 	 * @param  array $options
