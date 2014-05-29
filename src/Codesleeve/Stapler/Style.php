@@ -10,19 +10,12 @@ class Style
 	public $name;
 
 	/**
-	 * The style value.
+	 * The style dimensions.
 	 * This can be either a string or a callable type.
 	 *
 	 * @var mixed
 	 */
-	public $value;
-
-	/**
-	 * The image conversion options for this style.
-	 *
-	 * @var array
-	 */
-	public $convertOptions;
+	public $dimensions;
 
 	/**
 	 * Whether or not the image should be auto-oriented
@@ -33,22 +26,42 @@ class Style
 	public $autoOrient;
 
 	/**
+	 * An array of values used by Imagine Image to control
+	 * image quality, DPI, etc when saving an image.
+	 * 
+	 * @var array
+	 */
+	public $convertOptions;
+
+	/**
 	 * Constructor method.
 	 *
 	 * @param string $name
 	 * @param mixed $value
-	 * @param array $convertOptions
 	 */
-	function __construct($name, $value, $convertOptions)
+	function __construct($name, $value)
 	{
 		$this->name = $name;
-		$this->value = $value;
 
-		if (array_key_exists('auto-orient', $convertOptions)) {
-			$this->autoOrient = $convertOptions['auto-orient'];
-			unset($convertOptions['auto-orient']);
+		if (is_array($value)) 
+		{
+			if (!array_key_exists('dimensions', $value)) {
+				throw new Exceptions\InvalidStyleConfigurationException("Error Processing Request", 1);
+			}
+
+			$this->dimensions = $value['dimensions'];
+
+			if (array_key_exists('auto_orient', $value)) {
+				$this->autoOrient = $value['auto_orient'];
+			}
+
+			if (array_key_exists('convert_options', $value)) {
+				$this->convertOptions = $value['convert_options'];
+			}
+
+			return;
 		}
-
-		$this->convertOptions = $convertOptions;
+		
+		$this->dimensions = $value;
 	}
 }

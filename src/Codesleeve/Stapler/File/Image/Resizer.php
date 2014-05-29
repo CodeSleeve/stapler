@@ -37,7 +37,7 @@ class Resizer
 
 		if ($method == 'resizeCustom')
 		{
-			$this->resizeCustom($file, $style->value)
+			$this->resizeCustom($file, $style->dimensions)
 				->save($filePath, $style->convertOptions);
 
 			return $filePath;
@@ -75,19 +75,19 @@ class Resizer
 	 */
 	protected function parseStyleDimensions($style)
   	{
-		if (is_callable($style->value)) {
+		if (is_callable($style->dimensions)) {
 			return [null, null, 'custom'];
 		}
 
-		if (strpos($style->value, 'x') === false)
+		if (strpos($style->dimensions, 'x') === false)
 		{
 			// Width given, height automagically selected to preserve aspect ratio (landscape).
-			$width = $style->value;
+			$width = $style->dimensions;
 
 			return [$width, null, 'landscape'];
 		}
 
-		$dimensions = explode('x', $style->value);
+		$dimensions = explode('x', $style->dimensions);
 		$width = $dimensions[0];
 		$height = $dimensions[1];
 
