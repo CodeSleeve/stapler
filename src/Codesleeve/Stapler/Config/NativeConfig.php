@@ -17,7 +17,6 @@ class NativeConfig implements ConfigInterface
             'default_url' => '/:attachment/:style/missing.png',
             'default_style' => 'original',
             'styles' => [],
-            'convert_options' => [],
             'keep_old_files' => false,
             'preserve_files' => false
         ],
