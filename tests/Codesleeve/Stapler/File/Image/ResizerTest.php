@@ -98,7 +98,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase
 	*/
 	protected function buildMockImage($originalSize, $expectedResize, $expectedCropPoint = null, $expectedCropBox = null)
 	{
-		$image = $this->getMock('Image', ['getSize', 'resize', 'crop', 'save']);
+		$image = $this->getMock('Imagine\Image\ImageInterface');
 		$image->expects($this->once())->method('getSize')->will($this->returnValue($originalSize));
 		$image->expects($this->once())->method('resize')->with($expectedResize)->will($this->returnValue($image));
 		$image->expects($this->once())->method('crop')->with($expectedCropPoint, $expectedCropBox)->will($this->returnValue($image));
