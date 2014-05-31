@@ -10,16 +10,17 @@ class File
 	 * Build a Codesleeve\Stapler\UploadedFile object using various file input types.
 	 *
 	 * @param  mixed $file
+	 * @param  boolean $testing
 	 * @return \Codesleeve\Stapler\File\UploadedFile
 	 */
-	public static function create($file)
+	public static function create($file, $testing = false)
 	{
 		if ($file instanceof SymfonyUploadedFile) {
 			return static::createFromObject($file);
 		}
 
 		if (is_array($file)) {
-			return static::createFromArray($file);
+			return static::createFromArray($file, $testing);
 		}
 
 		if (substr($file, 0, 7) == "http://" || substr($file, 0, 8) == "https://") {
@@ -50,11 +51,12 @@ class File
 	 * has been formated using the Stapler::arrangeFiles utility method.
 	 *
 	 * @param  array $file
+	 * @param  boolean $testing
 	 * @return \Codesleeve\Stapler\File\File
 	 */
-	protected static function createFromArray($file)
+	protected static function createFromArray($file, $testing)
 	{
-		$file = new SymfonyUploadedFile($file['tmp_name'], $file['name'], $file['type'], $file['size'], $file['error']);
+		$file = new SymfonyUploadedFile($file['tmp_name'], $file['name'], $file['type'], $file['size'], $file['error'], $testing);
 
 		return static::createFromObject($file);
 	}
