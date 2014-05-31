@@ -388,7 +388,7 @@ class Attachment
 			$fileLocation = $this->storage == 'filesystem' ? $this->path('original') : $this->url('original');
 			$file = FileFactory::create($fileLocation);
 
-			if ($style->value && $file->isImage()) {
+			if ($style->dimensions && $file->isImage()) {
 				$file = $this->resizer->resize($file, $style);
 			}
 			else {
@@ -518,7 +518,7 @@ class Attachment
 	{
 		foreach ($this->queuedForWrite as $style)
 		{
-      		if ($style->value && $this->uploadedFile->isImage()) {
+      		if ($style->dimensions && $this->uploadedFile->isImage()) {
 				$file = $this->resizer->resize($this->uploadedFile, $style);
 			}
 			else {
