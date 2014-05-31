@@ -132,14 +132,14 @@ class UploadedFileTest extends PHPUnit_Framework_TestCase
 	/**
 	* Helper method to build a mock Symfony UploadedFile object.
 	*
-	* @param  boolean $test
+	* @param  boolean $testing
 	* @return UploadedFile
 	*/
-	protected function buildSymfonyUploadedFile($test = true)
+	protected function buildSymfonyUploadedFile($testing = true)
 	{
-		$path = __DIR__.'/../Fixtures/empty.gif';
+		$path = __DIR__ . '/../Fixtures/empty.gif';
 		$originalName = 'empty.gif';
 
-		return new SymfonyUploadedFile($path, $originalName, null, null, null, $test);
+		return new SymfonyUploadedFile($path, $originalName, null, null, null, $testing);
 	}
 }
