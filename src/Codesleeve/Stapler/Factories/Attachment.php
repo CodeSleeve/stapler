@@ -3,7 +3,6 @@
 use Codesleeve\Stapler\Stapler;
 use Codesleeve\Stapler\AttachmentConfig;
 use Codesleeve\Stapler\Attachment as AttachmentObject;
-use Codesleeve\Stapler\Factories\Resizer as ResizerFactory;
 use Codesleeve\Stapler\Factories\Storage as StorageFactory;
 
 class Attachment

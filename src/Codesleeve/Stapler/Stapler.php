@@ -187,7 +187,7 @@ class Stapler
      *
      * @return \Codesleeve\Stapler\Config\ConfigInterface
      */
-    public static function getConfigInstance($type = null)
+    public static function getConfigInstance()
     {
         if (!static::$config) {
             static::$config = new Config\NativeConfig;

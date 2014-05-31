@@ -23,21 +23,21 @@ class Attachment
 	/**
 	 * An instance of the underlying storage driver that is being used.
 	 *
-	 * @var \Codesleeve\Stapler\Storage\StorageInterface.
+	 * @var StorageInterface.
 	 */
 	protected $storageDriver;
 
 	/**
 	 * An instance of the interpolator class for processing interpolations.
 	 *
-	 * @var \Codesleeve\Stapler\Interpolator
+	 * @var Interpolator
 	 */
 	protected $interpolator;
 
 	/**
 	 * The uploaded file object for the attachment.
 	 *
-	 * @var \Codesleeve\Stapler\File\UploadedFile
+	 * @var \Codesleeve\Stapler\File\FileInterface
 	 */
 	protected $uploadedFile;
 
@@ -130,7 +130,7 @@ class Attachment
 	/**
 	 * Accessor method for the uploadedFile property.
 	 *
-	 * @return \Symfony\Component\HttpFoundation\File\UploadedFile
+	 * @return \Codesleeve\Stapler\File\FileInterface
 	 */
 	public function getUploadedFile()
 	{
@@ -259,7 +259,7 @@ class Attachment
 	/**
 	 * Handle dynamic method calls on the attachment.
 	 * This allows us to call methods on the underlying
-	 * storage or utility objects directly via the attachment.
+	 * storage driver directly via the attachment.
 	 *
 	 * @param  string  $method
 	 * @param  array   $parameters
@@ -267,7 +267,6 @@ class Attachment
 	 */
 	public function __call($method, $parameters)
 	{
-		// Storage methods
 		$callable = ['remove', 'move'];
 
 		if (in_array($method, $callable)) {

@@ -2,7 +2,6 @@
 
 use Aws\S3\S3Client;
 use Codesleeve\Stapler\Attachment;
-use Codesleeve\Stapler\File\UploadedFile;
 
 class S3 implements StorageInterface
 {
@@ -77,11 +76,11 @@ class S3 implements StorageInterface
 	/**
 	 * Move an uploaded file to it's intended destination.
 	 *
-	 * @param  UploadedFile $file
+	 * @param  string $file
 	 * @param  string $filePath
 	 * @return void
 	 */
-	public function move(UploadedFile $file, $filePath)
+	public function move($file, $filePath)
 	{
  		$objectConfig = $this->attachedFile->s3_object_config;
  	    $fileSpecificConfig = ['Key' => $filePath, 'SourceFile' => $file, 'ContentType' => $this->attachedFile->contentType()];

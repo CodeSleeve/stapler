@@ -36,6 +36,7 @@ class Style
 	/**
 	 * Constructor method.
 	 *
+     * @throws Exceptions\InvalidStyleConfigurationException
 	 * @param string $name
 	 * @param mixed $value
 	 */

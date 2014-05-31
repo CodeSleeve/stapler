@@ -2,8 +2,6 @@
 
 use Codesleeve\Stapler\Exceptions;
 use Codesleeve\Stapler\Attachment;
-use Codesleeve\Stapler\File\UploadedFile;
-use Config;
 
 class Filesystem implements StorageInterface
 {
@@ -65,11 +63,11 @@ class Filesystem implements StorageInterface
 	 * The file can be an actual uploaded file object or the path to
 	 * a resized image file on disk.
 	 *
-	 * @param  UploadedFile $file
+	 * @param  string $file
 	 * @param  string $filePath
 	 * @return void
 	 */
-	public function move(UploadedFile $file, $filePath)
+	public function move($file, $filePath)
 	{
  		$this->buildDirectory($filePath);
  		$this->moveFile($file, $filePath);

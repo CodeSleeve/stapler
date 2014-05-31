@@ -9,7 +9,7 @@ class UploadedFile implements FileInterface
 	 * The underlying uploaded file object that acts
 	 * as part of this class's composition.
 	 *
-	 * @var symfony\Component\HttpFoundation\File\UploadedFile
+	 * @var \Symfony\Component\HttpFoundation\File\UploadedFile
 	 */
 	protected $uploadedFile;
 
@@ -33,7 +33,7 @@ class UploadedFile implements FileInterface
 	/**
 	 * Constructor method.
 	 *
-	 * @param Symfony\Component\HttpFoundation\File\UploadedFile $uploadedFile
+	 * @param SymfonyUploadedFile $uploadedFile
 	 */
 	function __construct(SymfonyUploadedFile $uploadedFile) {
 		$this->uploadedFile = $uploadedFile;
@@ -110,6 +110,7 @@ class UploadedFile implements FileInterface
 	/**
 	 * Validate the uploaded file object.
 	 *
+     * @throws FileException
 	 * @return void
 	 */
 	public function validate()

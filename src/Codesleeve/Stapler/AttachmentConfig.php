@@ -26,6 +26,7 @@ class AttachmentConfig
 	/**
 	 * Constructor method.
 	 *
+     * @throws  Exceptions\InvalidAttachmentConfigurationException
 	 * @param string $name
 	 * @param array $options
 	 */

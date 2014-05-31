@@ -1,6 +1,6 @@
 <?php namespace Codesleeve\Stapler\File\Image;
 
-use Codesleeve\Stapler\File\UploadedFile;
+use Codesleeve\Stapler\File\FileInterface;
 use Codesleeve\Stapler\Style;
 use Imagine\Image\ImagineInterface;
 use Imagine\Image\ImageInterface;
@@ -12,14 +12,14 @@ class Resizer
 	/**
 	 * Instance of Imagine Interface.
 	 *
-	 * @var \Imagine\Image\ImagineInterface
+	 * @var ImagineInterface
 	 */
 	protected $imagine;
 
 	/**
 	 * Constructor method
 	 *
-	 * @param \Imagine\Image\ImagineInterface $imagine
+	 * @param ImagineInterface $imagine
 	 */
 	function __construct(ImagineInterface $imagine) {
 		$this->imagine = $imagine;
@@ -28,11 +28,11 @@ class Resizer
 	/**
 	 * Resize an image using the computed settings.
 	 *
-	 * @param  UploadedFile $file
+	 * @param  FileInterface $file
 	 * @param  Style $style
 	 * @return void
 	 */
-	public function resize(UploadedFile $file, Style $style)
+	public function resize(FileInterface $file, Style $style)
 	{
 		$filePath = tempnam(sys_get_temp_dir(), 'STP') . '.' . $file->getFilename();
 		list($width, $height, $option) = $this->parseStyleDimensions($style);
@@ -236,11 +236,11 @@ class Resizer
 	/**
 	 * Resize an image using a user defined callback.
 	 *
-	 * @param  UploadedFile $file
+	 * @param  FileInterface $file
 	 * @param  $callable
 	 * @return ImageInterface
 	 */
-	protected function resizeCustom(UploadedFile $file, callable $callable)
+	protected function resizeCustom(FileInterface $file, callable $callable)
 	{
 		return call_user_func_array($callable, [$file, $this->imagine]);
 	}
@@ -317,5 +317,4 @@ class Resizer
 
 		return $image->strip();
 	}
-
 }

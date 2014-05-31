@@ -1,7 +1,5 @@
 <?php namespace Codesleeve\Stapler\Services;
 
-use Codesleeve\Stapler\File\UploadedFile;
-use Codesleeve\Stapler\IOWrapper;
 use Codesleeve\Stapler\Exceptions\InvalidClassException;
 use Illuminate\Database\Eloquent\Collection;
 use App;
@@ -11,6 +9,7 @@ class ImageRefreshService
 	/**
 	 * Attempt to refresh the defined attachments on a particular model.
 	 *
+     * @throws InvalidClassException
 	 * @param  string $class
 	 * @param  array $attachments
 	 * @return void

@@ -18,6 +18,7 @@ class Validator
 	 * Validate the attachment options for an attachment type when the storage
 	 * driver is set to 'filesystem'.
 	 *
+     * @throws Exceptions\InvalidUrlOptionException
 	 * @param  array $options
 	 * @return void
 	 */
@@ -32,6 +33,7 @@ class Validator
 	 * Validate the attachment options for an attachment type when the storage
 	 * driver is set to 's3'.
 	 *
+     * @throws Exceptions\InvalidUrlOptionException
 	 * @param  array $options
 	 * @return void
 	 */
