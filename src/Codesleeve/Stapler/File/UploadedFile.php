@@ -48,7 +48,7 @@ class UploadedFile implements FileInterface
 	 * @param  array   $parameters
 	 * @return mixed
 	 */
-	public function __call($method, $parameters)
+	public function __call($method, array $parameters)
 	{
  		return call_user_func_array([$this->uploadedFile, $method], $parameters);
 	}

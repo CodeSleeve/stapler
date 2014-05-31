@@ -3,6 +3,7 @@
 use Codesleeve\Stapler\File\UploadedFile;
 use Codesleeve\Stapler\IOWrapper;
 use Codesleeve\Stapler\Exceptions\InvalidClassException;
+use Illuminate\Database\Eloquent\Collection;
 use App;
 
 class ImageRefreshService
@@ -14,7 +15,7 @@ class ImageRefreshService
 	 * @param  array $attachments
 	 * @return void
 	 */
-	public function refresh($class, $attachments)
+	public function refresh($class, array $attachments)
 	{
 		if (!method_exists($class, 'hasAttachedFile')) {
 			throw new InvalidClassException("Invalid class: the $class class is not currently using Stapler.", 1);
@@ -36,10 +37,11 @@ class ImageRefreshService
 	/**
 	 * Process a only a specified subset of stapler attachments.
 	 *
+	 * @param  Collection $models
 	 * @param  array $attachments
 	 * @return void
 	 */
-	protected  function processSomeAttachments($models, $attachments)
+	protected  function processSomeAttachments(Collection $models, array $attachments)
 	{
 		foreach ($models as $model)
 		{
@@ -55,9 +57,10 @@ class ImageRefreshService
 	/**
 	 * Process all stapler attachments defined on a class.
 	 *
+	 * @param  Collection $models
 	 * @return void
 	 */
-	protected function processAllAttachments($models)
+	protected function processAllAttachments(Collection $models)
 	{
 		foreach ($models as $model)
 		{

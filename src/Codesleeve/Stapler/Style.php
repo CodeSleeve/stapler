@@ -23,7 +23,7 @@ class Style
 	 *
 	 * @var boolean
 	 */
-	public $autoOrient;
+	public $autoOrient = false;
 
 	/**
 	 * An array of values used by Imagine Image to control
@@ -31,7 +31,7 @@ class Style
 	 * 
 	 * @var array
 	 */
-	public $convertOptions;
+	public $convertOptions = [];
 
 	/**
 	 * Constructor method.

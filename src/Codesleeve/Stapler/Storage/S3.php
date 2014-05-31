@@ -2,6 +2,7 @@
 
 use Aws\S3\S3Client;
 use Codesleeve\Stapler\Attachment;
+use Codesleeve\Stapler\File\UploadedFile;
 
 class S3 implements StorageInterface
 {
@@ -29,7 +30,7 @@ class S3 implements StorageInterface
 	/**
 	 * Constructor method
 	 *
-	 * @param \Codesleeve\Stapler\Attachment $attachedFile
+	 * @param Attachment $attachedFile
      * @param S3Client $s3Client
 	 */
 	function __construct(Attachment $attachedFile, S3Client $s3Client)
@@ -66,7 +67,7 @@ class S3 implements StorageInterface
 	 * @param  array $filePaths
 	 * @return void
 	 */
-	public function remove($filePaths)
+	public function remove(array $filePaths)
 	{
 		if ($filePaths) {
 			$this->s3Client->deleteObjects(['Bucket' => $this->attachedFile->s3_object_config['Bucket'], 'Objects' => $this->getKeys($filePaths)]);
@@ -76,11 +77,11 @@ class S3 implements StorageInterface
 	/**
 	 * Move an uploaded file to it's intended destination.
 	 *
-	 * @param  \Codesleeve\Stapler\File\UploadedFile $file
+	 * @param  UploadedFile $file
 	 * @param  string $filePath
 	 * @return void
 	 */
-	public function move($file, $filePath)
+	public function move(UploadedFile $file, $filePath)
 	{
  		$objectConfig = $this->attachedFile->s3_object_config;
  	    $fileSpecificConfig = ['Key' => $filePath, 'SourceFile' => $file, 'ContentType' => $this->attachedFile->contentType()];

@@ -15,7 +15,7 @@ class Attachment
      * @param array $options
      * @return \Codesleeve\Stapler\Attachment
      */
-    public static function create($name, $options)
+    public static function create($name, array $options)
     {
         $options = static::mergeOptions($options);
         Stapler::getValidatorInstance()->validateOptions($options);
@@ -36,7 +36,7 @@ class Attachment
      * @param array $options
      * @return array
      */
-    protected static function buildDependencies($name, $options)
+    protected static function buildDependencies($name, array $options)
     {
         return [
             new AttachmentConfig($name, $options),
@@ -54,7 +54,7 @@ class Attachment
      * @param  array $options
      * @return array
      */
-    protected static function mergeOptions($options)
+    protected static function mergeOptions(array $options)
     {
         $config = Stapler::getConfigInstance();
         $defaultOptions = $config->get('stapler');

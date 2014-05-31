@@ -1,6 +1,7 @@
 <?php namespace Codesleeve\Stapler\Storage;
 
 use Codesleeve\Stapler\Exceptions;
+use Codesleeve\Stapler\Attachment;
 use Codesleeve\Stapler\File\UploadedFile;
 use Config;
 
@@ -16,9 +17,9 @@ class Filesystem implements StorageInterface
 	/**
 	 * Constructor method
 	 *
-	 * @param \Codesleeve\Stapler\Attachment $attachedFile
+	 * @param Attachment $attachedFile
 	 */
-	function __construct($attachedFile)
+	function __construct(Attachment $attachedFile)
 	{
 		$this->attachedFile = $attachedFile;
 	}
@@ -51,7 +52,7 @@ class Filesystem implements StorageInterface
 	 * @param array $filePaths
 	 * @return void
 	 */
-	public function remove($filePaths)
+	public function remove(array $filePaths)
 	{
 		foreach ($filePaths as $filePath) {
 			$directory = dirname($filePath);
@@ -68,7 +69,7 @@ class Filesystem implements StorageInterface
 	 * @param  string $filePath
 	 * @return void
 	 */
-	public function move($file, $filePath)
+	public function move(UploadedFile $file, $filePath)
 	{
  		$this->buildDirectory($filePath);
  		$this->moveFile($file, $filePath);

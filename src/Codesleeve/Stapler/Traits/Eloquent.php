@@ -29,7 +29,7 @@ trait Eloquent
      * @param array $options
      * @return void
      */
-    public function hasAttachedFile($name, $options = [])
+    public function hasAttachedFile($name, array $options = [])
     {
         $attachment = AttachmentFactory::create($name, $options);
         $attachment->setInstance($this);

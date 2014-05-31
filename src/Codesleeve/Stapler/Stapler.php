@@ -12,7 +12,7 @@ use Aws\S3\S3Client;
  * https://github.com/thoughtbot/paperclip
  *
  * @package Codesleeve/Stapler
- * @version v1.0.0-Beta4
+ * @version v1.0.0
  * @author Travis Bennett <tandrewbennett@hotmail.com>
  * @link
  */
@@ -162,10 +162,10 @@ class Stapler
      * If no instance has been defined yet we'll buld one and then
      * cache it on the s3Clients property (for the current request only).
      *
-     * @param  \Codesleeve\Stapler\Attachment $attachedFile
+     * @param  Attachment $attachedFile
      * @return S3Client
      */
-    public static function getS3ClientInstance($attachedFile)
+    public static function getS3ClientInstance(Attachment $attachedFile)
     {
         $modelName = $attachedFile->getInstanceClass();
         $attachmentName = $attachedFile->getConfig()->name;
@@ -212,7 +212,7 @@ class Stapler
      * @param $attachedFile
      * @return S3Client
      */
-    protected static function buildS3Client($attachedFile)
+    protected static function buildS3Client(Attachment $attachedFile)
     {
         return S3Client::factory($attachedFile->s3_client_config);
     }

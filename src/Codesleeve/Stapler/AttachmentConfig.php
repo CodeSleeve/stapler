@@ -29,7 +29,7 @@ class AttachmentConfig
 	 * @param string $name
 	 * @param array $options
 	 */
-	function __construct($name, $options)
+	function __construct($name, array $options)
 	{
 		if (!array_key_exists('styles', $options)) {
 			throw new Exceptions\InvalidAttachmentConfigurationException("Attachment configuration options must contain a 'styles' key", 1);

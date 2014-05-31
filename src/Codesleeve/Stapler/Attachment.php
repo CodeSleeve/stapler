@@ -221,7 +221,7 @@ class Attachment
 	 * @param  AttachmentConfig $config
 	 * @return void
 	 */
-	public function setConfig($config)
+	public function setConfig(AttachmentConfig $config)
 	{
 		$this->config = $config;
 	}
@@ -446,7 +446,7 @@ class Attachment
 	 * @param  array $stylesToClear
 	 * @return void
 	 */
-	public function destroy($stylesToClear = [])
+	public function destroy(array $stylesToClear = [])
 	{
 		$this->clear($stylesToClear);
 		$this->clearAttributes();
@@ -460,7 +460,7 @@ class Attachment
 	 * @param  array $stylesToClear
 	 * @return void
 	 */
-	public function clear($stylesToClear = [])
+	public function clear(array $stylesToClear = [])
 	{
 		if ($stylesToClear) {
 			$this->queueSomeForDeletion($stylesToClear);
@@ -560,7 +560,7 @@ class Attachment
 	 * @param  array $stylesToClear
 	 * @return void
 	 */
-	protected function queueSomeForDeletion($stylesToClear)
+	protected function queueSomeForDeletion(array $stylesToClear)
 	{
 		$filePaths = array_map(function($styleToClear)
 		{

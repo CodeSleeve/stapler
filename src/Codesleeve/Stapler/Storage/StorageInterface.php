@@ -1,5 +1,7 @@
 <?php namespace Codesleeve\Stapler\Storage;
 
+use Codesleeve\Stapler\File\UploadedFile;
+
 interface StorageInterface
 {
     /**
@@ -25,7 +27,7 @@ interface StorageInterface
 	 * @param array $filePaths
 	 * @return void
 	 */
-    public function remove($filePaths);
+    public function remove(array $filePaths);
 
     /**
 	 * Move an uploaded file to it's intended destination.
@@ -36,5 +38,5 @@ interface StorageInterface
 	 * @param  string $filePath
 	 * @return void
 	 */
-	public function move($file, $filePath);
+	public function move(UploadedFile $file, $filePath);
 }

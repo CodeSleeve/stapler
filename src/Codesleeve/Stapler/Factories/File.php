@@ -54,7 +54,7 @@ class File
 	 * @param  boolean $testing
 	 * @return \Codesleeve\Stapler\File\File
 	 */
-	protected static function createFromArray($file, $testing)
+	protected static function createFromArray(array $file, $testing)
 	{
 		$file = new SymfonyUploadedFile($file['tmp_name'], $file['name'], $file['type'], $file['size'], $file['error'], $testing);
 
