@@ -116,6 +116,8 @@ class Attachment
 		}
 
 		if ($uploadedFile == STAPLER_NULL) {
+			$this->clearAttributes();
+
 			return;
 		}
 
@@ -448,7 +450,6 @@ class Attachment
 	public function destroy(array $stylesToClear = [])
 	{
 		$this->clear($stylesToClear);
-		$this->clearAttributes();
 		$this->flushDeletes();
 	}
 

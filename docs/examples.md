@@ -1,150 +1,198 @@
 ## Examples
-Create an attachment named 'picture', with both thumbnail (100x100) and large (300x300) styles, using custom url and default_url configurations.
+* [Eloquent](#eloquent)
+  * [Defining Attachments](#defining-attachments)
+  * [Saving Files](#saving-files)
+  * [Retreiving Uploads](#retreiving-uploads)
+  * [Deleting uploads](#deleting-uploads)
 
+*These examples assume you have already booted Stapler (see [setup](setup.md) for more info on this).*
+
+### Eloquent
+#### Definining-Attachments
 ```php
-public function __construct(array $attributes = array()) {
-    $this->hasAttachedFile('picture', [
-        'styles' => [
-            'thumbnail' => '100x100',
-            'large' => '300x300'
-        ],
-        'url' => '/system/:attachment/:id_partition/:style/:filename',
-        'default_url' => '/:attachment/:style/missing.jpg'
-    ]);
-
-    parent::__construct($attributes);
-}
-```
-
-Create an attachment named 'picture', with both thumbnail (100x100) and large (300x300) styles, using custom url and default_url configurations, with the keep_old_files flag set to true (so that older file uploads aren't deleted from the file system) and image cropping turned on.
-
-```php
-public function __construct(array $attributes = array()) {
-    $this->hasAttachedFile('picture', [
-        'styles' => [
-            'thumbnail' => '100x100#',
-            'large' => '300x300#'
-        ],
-        'url' => '/system/:attachment/:id_partition/:style/:filename',
-        'default_url' => '/:attachment/:style/missing.jpg',
-        'keep_old_files' => true
-    ]);
-
-    parent::__construct($attributes);
-}
-```
-
-To store this on s3, you'll need to set a few s3 specific configuraiton options (the url interpolation will no longer be necessary when using s3 storage): 
-
-```php
-public function __construct(array $attributes = array()) {
-    $this->hasAttachedFile('picture', [
-        'styles' => [
-            'thumbnail' => '100x100#',
-            'large' => '300x300#'
-        ],
-        'default_url' => '/:attachment/:style/missing.jpg',
-        'storage' => 's3',
-        'key' => 'yourPublicKey',
-        'secret' => 'yourSecreteKey',
-        'bucket' => 'your.s3.bucket',
-        'keep_old_files' => true
-    ]);
-
-    parent::__construct($attributes);
-}
-```
-
-Stapler makes it easy to manage multiple file uploads as well.  In stapler, attachments (and the uploaded file objects they represent) are tied directly to database records.  Because of this, processing multiple file uploades is simply a matter of defining the correct Eloquent relationships between models.  
-
-As an example of how this works, let's assume that we have a system where users need to have multiple profile pictures (let's say 3).  Also, let's assume that users need to have the ability to upload all three of their photos from the user creation form. To do this, we'll need two tables (users and profile_pictures) and we'll need to set their relationships such that profile pictures belong to a user and a user has many profile pictures.  By doing this, uploaded images can be attached to the ProfilePicture model and instances of the User model can in turn access the uploaded files via their hasMany relationship to the ProfilePicture model.  Here's what this looks like:
-
-In models/user.php:
-
-```php
-// A user has many profile pictures.
-public function profilePictures(){
-    return $this->hasMany('ProfilePicture');
-}
-```
-
-In models/ProfilePicture.php:
-```php
-public function __construct(array $attributes = array()) {
-    // Profile pictures have an attached file (we'll call it photo).
-    $this->hasAttachedFile('photo', [
-        'styles' => [
-            'thumbnail' => '100x100#'
-        ]
-    ]);
-
-    parent::__construct($attributes);
-}
-
-// A profile picture belongs to a user.
-public function user(){
-    return $this->belongsTo('User');
-}
-```
-
-In the user create view:
-
-```php
-<?= Form::open(['url' => '/users', 'method' => 'post', 'files' => true]) ?>
-    <?= Form::text('first_name') ?>
-    <?= Form::text('last_name') ?>
-    <?= Form::file('photos[]') ?>
-    <?= Form::file('photos[]') ?>
-    <?= Form::file('photos[]') ?>
-<?= Form::close() ?>
-```
-
-In controllers/UsersController.php
-```php
-public function store()
+Class Photo extends Eloquent
 {
-    // Create the new user
-    $user = new User(Input::get());
-    $user->save();
-
-    // Loop through each of the uploaded files:
-    // 1. Create a new ProfilePicture instance. 
-    // 2. Attach the file to the new instance (stapler will process it once it's saved).
-    // 3. Attach the ProfilePicture instance to the user and save it.
-    foreach(Input::file('photos') as $photo)
+    // We'll need to use the Stapler Eloquent trait in our model (see setup for more info).
+    use Codesleeve\Stapler\Traits\Eloquent;
+    
+    /**
+     * We can add our attachments to the fillable array so that they're 
+     * mass assignable on the model.
+     *
+     * @var array
+     */
+    protected $fillable = ['foo', 'bar', 'baz', 'qux', 'quux'];
+    
+    /**
+     * Inside our model's constructor, we'll define some stapler attachments:
+     *
+     * @param attributes
+     */
+    public function __construct(array $attributes = array()) 
     {
-        $profilePicture = new ProfilePicture();             // (1)
-        $profilePicture->photo = $photo;                    // (2)
-        $user->profilePictures()->save($profilePicture);    // (3)
+        // Define an attachment named 'foo', with both thumbnail (100x100) and large (300x300) styles, 
+        // using custom url and default_url configurations:
+        $this->hasAttachedFile('foo', [
+            'styles' => [
+                'thumbnail' => '100x100',
+                'large' => '300x300'
+            ],
+            'url' => '/system/:attachment/:id_partition/:style/:filename',
+            'default_url' => '/:attachment/:style/missing.jpg'
+        ]);
+        
+        // Define an attachment named 'bar', with both thumbnail (100x100) and large (300x300) styles, 
+        // using custom url and default_url configurations, with the keep_old_files flag set to true 
+        // (so that older file uploads aren't deleted from the file system) and image cropping turned on:
+        $this->hasAttachedFile('bar', [
+            'styles' => [
+                'thumbnail' => '100x100#',
+                'large' => '300x300#'
+            ],
+            'url' => '/system/:attachment/:id_partition/:style/:filename',
+            'keep_old_files' => true
+        ]);
+        
+        // Define an attachment named 'baz' that has a watermarked style.  Here, we define a style named 'watermarked'
+        // that's a closure (so that we can do some complex watermarking stuff):
+        $this->hasAttachedFile('baz', [
+            'styles' => [
+                'thumbnail' => ['dimensions' => '100x100', 'auto-orient' => true, 'convert_options' => ['quality' => 100]],
+                'micro'     => '50X50',
+                'watermarked' => function($file, $imagine) {
+                    $watermark = $imagine->open('/path/to/images/watermark.png');   // Create an instance of ImageInterface for the watermark image.
+                    $image     = $imagine->open($file->getRealPath());              // Create an instance of ImageInterface for the uploaded image.
+                    $size      = $image->getSize();                                 // Get the size of the uploaded image.
+                    $watermarkSize = $watermark->getSize();                         // Get the size of the watermark image.
+
+                    // Calculate the placement of the watermark (we're aiming for the bottom right corner here).
+                    $bottomRight = new Imagine\Image\Point($size->getWidth() - $watermarkSize->getWidth(), $size->getHeight() - $watermarkSize->getHeight());
+
+                    // Paste the watermark onto the image.
+                    $image->paste($watermark, $bottomRight);
+
+                    // Return the Imagine\Image\ImageInterface instance.
+                    return $image;
+                }
+            ],
+            'url' => '/system/:attachment/:id_partition/:style/:filename'
+        ]);
+        
+        // Define an attachment named 'qux'.  In this attachment, we'll use alternative style notation to define a slightly more
+        // complex thumbnail style.  In this example, the thumbnail style will be a 100x100px auto-oriented image with 100% quality: 
+        $this->hasAttachedFile('qux', [
+            'styles' => [
+                'thumbnail' => ['dimensions' => '100x100', 'auto-orient' => true, 'convert_options' => ['quality' => 100]],
+                'micro'     => '50X50'
+            ],
+            'url' => '/system/:attachment/:id_partition/:style/:filename',
+            'default_url' => '/defaults/:style/missing.png'
+        ]);
+        
+        // Define an attachment named 'quux' that stores images remotely in an S3 bucket.
+        $this->hasAttachedFile('quux', [
+            'styles' => [
+                'thumbnail' => '100x100#',
+                'large' => '300x300#'
+            ],
+            'storage' => 's3',
+            's3_client_config' => [
+                'key' => 'yourPublicKey',
+                'secret' => 'yourSecreteKey',
+                'region' => 'yourBucketRegion'
+            ],
+            's3_object_config' => [
+                'bucket' => 'your.s3.bucket'
+            ],
+            'default_url' => '/defaults/:style/missing.png',
+            'keep_old_files' => true
+        ]);
+
+        // IMPORTANT:  the call to the parent constructor method
+        // should always come after we define our attachments.
+        parent::__construct($attributes);
     }
 }
 ```
 
-Displaying uploaded files is also easy.  When working with a model instance, each attachment can be accessed as a property on the model.  An attachment object provides methods for seamlessly accessing the properties, paths, and urls of the underlying uploaded file object.  As an example, for an attachment named 'photo', the path(), url(), createdAt(), contentType(), size(), and originalFilename() methods would be available on the model to which the file was attached.  Continuing our example from above, we can loop through a user's profile pictures display each of the uploaded files like this:
+#### Saving-Files
+Once an attachment is defined on a model, we can then assign values to it (as a property on the model) in order to save it as a file upload.  Assuming we had an instance of our Photo model from above, we can assign a value to any of our defined attachments before saving the model.  Upon successful save of the record, Stapler will go in and handle all of the file uploading, image processing, etc for us.  In a controller somewhere, let's assume that we've fetched (or created) a photo model instance and we want to assign some file values to it (from a previously submitted form):
 
-```html
-// Display a resized thumbnail style image belonging to a user record:
-<img src="<?= asset($profilePicture->photo->url('thumbnail')) ?>">
-
-// Display the original image style (unmodified image):
-<img src="<?=  asset($profilePicture->photo->url('original')) ?>">
-
-// This also displays the unmodified original image (unless the :default_style interpolation has been set to a different style):
-<img src="<?=  asset($profilePicture->photo->url()) ?>">
-```
-
-We can also retrieve the file path, size, original filename, etc of an uploaded file:
 ```php
-$profilePicture->photo->path('thumbnail');
-$profilePicture->photo->size();
-$profilePicture->photo->originalFilename();
+// If we're using Laravel, we can assign the Symfony uploaded file object directly on the modeal:
+$photo->foo = Input::file('foo');
+$photos->save();
+
+// In fact, because our attachments are listed in our fillable array, we can simple mass assign all input values on our photo:
+$photo->fill(Input::all());
+$photo->save();
+
+// If we're not using Laravel, we can assign an array (from the $_FILES array) to the uploaded file:
+$photo->foo = $_FILES['foo'];
+$photo->save();
+
+// Regardless of what framework we're using, we can always assign a remote url as an attachment value.
+// This is very useful when working with third party API's such as facebook, twitter, etc.  
+// Note that this feature requires that the CURL extension is included as part of your PHP installation.
+$photo->foo = "http://foo.com/bar.jpg";
+$photo->save();
+
+// Or an existing file on the local filesystem:
+$photo->foo = "/some/path/on/the/local/file/system/bar.jpg";
+$photo->save();
 ```
 
-## Fetching-Remote-Images
-As of Stapler v1.0.0-Beta4, remote images can now be fetched by assigning an absolute URL to an attachment property that's defined on a model: 
+#### Retreiving-Uploads
+After we define an attachment on a model, we can access the attachment as on property on the model regardless of whether or not an image has been uploaded or not.  When attempting to display images, the default image url will be displayed until an image is uploaded.  The attachment itself is an instance of Codesleeve\Stapler\Attachment (see [attachments](attachments.md) for more info on attachments).  An attachment is really just a value object; it provides methods for seamlessly accessing the properties, paths, and urls of the underlying uploaded file.  Continuing our example from above, lets assume we wanted to display the various styles of our previously defined foo attachment in an image tag.  Assuming we had an instance of the Photo model, we could do the following:
+```html
+Display a resized thumbnail style image belonging to a user record
+<img src="<?= $photo->foo->url('thumbnail') ?>">
 
-```php 
-$profilePicture->photo = "http://foo.com/bar.jpg"; 
+Display the original image style (unmodified image):
+<img src="<?= $photo->foo->url('original') ?>">
+
+This also displays the unmodified original image (unless the :default_style interpolation has been set to a different style):
+<img src="<?= $photo->foo->url() ?>">
 ```
 
-This is very useful when working with third party API's such as facebook, twitter, etc.  Note that this feature requires that the CURL extension is included as part of your PHP installation.
+As you can, we can display any of the defined styles for a given attachment. We can also retrieve the full file path (on disk) of a given style (this is very useful when providing file download functionality):
+```php
+$photo->foo->path('thumbnail');
+```
+
+We can also grab the size, original filename, laste updated timestamp, and content type of the original (unaltered) uploaded file (**NOTE**: *stapler will always store an unaltered version of the original file*):
+```php
+$photo->foo->size();
+$photo->foo->originalFilename();
+$photo->foo->updatedAt();
+$photo->foo->contentType();
+```
+
+#### Deleting-Uploads
+Unless you've set the 'keep_old_files' flag on the attachment to true, deleting a record will automatically remove all uploaded files, across all attachments, across all styles, for the a given model/record:
+```php
+$photo->delete();
+```
+
+If we need to remove the uploaded files only (the photo record itself will remain intact), we can assign the attachment a value of STAPLER_NULL and then save the record. This will remove all of the attachment's uploaded files from storage and clear out the attachment related file attributes on the model:
+```php
+// Remove all of the attachment's uploaded files and empty the attacment attributes on the model (does not save the record though).
+$photo->foo = STAPLER_NULL;
+$photo->save();
+```
+
+The destroy method is similar, however it doesn't clear out the attachment attributes on the model and doesn't require us to save the record in order to remove uploaded files.  It's also filterable; we can pass in array of the syles we want to clear:  
+```php
+// Remove all of the attachments's uploaded files (across all styles) from storage.
+$photo->foo->destroy();
+
+// Remove thumbnail files only.
+$photo->foo->destroy(['thumbnail']);
+```
+
+You may also reprocess uploaded images on an attachment by calling the reprocess() command (this is very useful for adding new styles to an existing attachment type where records have already been uploaded).
+
+```php
+// Programmatically reprocess an attachment's uploaded images:
+$photo->foo->reprocess();
+```
