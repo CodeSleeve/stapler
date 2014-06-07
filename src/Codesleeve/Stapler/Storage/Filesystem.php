@@ -48,7 +48,6 @@ class Filesystem implements StorageInterface
 	 * Remove an attached file.
 	 *
 	 * @param array $filePaths
-	 * @return void
 	 */
 	public function remove(array $filePaths)
 	{
@@ -65,7 +64,6 @@ class Filesystem implements StorageInterface
 	 *
 	 * @param  string $file
 	 * @param  string $filePath
-	 * @return void
 	 */
 	public function move($file, $filePath)
 	{
@@ -78,7 +76,6 @@ class Filesystem implements StorageInterface
 	 * Determine if a style directory needs to be built and if so create it.
 	 *
 	 * @param  string $filePath
-	 * @return void
 	 */
 	protected function buildDirectory($filePath)
 	{
@@ -112,7 +109,6 @@ class Filesystem implements StorageInterface
 	 * @param  string $file
 	 * @param  string $filePath
      * @throws Exceptions\FileException
-	 * @return void
 	 */
 	protected function moveFile($file, $filePath)
 	{
@@ -129,7 +125,6 @@ class Filesystem implements StorageInterface
 	 * @desc Recursively loops through each file in the directory and deletes it.
 	 * @param string $directory
 	 * @param boolean $deleteDirectory
-	 * @return void
 	 */
 	protected function emptyDirectory($directory, $deleteDirectory = false)
 	{

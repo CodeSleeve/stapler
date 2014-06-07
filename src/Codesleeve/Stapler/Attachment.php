@@ -107,7 +107,6 @@ class Attachment
 	 * - A Symfony uploaded file object.
 	 *
 	 * @param mixed $uploadedFile
-	 * @return void
 	 */
 	public function setUploadedFile($uploadedFile)
 	{
@@ -164,7 +163,6 @@ class Attachment
 	 * Mutator method for the resizer property.
 	 *
 	 * @param Resizer $resizer
-	 * @return  void
 	 */
 	public function setResizer(Resizer $resizer)
 	{
@@ -185,7 +183,6 @@ class Attachment
 	 * Mutator method for the storageDriver property.
 	 *
 	 * @param  StorageInterface $storageDriver
-	 * @return void
 	 */
 	public function setStorageDriver(StorageInterface $storageDriver)
 	{
@@ -198,7 +195,6 @@ class Attachment
 	 * corresponding model instance it's attached to.
 	 *
 	 * @param mixed $instance
-	 * @return void
 	 */
 	public function setInstance($instance)
 	{
@@ -221,7 +217,6 @@ class Attachment
 	 * Mutator method for the config property.
 	 *
 	 * @param  AttachmentConfig $config
-	 * @return void
 	 */
 	public function setConfig(AttachmentConfig $config)
 	{
@@ -375,8 +370,6 @@ class Attachment
 
     /**
 	 * Rebuild the images for this attachment.
-	 *
-	 * @return void
 	 */
 	public function reprocess()
 	{
@@ -405,7 +398,6 @@ class Attachment
 	 * Process the write queue.
 	 *
 	 * @param  mixed $instance
-	 * @return void
 	*/
 	public function afterSave($instance)
 	{
@@ -417,7 +409,6 @@ class Attachment
 	 * Queue up this attachments files for deletion.
 	 *
 	 * @param  mixed $instance
-	 * @return void
 	 */
 	public function beforeDelete($instance)
 	{
@@ -432,7 +423,6 @@ class Attachment
 	 * Process the delete queue.
 	 *
 	 * @param  mixed $instance
-	 * @return void
 	*/
 	public function afterDelete($instance)
 	{
@@ -445,7 +435,6 @@ class Attachment
 	 * STAPLER_NULL to the attachment and then saving.
 	 *
 	 * @param  array $stylesToClear
-	 * @return void
 	 */
 	public function destroy(array $stylesToClear = [])
 	{
@@ -458,7 +447,6 @@ class Attachment
 	 * STAPLER_NULL to the attachment.  Does not save the associated model.
 	 *
 	 * @param  array $stylesToClear
-	 * @return void
 	 */
 	public function clear(array $stylesToClear = [])
 	{
@@ -473,8 +461,6 @@ class Attachment
 	/**
 	 * Removes the old file upload (if necessary).
 	 * Saves the new file upload.
-	 *
-	 * @return void
 	 */
 	public function save()
 	{
@@ -487,7 +473,6 @@ class Attachment
      *
      * @param  string $property
      * @param  mixed $value
-     * @return void
      */
     public function instanceWrite($property, $value)
     {
@@ -498,8 +483,6 @@ class Attachment
 	/**
 	 * Clear (set to null) all attachment related model
 	 * attributes.
-	 * 
-	 * @return void
 	 */
 	public function clearAttributes()
 	{
@@ -511,8 +494,6 @@ class Attachment
 
 	/**
 	 * Process the queuedForWrite que.
-	 *
-	 * @return void
 	 */
 	protected function flushWrites()
 	{
@@ -534,8 +515,6 @@ class Attachment
 
 	/**
 	 * Process the queuedForDeletion que.
-	 *
-	 * @return void
 	 */
 	protected function flushDeletes()
 	{
@@ -545,8 +524,6 @@ class Attachment
 
 	/**
 	 * Fill the queuedForWrite que with all of this attachment's styles.
-	 *
-	 * @return void
 	 */
 	protected function queueAllForWrite()
 	{
@@ -558,7 +535,6 @@ class Attachment
 	 * to the queuedForDeletion queue.
 	 *
 	 * @param  array $stylesToClear
-	 * @return void
 	 */
 	protected function queueSomeForDeletion(array $stylesToClear)
 	{
@@ -572,8 +548,6 @@ class Attachment
 
     /**
      * Add all uploaded files (across all image styles) to the queuedForDeletion queue.
-     *
-     * @return void
      */
     protected function queueAllForDeletion()
     {

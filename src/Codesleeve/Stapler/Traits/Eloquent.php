@@ -27,7 +27,6 @@ trait Eloquent
      *
      * @param string $name
      * @param array $options
-     * @return void
      */
     public function hasAttachedFile($name, array $options = [])
     {
@@ -38,8 +37,6 @@ trait Eloquent
 
     /**
      * The "booting" method of the model.
-     *
-     * @return void
      */
     public static function boot()
     {
@@ -53,8 +50,6 @@ trait Eloquent
      * We'll spin through each of the attached files defined on this class
      * and register callbacks for the events we need to observe in order to
      * handle file uploads.
-     *
-     * @return void
      */
     public static function bootStapler()
     {
@@ -98,7 +93,6 @@ trait Eloquent
      *
      * @param  string $key
      * @param  mixed $value
-     * @return void
      */
     public function setAttribute($key, $value)
     {

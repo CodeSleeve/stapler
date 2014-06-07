@@ -111,7 +111,6 @@ class UploadedFile implements FileInterface
 	 * Validate the uploaded file object.
 	 *
      * @throws FileException
-	 * @return void
 	 */
 	public function validate()
 	{
@@ -123,7 +122,7 @@ class UploadedFile implements FileInterface
 	/**
      * Returns an informative upload error message.
      *
-     * @return string The error message regarding the specified error code
+     * @return string
      */
     protected function getErrorMessage()
     {

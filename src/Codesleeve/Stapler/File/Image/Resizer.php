@@ -30,7 +30,7 @@ class Resizer
 	 *
 	 * @param  FileInterface $file
 	 * @param  Style $style
-	 * @return void
+	 * @return string
 	 */
 	public function resize(FileInterface $file, Style $style)
 	{

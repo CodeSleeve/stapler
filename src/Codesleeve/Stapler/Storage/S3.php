@@ -64,7 +64,6 @@ class S3 implements StorageInterface
 	 * Remove an attached file.
 	 *
 	 * @param  array $filePaths
-	 * @return void
 	 */
 	public function remove(array $filePaths)
 	{
@@ -78,7 +77,6 @@ class S3 implements StorageInterface
 	 *
 	 * @param  string $file
 	 * @param  string $filePath
-	 * @return void
 	 */
 	public function move($file, $filePath)
 	{
@@ -112,7 +110,6 @@ class S3 implements StorageInterface
 	 * Ensure that a given S3 bucket exists.
 	 *
 	 * @param  string $bucketName
-	 * @return void
 	 */
 	protected function ensureBucketExists($bucketName)
 	{
@@ -125,7 +122,6 @@ class S3 implements StorageInterface
 	 * Attempt to build a bucket (if it doesn't already exist).
 	 *
 	 * @param  string $bucketName
-	 * @return void
 	 */
 	protected function buildBucket($bucketName)
 	{

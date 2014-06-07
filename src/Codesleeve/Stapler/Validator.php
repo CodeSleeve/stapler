@@ -7,7 +7,6 @@ class Validator
 	 * A url is required to have either an :id or an :id_partition interpolation.
 	 *
 	 * @param  array $options
-	 * @return void
 	 */
 	public function validateOptions(array $options)
 	{
@@ -20,7 +19,6 @@ class Validator
 	 *
      * @throws Exceptions\InvalidUrlOptionException
 	 * @param  array $options
-	 * @return void
 	 */
 	protected function validateFilesystemOptions(array $options)
 	{
@@ -35,7 +33,6 @@ class Validator
 	 *
      * @throws Exceptions\InvalidUrlOptionException
 	 * @param  array $options
-	 * @return void
 	 */
 	protected function validateS3Options(array $options)
 	{

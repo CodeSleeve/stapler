@@ -74,7 +74,6 @@ class NativeConfig implements ConfigInterface
      *
      * @param $name
      * @param $value
-     * @return mixed
      */
     public function set($name, $value)
     {
