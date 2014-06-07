@@ -42,5 +42,5 @@ Stapler works by attaching file uploads to database table records.  This is done
 * [Image Processing](docs/imageprocessing.md)
 * [Working with Attachment](docs/attachments.md)
 * [Examples](docs/examples.md)
-* [Advanced Usage](docs/advanced.md)
+* [Troubleshooting](docs/troubleshooting.md)
 * [Contributing](docs/contributing.md)
