@@ -7,7 +7,7 @@ use Codesleeve\Stapler\Factories\File as FileFactory;
 class Attachment
 {
 	/**
-	 * The model the attachment belongs to.
+	 * The model instance that the attachment belongs to.
 	 *
 	 * @var mixed
 	 */
@@ -56,7 +56,7 @@ class Attachment
 	protected $queuedForDeletion = [];
 
 	/**
-	 * The uploaded/resized files that have been queued up for deletion.
+	 * The uploaded/resized files that have been queued up to be written to storage.
 	 *
 	 * @var array
 	 */
@@ -190,6 +190,16 @@ class Attachment
 	}
 
 	/**
+	 * Accessor method for the storageDriver property.
+	 *
+	 * @return StorageInterface
+	 */
+	public function getStorageDriver()
+	{
+		return $this->storageDriver;
+	}
+
+	/**
 	 * Mutator method for the instance property.
 	 * This provides a mechanism for the attachment to access properties of the
 	 * corresponding model instance it's attached to.
@@ -272,7 +282,7 @@ class Attachment
 	}
 
 	/**
-	 * Generates the url to a file upload.
+	 * Generates the url to an uploaded file (or a resized version of it).
 	 *
 	 * @param string $styleName
 	 * @return string
@@ -287,7 +297,8 @@ class Attachment
 	}
 
 	/**
-	 * Generates the file system path to an uploaded file.  This is used for saving files, etc.
+	 * Generates the file system path to an uploaded file (or a resized version of it). 
+	 * This is used for saving files, etc.
 	 *
 	 * @param string $styleName
 	 * @return string
@@ -358,7 +369,7 @@ class Attachment
 	}
 
 	/**
-     * Return the class type of the attachment's underlying
+     * Returns the class type of the attachment's underlying
      * model instance.
      *
      * @return string
@@ -369,7 +380,7 @@ class Attachment
     }
 
     /**
-	 * Rebuild the images for this attachment.
+	 * Rebuilds the images for this attachment.
 	 */
 	public function reprocess()
 	{
@@ -431,8 +442,8 @@ class Attachment
 	}
 
 	/**
-	 * Destroys the attachment.  Has the same effect as previously assigning
-	 * STAPLER_NULL to the attachment and then saving.
+	 * Removes all uploaded files (from storage) for this attachment.
+	 * This method does not clear out attachment attributes on the model instance.
 	 *
 	 * @param  array $stylesToClear
 	 */
@@ -443,8 +454,7 @@ class Attachment
 	}
 
 	/**
-	 * Clears out the attachment.  Has the same effect as previously assigning
-	 * STAPLER_NULL to the attachment.  Does not save the associated model.
+	 * Queues up all or some of this attachments uploaded files/images for deletion.
 	 *
 	 * @param  array $stylesToClear
 	 */
@@ -459,8 +469,7 @@ class Attachment
 	}
 
 	/**
-	 * Removes the old file upload (if necessary).
-	 * Saves the new file upload.
+	 * Flushes the queuedForDeletion and queuedForWrite arrays.
 	 */
 	public function save()
 	{
