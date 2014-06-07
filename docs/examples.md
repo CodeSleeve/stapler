@@ -143,7 +143,7 @@ $photo->save();
 ```
 
 #### Retreiving-Uploads
-After we define an attachment on a model, we can access the attachment as on property on the model regardless of whether or not an image has been uploaded or not.  When attempting to display images, the default image url will be displayed until an image is uploaded.  The attachment itself is an instance of Codesleeve\Stapler\Attachment (see [attachments](attachments.md) for more info on attachments).  An attachment is really just a value object; it provides methods for seamlessly accessing the properties, paths, and urls of the underlying uploaded file.  Continuing our example from above, lets assume we wanted to display the various styles of our previously defined foo attachment in an image tag.  Assuming we had an instance of the Photo model, we could do the following:
+After we define an attachment on a model, we can access the attachment as a property on the model (regardless of whether or not an image has been uploaded or not).  When attempting to display images, the default image url will be displayed until an image is uploaded.  The attachment itself is an instance of Codesleeve\Stapler\Attachment (see [attachments](attachments.md) for more info on attachments).  An attachment is really just a value object; it provides methods for seamlessly accessing the properties, paths, and urls of the underlying uploaded file.  Continuing our example from above, lets assume we wanted to display the various styles of our previously defined foo attachment in an image tag.  Assuming we had an instance of the Photo model, we could do the following:
 ```html
 Display a resized thumbnail style image belonging to a user record
 <img src="<?= $photo->foo->url('thumbnail') ?>">
@@ -155,7 +155,7 @@ This also displays the unmodified original image (unless the :default_style inte
 <img src="<?= $photo->foo->url() ?>">
 ```
 
-As you can, we can display any of the defined styles for a given attachment. We can also retrieve the full file path (on disk) of a given style (this is very useful when providing file download functionality):
+As you can see, we can display any of the defined styles for a given attachment. We can also retrieve the full file path (on disk) of a given style (this is very useful when providing file download functionality):
 ```php
 $photo->foo->path('thumbnail');
 ```
