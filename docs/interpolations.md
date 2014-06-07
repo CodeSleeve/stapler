@@ -8,6 +8,6 @@ With Stapler, uploaded files are accessed by configuring/defining path, url, and
 *   **:id** - The id of the corresponding database record for the uploaded file.
 *   **:id_partition** - The partitioned id of the corresponding database record for the uploaded file, e.g an id = 1 is interpolated as 000/000/001.  This is the default and recommended setting for Stapler.  Partioned id's help overcome the 32k subfolder problem that occurs in nix-based systems using the EXT3 file system.
 *   **:hash** - An sha256 hash of the corresponding database record id.
-*   **:laravel_root** - The path to the root of the laravel project.
+*   **:app_root** - The path to the root of the project.
 *   **:style** - The resizing style of the file (images only), e.g 'thumbnail' or 'orginal'.
 *   **:url** - The url string pointing to your uploaded file.  This interpolation is actually an interpolation itself.  It can be composed of any of the above interpolations (except itself).

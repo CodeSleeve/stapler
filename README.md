@@ -40,6 +40,7 @@ Stapler works by attaching file uploads to database table records.  This is done
 * [Configuration](docs/configuration.md)
 * [Interpolations](docs/interpolations.md)
 * [Image Processing](docs/imageprocessing.md)
+* [Working with Attachment](docs/attachments.md)
 * [Examples](docs/examples.md)
 * [Advanced Usage](docs/advanced.md)
 * [Contributing](docs/contributing.md)
