@@ -116,7 +116,7 @@ Class Photo extends Eloquent
 ```
 
 #### Saving-Files
-Once an attachment is defined on a model, we can then assign values to it (as a property on the model) in order to save it as a file upload.  Assuming we had an instance of our Photo model from above, we can assign a value to any of our defined attachments before saving the model.  Upon successful save of the record, Stapler will go in and handle all of the file uploading, image processing, etc for us.  In a controller somewhere, let's assume that we've fetched (or created) a photo model instance and we want to assign some file values to it (from a previously submitted form):
+Once an attachment is defined on a model, we can then assign values to it (as a property on the model) in order to save it as a file upload.  Assuming we had an instance of our Photo model from above, we can assign a value to any of our defined attachments before saving the model.  Upon a successful save of the record, Stapler will go in and handle all of the file uploading, image processing, etc for us.  In a controller somewhere, let's assume that we've fetched (or created) a photo model instance and we want to assign some file values to it (from a previously submitted form):
 
 ```php
 // If we're using Laravel, we can assign the Symfony uploaded file object directly on the modeal:

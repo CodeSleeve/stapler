@@ -51,7 +51,7 @@ As your web application grows, you may find yourself in need of more robust file
   }
 ```
 
-Next, change the storage setting in config/stapler.php from 'filesystem' to 's3' (keep in mind, this can be done per attachment if you want to use s3 for a specific attachment only).  As of Stapler 1.0.0, S3 storage configration for the S3Client is broken down into two arrays:
+Next, change the storage setting in config/stapler.php from 'filesystem' to 's3' (keep in mind, this can be done per attachment if you want to use s3 for a specific attachment only).  As of Stapler 1.0.0, S3 storage configuration for the S3Client is broken down into two arrays:
 
 * **s3_client_config**: An array of key/value pairs that will be passed directly into the S3Client::factory() method.  You can go [here](http://docs.aws.amazon.com/aws-sdk-php/guide/latest/configuration.html#client-configuration-options) for a complete list/explanation of these options.
 * **s3_object_config**: An array of key/value pairs that will be passed directly to the S3Client::putObject() method.  You can go [here](http://docs.aws.amazon.com/aws-sdk-php/latest/class-Aws.S3.S3Client.html#_putObject) for a complete list/explanation of these options.
