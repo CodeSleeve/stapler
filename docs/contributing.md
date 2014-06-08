@@ -1,8 +1,8 @@
 ## Contributing
-Stapler is always open to contributions, however there are a couple of guidelines you should follow:
+This package is always open to contributions, however there are a couple of guidelines you should follow:
 
 1. Master will always contain the most recent, stable release.
-2. Development will always have the newest work (bug fixes, new features, etc) and will always be ahead of master.  Every new tagged release will come from the work done on development (development will always be merged into master before a release is tagged).  If you want to contribute to Stapler, you must submit your pull request to development; it will always contain the most recent development work I'm doing.  **I WILL NOT BE MERGING PULL REQUESTS INTO MASTER**.
+2. Development will always have the newest work (bug fixes, new features, etc) and will always be ahead of master.  Every new tagged release will come from the work done on development (development will always be merged into master before a release is tagged).  If you want to contribute, you must submit your pull request to development; it will always contain the most recent development work I'm doing.  **I WILL NOT BE MERGING PULL REQUESTS INTO MASTER**.
 
 ### Formating
 I'm very particular about the way I format my php code.  In general, if you're submitting a pull request to Stapler, please adhere to the following guidelines and conventions:
