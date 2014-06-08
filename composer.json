@@ -1,6 +1,6 @@
 {
     "name": "codesleeve/stapler",
-    "description": "Easy file attachment management for your favorite ORM",
+    "description": "Elegant and simple ORM-based file upload package for php.",
     "keywords": ["ORM", "file", "upload", "S3", "AWS", "paperclip"],
     "license": "MIT",
     "authors": [
@@ -16,7 +16,6 @@
         "doctrine/inflector": "v1.0"
     },
     "require-dev": {
-        "mikey179/vfsStream": "1.2.0",
         "mockery/mockery": "0.8.0",
         "aws/aws-sdk-php": "2.4.*@dev",
         "illuminate/database": "~4",
