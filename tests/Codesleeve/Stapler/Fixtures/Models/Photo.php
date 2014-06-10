@@ -1,10 +1,12 @@
 <?php namespace Codesleeve\Stapler\Fixtures\Models;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Codesleeve\Stapler\ORM\StaplerableInterface;
+use Codesleeve\Stapler\ORM\EloquentTrait;
 
-class Photo extends Eloquent
+class Photo extends Eloquent implements StaplerableInterface
 {
-	use \Codesleeve\Stapler\Traits\Eloquent;
+	use EloquentTrait;
 
 	protected $fillable = ['id'];
 

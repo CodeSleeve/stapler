@@ -117,7 +117,7 @@ class InterpolatorTest extends PHPUnit_Framework_TestCase
 	 */
 	protected function build_mock_instance()
 	{
-		$instance = m::mock('Codesleeve\Stapler\Fixtures\Model\Photo');
+		$instance = m::mock('Codesleeve\Stapler\ORM\StaplerableInterface');
 		$instance->shouldReceive('getKey')->andReturn(1);
 		$instance->shouldReceive('getAttribute')->with('photo_file_name')->andReturn('test.jpg');
 		$instance->shouldReceive('getAttribute')->with('photo_file_size')->andReturn(0);

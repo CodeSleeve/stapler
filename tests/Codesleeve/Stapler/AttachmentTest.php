@@ -171,33 +171,6 @@ class AttachmentTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals('empty.gif', $filename);
 	}
 
-	public function it_should_be_able_to_process_files_from_the_write_queue()
-	{
-		# code...
-	}
-
-	public function it_should_be_able_to_files_to_the_delete_queue()
-	{
-		# code...
-	}
-
-	public function it_should_be_able_to_process_files_from_the_delete_queue()
-	{
-		# code...
-	}
-
-	/**
-	 * Build a mock attachment instance.
-	 * 
-	 * @return Attachment
-	 */
-	/*protected function build_mock_instance()
-	{
-		Stapler::boot();
-
-		return new \Codesleeve\Stapler\Fixtures\Models\Photo(['id' => 1]);
-	}*/
-
 	/**
 	 * Build an attachment object.
 	 *
@@ -236,7 +209,7 @@ class AttachmentTest extends PHPUnit_Framework_TestCase
 	 */
 	protected function build_mock_instance()
 	{
-		$instance = m::mock('Codesleeve\Stapler\Fixtures\Model\Photo');
+		$instance = m::mock('Codesleeve\Stapler\ORM\StaplerableInterface');
 		$instance->shouldReceive('getKey')->andReturn(1);
 		$instance->shouldReceive('getAttribute')->with('photo_file_name')->andReturn('empty.gif');
 		$instance->shouldReceive('getAttribute')->with('photo_file_size')->andReturn(0);
