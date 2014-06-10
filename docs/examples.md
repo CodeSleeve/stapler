@@ -10,10 +10,13 @@
 ### Eloquent
 #### Definining-Attachments
 ```php
-Class Photo extends Eloquent
+use Codesleeve\Stapler\ORM\StaplerableInterface;
+use Codesleeve\Stapler\ORM\EloquentTrait;
+
+Class Photo extends Eloquent implements StaplerableInterface
 {
     // We'll need to use the Stapler Eloquent trait in our model (see setup for more info).
-    use Codesleeve\Stapler\Traits\Eloquent;
+    use EloquentTrait;
     
     /**
      * We can add our attachments to the fillable array so that they're 

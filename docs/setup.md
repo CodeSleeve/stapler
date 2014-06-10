@@ -18,12 +18,15 @@ $config->set('stapler.base_path', 'path/to/your/base/folder');
 ```
 
 ### Traits/Drivers
-Stapler works via the use of traits.  In order to add file uploading capabilities to your models/entities, you'll have to first use the corresponding trait for your ORM.  Stapler currently supports the following ORMS (more coming soon):
+Stapler works via the use of traits.  In order to add file uploading capabilities to your models/entities, you'll have to first use the corresponding trait for your ORM and ensure that your entities implement `Codesleeve\Stapler\ORM\StaplerableInterface`.  Stapler currently supports the following ORMS (more coming soon):
 * Eloquent: A trait for use within Laravel's Eloquent ORM.  Use this trait inside your Eloquent models in order to add file attachment abilities to them:
 ```php
-  class FooModel extends Eloquent {
-  	 use Codesleeve\Stapler\Traits\Eloquent;
-  }
+	use Codesleeve\Stapler\ORM\StaplerableInterface;
+	use Codesleeve\Stapler\ORM\EloquentTrait;
+	
+	class FooModel extends Eloquent implements StaplerableInterface{
+		use EloquentTrait;
+	}
 ```
 
 ### Database Tables

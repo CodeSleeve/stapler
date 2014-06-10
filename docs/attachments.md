@@ -2,7 +2,7 @@
 Attachments are the bread and butter of Stapler.  When you define an attached file on a model, your model automatically gains a new property containing an attachment value object for representing uploaded files on that record.  Regardless or whether you've uploaded a file or not, this value object will exist.  This allows file uploads to be represented in a simple yet powerful object oriented fashion.
 
 ### Properties
-* *mixed* **instance**: The model instance that the attachment belongs to.
+* *Codesleeve\Stapler\ORM\StaplerableInterface* **instance**: The model instance that the attachment belongs to.
 * *Codesleeve\Stapler\AttachmentConfig* **config**: The attachment's config value object.  
 * *Codesleeve\Stapler\Storage\StorageInterface* **storageDriver**: An instance of the underlying storage driver being used by the attachment.	
 * *Codesleeve\Stapler\Interpolator* **interpolator**: An instance of the interpolator class for processing interpolations.
