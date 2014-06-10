@@ -1,8 +1,8 @@
-<?php namespace Codesleeve\Stapler\Traits;
+<?php namespace Codesleeve\Stapler\ORM;
 
 use Codesleeve\Stapler\Factories\Attachment as AttachmentFactory;
 
-trait Eloquent
+trait EloquentTrait
 {
     /**
      * All of the model's current file attachments.

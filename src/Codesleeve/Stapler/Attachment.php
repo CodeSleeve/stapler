@@ -1,5 +1,6 @@
 <?php namespace Codesleeve\Stapler;
 
+use Codesleeve\Stapler\ORM\StaplerableInterface;
 use Codesleeve\Stapler\Storage\StorageInterface;
 use Codesleeve\Stapler\File\Image\Resizer;
 use Codesleeve\Stapler\Factories\File as FileFactory;
@@ -9,7 +10,7 @@ class Attachment
 	/**
 	 * The model instance that the attachment belongs to.
 	 *
-	 * @var mixed
+	 * @var StaplerableInterface
 	 */
 	protected $instance;
 
@@ -204,9 +205,9 @@ class Attachment
 	 * This provides a mechanism for the attachment to access properties of the
 	 * corresponding model instance it's attached to.
 	 *
-	 * @param mixed $instance
+	 * @param StaplerableInterface $instance
 	 */
-	public function setInstance($instance)
+	public function setInstance(StaplerableInterface $instance)
 	{
 		$this->instance = $instance;
 	}
@@ -216,7 +217,7 @@ class Attachment
 	 * instance (model) object this attachment
 	 * is defined on.
 	 *
-	 * @return mixed
+	 * @return StaplerableInterface
 	 */
 	public function getInstance()
 	{
@@ -408,9 +409,9 @@ class Attachment
 	/**
 	 * Process the write queue.
 	 *
-	 * @param  mixed $instance
+	 * @param  StaplerableInterface $instance
 	*/
-	public function afterSave($instance)
+	public function afterSave(StaplerableInterface $instance)
 	{
 		$this->instance = $instance;
 		$this->save();
@@ -419,9 +420,9 @@ class Attachment
 	/**
 	 * Queue up this attachments files for deletion.
 	 *
-	 * @param  mixed $instance
+	 * @param  StaplerableInterface $instance
 	 */
-	public function beforeDelete($instance)
+	public function beforeDelete(StaplerableInterface $instance)
 	{
 		$this->instance = $instance;
 		
@@ -433,9 +434,9 @@ class Attachment
 	/**
 	 * Process the delete queue.
 	 *
-	 * @param  mixed $instance
+	 * @param  StaplerableInterface $instance
 	*/
-	public function afterDelete($instance)
+	public function afterDelete(StaplerableInterface $instance)
 	{
 		$this->instance = $instance;
 		$this->flushDeletes();
