@@ -1,33 +1,32 @@
 <?php namespace Codesleeve\Stapler\Storage;
 
 use Codesleeve\Stapler\Exceptions;
-use Codesleeve\Stapler\File\UploadedFile;
-use Config;
+use Codesleeve\Stapler\Attachment;
 
-class Filesystem implements StorageInterface
+class Filesystem implements StorageableInterface
 {
 	/**
 	 * The current attachedFile object being processed.
-	 * 
-	 * @var Codesleeve\Stapler\Attachment
+	 *
+	 * @var \Codesleeve\Stapler\Attachment
 	 */
 	public $attachedFile;
 
 	/**
 	 * Constructor method
-	 * 
-	 * @param Codesleeve\Stapler\Attachment $attachedFile
+	 *
+	 * @param Attachment $attachedFile
 	 */
-	function __construct($attachedFile)
+	function __construct(Attachment $attachedFile)
 	{
 		$this->attachedFile = $attachedFile;
 	}
 
 	/**
 	 * Return the url for a file upload.
-	 * 
-	 * @param  string $styleName 
-	 * @return string          
+	 *
+	 * @param  string $styleName
+	 * @return string
 	 */
 	public function url($styleName)
 	{
@@ -36,9 +35,9 @@ class Filesystem implements StorageInterface
 
 	/**
 	 * Return the path (on disk) of a file upload.
-	 * 
-	 * @param  string $styleName 
-	 * @return string          
+	 *
+	 * @param  string $styleName
+	 * @return string
 	 */
 	public function path($styleName)
 	{
@@ -49,9 +48,8 @@ class Filesystem implements StorageInterface
 	 * Remove an attached file.
 	 *
 	 * @param array $filePaths
-	 * @return void
 	 */
-	public function remove($filePaths)
+	public function remove(array $filePaths)
 	{
 		foreach ($filePaths as $filePath) {
 			$directory = dirname($filePath);
@@ -64,9 +62,8 @@ class Filesystem implements StorageInterface
 	 * The file can be an actual uploaded file object or the path to
 	 * a resized image file on disk.
 	 *
-	 * @param  UploadedFile $file 
+	 * @param  string $file
 	 * @param  string $filePath
-	 * @return void 
 	 */
 	public function move($file, $filePath)
 	{
@@ -79,12 +76,11 @@ class Filesystem implements StorageInterface
 	 * Determine if a style directory needs to be built and if so create it.
 	 *
 	 * @param  string $filePath
-	 * @return void
 	 */
 	protected function buildDirectory($filePath)
 	{
 		$directory = dirname($filePath);
-		
+
 		if (!is_dir($directory)) {
 			mkdir($directory, 0777, true);
 		}
@@ -93,7 +89,7 @@ class Filesystem implements StorageInterface
 	/**
 	 * Set the file permissions of a file upload
 	 * Does not ignore umask.
-	 * 
+	 *
 	 * @param string $filePath
 	 * @param integer $overrideFilePermissions
 	 */
@@ -109,14 +105,15 @@ class Filesystem implements StorageInterface
 
 	/**
 	 * Attempt to move and uploaded file to it's intended location on disk.
-	 * 
-	 * @param  string $file   
+	 *
+	 * @param  string $file
 	 * @param  string $filePath
-	 * @return void           
+     * @throws Exceptions\FileException
 	 */
 	protected function moveFile($file, $filePath)
 	{
-		if (!rename($file, $filePath)) {
+		if (!rename($file, $filePath))
+        {
             $error = error_get_last();
             throw new Exceptions\FileException(sprintf('Could not move the file "%s" to "%s" (%s)', $file, $filePath, strip_tags($error['message'])));
         }
@@ -128,15 +125,14 @@ class Filesystem implements StorageInterface
 	 * @desc Recursively loops through each file in the directory and deletes it.
 	 * @param string $directory
 	 * @param boolean $deleteDirectory
-	 * @return void
 	 */
 	protected function emptyDirectory($directory, $deleteDirectory = false)
 	{
 		if (!is_dir($directory) || !($directoryHandle = opendir($directory))) {
 			return;
 		}
-		
-		while (false !== ($object = readdir($directoryHandle))) 
+
+		while (false !== ($object = readdir($directoryHandle)))
 		{
 			if ($object == '.' || $object == '..') {
 				continue;
@@ -149,7 +145,7 @@ class Filesystem implements StorageInterface
 				$this->emptyDirectory($directory.'/'.$object, true);	// The object is a folder, recurse through it.
 			}
 		}
-		
+
 		if ($deleteDirectory)
 		{
 			closedir($directoryHandle);

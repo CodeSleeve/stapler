@@ -7,7 +7,7 @@ class File extends SymfonyFile implements FileInterface
 	/**
 	 * An array of key value pairs for valid image
 	 * extensions and their associated MIME types.
-	 * 
+	 *
 	 * @var array
 	 */
 	protected $imageMimes = [
@@ -24,15 +24,15 @@ class File extends SymfonyFile implements FileInterface
 	/**
 	 * Method for determining whether the uploaded file is
 	 * an image type.
-	 * 
-	 * @return boolean 
+	 *
+	 * @return boolean
 	 */
 	public function isImage()
 	{
 		$mime = $this->getMimeType();
-		
+
 		// The $imageMimes property contains an array of file extensions and
-		// their associated MIME types. We will loop through them and look for 
+		// their associated MIME types. We will loop through them and look for
 		// the MIME type of the current SymfonyUploadedFile.
 		foreach ($this->imageMimes as $imageMime)
 		{

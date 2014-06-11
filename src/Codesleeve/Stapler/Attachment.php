@@ -1,59 +1,53 @@
 <?php namespace Codesleeve\Stapler;
 
-use Codesleeve\Stapler\Storage\StorageInterface;
+use Codesleeve\Stapler\ORM\StaplerableInterface;
+use Codesleeve\Stapler\Storage\StorageableInterface;
 use Codesleeve\Stapler\File\Image\Resizer;
+use Codesleeve\Stapler\Factories\File as FileFactory;
 
 class Attachment
 {
 	/**
-	 * The model the attachment belongs to.
+	 * The model instance that the attachment belongs to.
 	 *
-	 * @var string
+	 * @var StaplerableInterface
 	 */
 	protected $instance;
 
 	/**
 	 * An instance of the configuration class.
 	 *
-	 * @var Codesleeve\Stapler\Config
+	 * @var AttachmentConfig
 	 */
 	protected $config;
 
 	/**
 	 * An instance of the underlying storage driver that is being used.
 	 *
-	 * @var Codesleeve\Stapler\Storage\StorageInterface.
+	 * @var StorageableInterface.
 	 */
 	protected $storageDriver;
 
 	/**
 	 * An instance of the interpolator class for processing interpolations.
 	 *
-	 * @var Codesleeve\Stapler\Interpolator
+	 * @var Interpolator
 	 */
 	protected $interpolator;
 
 	/**
 	 * The uploaded file object for the attachment.
 	 *
-	 * @var Codesleeve\Stapler\UploadedFile
+	 * @var \Codesleeve\Stapler\File\FileInterface
 	 */
 	protected $uploadedFile;
 
 	/**
 	 * An instance of the resizer library that's being used for image processing.
-	 * 
-	 * @var Codesleeve\Stapler\File\Image\Resizer
+	 *
+	 * @var \Codesleeve\Stapler\File\Image\Resizer
 	 */
 	protected $resizer;
-
-	/**
-	 * An IOWrapper instance for converting file input formats (symfony uploaded file object
-	 * arrays, string, etc) into an instance of Codesleeve\Stapler\UploadedFile.
-	 * 
-	 * @var Codesleeve\Stapler\IOWrapper
-	 */
-	protected $IOWrapper;
 
 	/**
 	 * The uploaded/resized files that have been queued up for deletion.
@@ -63,7 +57,7 @@ class Attachment
 	protected $queuedForDeletion = [];
 
 	/**
-	 * The uploaded/resized files that have been queued up for deletion.
+	 * The uploaded/resized files that have been queued up to be written to storage.
 	 *
 	 * @var array
 	 */
@@ -72,17 +66,15 @@ class Attachment
 	/**
 	 * Constructor method
 	 *
-	 * @param Codesleeve\Stapler\Config $config
-	 * @param Codesleeve\Stapler\Interpolator $interpolator
-	 * @param Codesleeve\Stapler\File\Image\Resizer $resizer
-	 * @param Codesleeve\Stapler\IOWrapper $IOWrapper
+	 * @param AttachmentConfig $config
+	 * @param Interpolator $interpolator
+	 * @param Resizer $resizer
 	 */
-	function __construct(Config $config, Interpolator $interpolator, Resizer $resizer, IOWrapper $IOWrapper)
+	function __construct(AttachmentConfig $config, Interpolator $interpolator, Resizer $resizer)
 	{
 		$this->config = $config;
 		$this->interpolator = $interpolator;
 		$this->resizer = $resizer;
-		$this->IOWrapper = $IOWrapper;
 	}
 
 	/**
@@ -110,23 +102,26 @@ class Attachment
 
     /**
 	 * Mutator method for the uploadedFile property.
-	 * Accepts the following inputs: 
+	 * Accepts the following inputs:
 	 * - An absolute string url (for fetching remote files).
 	 * - An array (data parsed from the $_FILES array),
-	 * - A symfony uploaded file object.
+	 * - A Symfony uploaded file object.
 	 *
 	 * @param mixed $uploadedFile
-	 * @return void
 	 */
 	public function setUploadedFile($uploadedFile)
 	{
-		$this->clear();
+		if (!$this->keep_old_files) {
+			$this->clear();
+		}
 
 		if ($uploadedFile == STAPLER_NULL) {
+			$this->clearAttributes();
+
 			return;
 		}
 
-		$this->uploadedFile = $this->IOWrapper->make($uploadedFile);
+		$this->uploadedFile = FileFactory::create($uploadedFile);
 		$this->instanceWrite('file_name', $this->uploadedFile->getFilename());
 		$this->instanceWrite('file_size', $this->uploadedFile->getSize());
 		$this->instanceWrite('content_type', $this->uploadedFile->getMimeType());
@@ -137,7 +132,7 @@ class Attachment
 	/**
 	 * Accessor method for the uploadedFile property.
 	 *
-	 * @return Symfony\Component\HttpFoundation\File\UploadedFile
+	 * @return \Codesleeve\Stapler\File\FileInterface
 	 */
 	public function getUploadedFile()
 	{
@@ -147,8 +142,8 @@ class Attachment
 	/**
 	 * Mutator method for the interpolator property.
 	 *
-	 * @param Codesleeve\Stapler\Interpolator $interpolator
-	 * @return void 
+	 * @param Interpolator $interpolator
+	 * @return void
 	 */
 	public function setInterpolator(Interpolator $interpolator)
 	{
@@ -158,7 +153,7 @@ class Attachment
 	/**
 	 * Accessor method for the interpolator property.
 	 *
-	 * @return Codesleeve\Stapler\Interpolator
+	 * @return Interpolator
 	 */
 	public function getInterpolator()
 	{
@@ -168,8 +163,7 @@ class Attachment
 	/**
 	 * Mutator method for the resizer property.
 	 *
-	 * @param Codesleeve\Stapler\File\Image\Resizer $resizer
-	 * @return  void
+	 * @param Resizer $resizer
 	 */
 	public function setResizer(Resizer $resizer)
 	{
@@ -179,7 +173,7 @@ class Attachment
 	/**
 	 * Accessor method for the uploadedFile property.
 	 *
-	 * @return Codesleeve\Stapler\File\Image\Resizer
+	 * @return Resizer
 	 */
 	public function getResizer()
 	{
@@ -189,12 +183,21 @@ class Attachment
 	/**
 	 * Mutator method for the storageDriver property.
 	 *
-	 * @param  Codesleeve\Stapler\Storage\StorageInterface $storageDriver
-	 * @return void
+	 * @param  StorageableInterface $storageDriver
 	 */
-	public function setStorageDriver(StorageInterface $storageDriver)
+	public function setStorageDriver(StorageableInterface $storageDriver)
 	{
 		$this->storageDriver = $storageDriver;
+	}
+
+	/**
+	 * Accessor method for the storageDriver property.
+	 *
+	 * @return StorageableInterface
+	 */
+	public function getStorageDriver()
+	{
+		return $this->storageDriver;
 	}
 
 	/**
@@ -202,20 +205,19 @@ class Attachment
 	 * This provides a mechanism for the attachment to access properties of the
 	 * corresponding model instance it's attached to.
 	 *
-	 * @param  Eloquent $instance
-	 * @return void
+	 * @param StaplerableInterface $instance
 	 */
-	public function setInstance($instance)
+	public function setInstance(StaplerableInterface $instance)
 	{
 		$this->instance = $instance;
 	}
 
 	/**
-	 * Accessore method for the underlying 
-	 * instance (Eloquent model) object this attachment
+	 * Accessor method for the underlying
+	 * instance (model) object this attachment
 	 * is defined on.
-	 * 
-	 * @return Eloquent 
+	 *
+	 * @return StaplerableInterface
 	 */
 	public function getInstance()
 	{
@@ -225,18 +227,17 @@ class Attachment
 	/**
 	 * Mutator method for the config property.
 	 *
-	 * @param  Codesleeve\Stapler\Config $config
-	 * @return void
+	 * @param  AttachmentConfig $config
 	 */
-	public function setConfig($config)
+	public function setConfig(AttachmentConfig $config)
 	{
 		$this->config = $config;
 	}
 
 	/**
 	 * Accessor method for the Config property.
-	 * 
-	 * @return array 
+	 *
+	 * @return array
 	 */
 	public function getConfig()
 	{
@@ -244,19 +245,9 @@ class Attachment
 	}
 
 	/**
-	 * Mutator method for the IOWrapper property.
-	 * 
-	 * @param Codesleeve\Stapler\IOWrapper $IOWrapper 
-	 */
-	public function setIOWrapper($IOWrapper)
-	{
-		$this->IOWrapper = $IOWrapper;
-	}
-
-	/**
 	 * Accessor method for the QueuedForDeletion property.
-	 * 
-	 * @return array 
+	 *
+	 * @return array
 	 */
 	public function getQueuedForDeletion()
 	{
@@ -265,7 +256,7 @@ class Attachment
 
 	/**
 	 * Mutator method for the QueuedForDeletion property.
-	 * 
+	 *
 	 * @param array $array
 	 */
 	public function setQueuedForDeletion($array)
@@ -276,7 +267,7 @@ class Attachment
 	/**
 	 * Handle dynamic method calls on the attachment.
 	 * This allows us to call methods on the underlying
-	 * storage or utility objects directly via the attachment.
+	 * storage driver directly via the attachment.
 	 *
 	 * @param  string  $method
 	 * @param  array   $parameters
@@ -284,7 +275,6 @@ class Attachment
 	 */
 	public function __call($method, $parameters)
 	{
-		// Storage methods
 		$callable = ['remove', 'move'];
 
 		if (in_array($method, $callable)) {
@@ -293,7 +283,7 @@ class Attachment
 	}
 
 	/**
-	 * Generates the url to a file upload.
+	 * Generates the url to an uploaded file (or a resized version of it).
 	 *
 	 * @param string $styleName
 	 * @return string
@@ -308,7 +298,8 @@ class Attachment
 	}
 
 	/**
-	 * Generates the file system path to an uploaded file.  This is used for saving files, etc.
+	 * Generates the file system path to an uploaded file (or a resized version of it). 
+	 * This is used for saving files, etc.
 	 *
 	 * @param string $styleName
 	 * @return string
@@ -327,7 +318,7 @@ class Attachment
 	 * Lives in the <attachment>_created_at attribute of the model.
 	 * This attribute may conditionally exist on the model, it is not one of the four required fields.
      *
-	 * @return datetime
+	 * @return string
 	 */
 	public function createdAt()
 	{
@@ -338,7 +329,7 @@ class Attachment
 	 * Returns the last modified time of the file as originally assigned to this attachment's model.
 	 * Lives in the <attachment>_updated_at attribute of the model.
      *
-	 * @return datetime
+	 * @return string
 	 */
 	public function updatedAt()
 	{
@@ -379,90 +370,18 @@ class Attachment
 	}
 
 	/**
-	 * Process the write queue.
-	 *
-	 * @param  Eloquent $instance
-	 * @return void
-	*/
-	public function afterSave($instance)
-	{
-		$this->instance = $instance;
-		$this->save();
-	}
+     * Returns the class type of the attachment's underlying
+     * model instance.
+     *
+     * @return string
+     */
+    public function getInstanceClass()
+    {
+    	return get_class($this->instance);
+    }
 
-	/**
-	 * Queue up this attachments files for deletion.
-	 *
-	 * @param  Eloquent $instance
-	 * @return void
-	 */
-	public function beforeDelete($instance)
-	{
-		$this->instance = $instance;
-		$this->clear();
-	}
-
-	/**
-	 * Process the delete queue.
-	 *
-	 * @param  Eloquent $instance
-	 * @return void
-	*/
-	public function afterDelete($instance)
-	{
-		$this->instance = $instance;
-		$this->flushDeletes();
-	}
-
-	/**
-	 * Destroys the attachment.  Has the same effect as previously assigning
-	 * STAPLER_NULL to the attachment and then saving.
-	 *
-	 * @param  array $stylesToClear
-	 * @return void
-	 */
-	public function destroy($stylesToClear = [])
-	{
-		$this->clear($stylesToClear);
-		$this->save();
-	}
-
-	/**
-	 * Clears out the attachment.  Has the same effect as previously assigning
-	 * STAPLER_NULL to the attachment.  Does not save the associated model.
-	 *
-	 * @param  array $stylesToClear
-	 * @return void
-	 */
-	public function clear($stylesToClear = [])
-	{
-		if ($stylesToClear) {
-			$this->queueSomeForDeletion($stylesToClear);
-		}
-		else {
-			$this->queueAllForDeletion();
-		}
-	}
-
-	/**
-	 * Removes the old file upload (if necessary).
-	 * Saves the new file upload.
-	 *
-	 * @return void
-	 */
-	public function save()
-	{
-		if (!$this->keep_old_files) {
-			$this->flushDeletes();
-		}
-
-		$this->flushWrites();
-	}
-
-	/**
-	 * Rebuild the images for this attachment.
-	 *
-	 * @return void 
+    /**
+	 * Rebuilds the images for this attachment.
 	 */
 	public function reprocess()
 	{
@@ -470,12 +389,12 @@ class Attachment
 			return;
 		}
 
-		foreach ($this->styles as $style) 
+		foreach ($this->styles as $style)
 		{
-			$fileLocation = $this->storage == 'filesystem' ? $this->path() : $this->url();
-			$file = $this->IOWrapper->make($fileLocation);
+			$fileLocation = $this->storage == 'filesystem' ? $this->path('original') : $this->url('original');
+			$file = FileFactory::create($fileLocation);
 
-			if ($style->value && $file->isImage()) {
+			if ($style->dimensions && $file->isImage()) {
 				$file = $this->resizer->resize($file, $style);
 			}
 			else {
@@ -488,26 +407,109 @@ class Attachment
 	}
 
 	/**
-     * Return the class type of the attachment's underlying
-     * model instance.
-     * 
-     * @return string
+	 * Process the write queue.
+	 *
+	 * @param  StaplerableInterface $instance
+	*/
+	public function afterSave(StaplerableInterface $instance)
+	{
+		$this->instance = $instance;
+		$this->save();
+	}
+
+	/**
+	 * Queue up this attachments files for deletion.
+	 *
+	 * @param  StaplerableInterface $instance
+	 */
+	public function beforeDelete(StaplerableInterface $instance)
+	{
+		$this->instance = $instance;
+		
+		if (!$this->preserve_files) {
+			$this->clear();
+		}
+	}
+
+	/**
+	 * Process the delete queue.
+	 *
+	 * @param  StaplerableInterface $instance
+	*/
+	public function afterDelete(StaplerableInterface $instance)
+	{
+		$this->instance = $instance;
+		$this->flushDeletes();
+	}
+
+	/**
+	 * Removes all uploaded files (from storage) for this attachment.
+	 * This method does not clear out attachment attributes on the model instance.
+	 *
+	 * @param  array $stylesToClear
+	 */
+	public function destroy(array $stylesToClear = [])
+	{
+		$this->clear($stylesToClear);
+		$this->flushDeletes();
+	}
+
+	/**
+	 * Queues up all or some of this attachments uploaded files/images for deletion.
+	 *
+	 * @param  array $stylesToClear
+	 */
+	public function clear(array $stylesToClear = [])
+	{
+		if ($stylesToClear) {
+			$this->queueSomeForDeletion($stylesToClear);
+		}
+		else {
+			$this->queueAllForDeletion();
+		}
+	}
+
+	/**
+	 * Flushes the queuedForDeletion and queuedForWrite arrays.
+	 */
+	public function save()
+	{
+		$this->flushDeletes();
+		$this->flushWrites();
+	}
+
+	/**
+     * Set an attachment attribute on the underlying model instance.
+     *
+     * @param  string $property
+     * @param  mixed $value
      */
-    public function getInstanceClass()
+    public function instanceWrite($property, $value)
     {
-    	return get_class($this->instance);
+    	$fieldName = "{$this->name}_{$property}";
+    	$this->instance->setAttribute($fieldName, $value);
     }
 
 	/**
+	 * Clear (set to null) all attachment related model
+	 * attributes.
+	 */
+	public function clearAttributes()
+	{
+		$this->instanceWrite('file_name', NULL);
+		$this->instanceWrite('file_size', NULL);
+		$this->instanceWrite('content_type', NULL);
+		$this->instanceWrite('updated_at', NULL);
+	}
+
+	/**
 	 * Process the queuedForWrite que.
-	 *
-	 * @return void
 	 */
 	protected function flushWrites()
 	{
 		foreach ($this->queuedForWrite as $style)
 		{
-      		if ($style->value && $this->uploadedFile->isImage()) {
+      		if ($style->dimensions && $this->uploadedFile->isImage()) {
 				$file = $this->resizer->resize($this->uploadedFile, $style);
 			}
 			else {
@@ -523,8 +525,6 @@ class Attachment
 
 	/**
 	 * Process the queuedForDeletion que.
-	 *
-	 * @return void
 	 */
 	protected function flushDeletes()
 	{
@@ -533,6 +533,47 @@ class Attachment
 	}
 
 	/**
+	 * Fill the queuedForWrite que with all of this attachment's styles.
+	 */
+	protected function queueAllForWrite()
+	{
+		$this->queuedForWrite = $this->styles;
+	}
+
+	/**
+	 * Add a subset (filtered via style) of the uploaded files for this attachment
+	 * to the queuedForDeletion queue.
+	 *
+	 * @param  array $stylesToClear
+	 */
+	protected function queueSomeForDeletion(array $stylesToClear)
+	{
+		$filePaths = array_map(function($styleToClear)
+		{
+			return $this->path($styleToClear);
+		}, $stylesToClear);
+
+		$this->queuedForDeletion = array_merge($this->queuedForDeletion, $filePaths);
+    }
+
+    /**
+     * Add all uploaded files (across all image styles) to the queuedForDeletion queue.
+     */
+    protected function queueAllForDeletion()
+    {
+		if (!$this->originalFilename()) {
+			return;
+		}
+		
+		$filePaths = array_map(function($style)
+		{
+			return $this->path($style->name);
+		}, $this->styles);
+
+		$this->queuedForDeletion = array_merge($this->queuedForDeletion, $filePaths);
+    }
+
+    /**
 	 * Generates the default url if no file attachment is present.
 	 *
 	 * @param string $styleName
@@ -557,71 +598,4 @@ class Attachment
 	{
 		return $this->public_path . $this->defaultUrl($styleName);
 	}
-
-	/**
-	 * Fill the queuedForWrite que with all of this attachment's styles.
-	 *
-	 * @return void
-	 */
-	protected function queueAllForWrite()
-	{
-		$this->queuedForWrite = $this->styles;
-	}
-
-	/**
-	 * Add a subset (filtered via style) of the uploaded files for this attachment
-	 * to the queuedForDeletion queue.
-	 *
-	 * @param  array $stylesToClear
-	 * @return void
-	 */
-	protected function queueSomeForDeletion($stylesToClear)
-	{
-		$filePaths = array_map(function($styleToClear)
-		{
-			return $this->path($styleToClear);
-		}, $stylesToClear);
-
-		$this->queuedForDeletion = array_merge($this->queuedForDeletion, $filePaths);
-    }
-
-    /**
-     * Add all uploaded files (across all image styles) to the queuedForDeletion queue.
-     *
-     * @return void
-     */
-    protected function queueAllForDeletion()
-    {
-		if (!$this->originalFilename()) {
-			return;
-		}
-
-		if (!$this->preserve_files)
-		{
-			$filePaths = array_map(function($style)
-			{
-				return $this->path($style->name);
-			}, $this->styles);
-
-			$this->queuedForDeletion = array_merge($this->queuedForDeletion, $filePaths);
-		}
-
-		$this->instanceWrite('file_name', NULL);
-		$this->instanceWrite('file_size', NULL);
-		$this->instanceWrite('content_type', NULL);
-		$this->instanceWrite('updated_at', NULL);
-    }
-
-    /**
-     * Set an attachment attribute on the underlying model instance.
-     *
-     * @param  string $property
-     * @param  mixed $value
-     * @return void
-     */
-    protected function instanceWrite($property, $value)
-    {
-    	$fieldName = "{$this->name}_{$property}";
-    	$this->instance->setAttribute($fieldName, $value);
-    }
 }
