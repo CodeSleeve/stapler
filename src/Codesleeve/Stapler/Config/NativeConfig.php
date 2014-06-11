@@ -1,6 +1,6 @@
 <?php namespace Codesleeve\Stapler\Config;
 
-class NativeConfig implements ConfigInterface
+class NativeConfig implements ConfigurableInterface
 {
     /**
      * An array of configuration values that have been

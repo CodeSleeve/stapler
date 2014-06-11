@@ -6,7 +6,7 @@ Before you can begin using Stapler, there's a few things you're going to have to
 // Boot stapler:
 Stapler::boot();
 
-// Set the configuration driver (we're using the default config driver here; if you choose to implement your own you'll need to implement Codesleeve\Stapler\Config\ConfigInterface):
+// Set the configuration driver (we're using the default config driver here; if you choose to implement your own you'll need to implement Codesleeve\Stapler\Config\ConfigurableInterface):
 $config = new Codesleeve\Stapler\Config\NativeConfig;
 Stapler::setConfigInstance($config);
 

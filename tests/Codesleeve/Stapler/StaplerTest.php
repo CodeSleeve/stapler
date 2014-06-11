@@ -144,7 +144,7 @@ class StaplerTest extends PHPUnit_Framework_TestCase
 		$config2 = Stapler::getConfigInstance();
 
 		$this->assertInstanceOf('Codesleeve\Stapler\Config\NativeConfig', $config1);
-		$this->assertInstanceOf('Codesleeve\Stapler\Config\ConfigInterface', $config1);
+		$this->assertInstanceOf('Codesleeve\Stapler\Config\ConfigurableInterface', $config1);
 		$this->assertSame($config1, $config2);
 	}
 
@@ -165,7 +165,7 @@ class StaplerTest extends PHPUnit_Framework_TestCase
 		$config2 = Stapler::getConfigInstance();
 
 		$this->assertInstanceOf('Codesleeve\Stapler\Config\IlluminateConfig', $config1);
-		$this->assertInstanceOf('Codesleeve\Stapler\Config\ConfigInterface', $config1);
+		$this->assertInstanceOf('Codesleeve\Stapler\Config\ConfigurableInterface', $config1);
 		$this->assertSame($config1, $config2);
 	}
 }

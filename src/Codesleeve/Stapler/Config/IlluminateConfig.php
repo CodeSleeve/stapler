@@ -2,7 +2,7 @@
 
 use Illuminate\Config\Repository;
 
-class IlluminateConfig implements ConfigInterface
+class IlluminateConfig implements ConfigurableInterface
 {
     /**
      * An instance of Laravel's config class.

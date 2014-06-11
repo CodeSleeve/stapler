@@ -1,6 +1,6 @@
 <?php namespace Codesleeve\Stapler;
 
-use Codesleeve\Stapler\Config\ConfigInterface;
+use Codesleeve\Stapler\Config\ConfigurableInterface;
 use Codesleeve\Stapler\File\Image\Resizer;
 use Aws\S3\S3Client;
 
@@ -49,7 +49,7 @@ class Stapler
     /**
      * A configuration object instance.
      *
-     * @var \Codesleeve\Stapler\Config\ConfigInterface
+     * @var \Codesleeve\Stapler\Config\ConfigurableInterface
      */
     protected static $config;
 
@@ -185,7 +185,7 @@ class Stapler
      * If no instance is currently set, we'll return an instance
      * of Codesleeve\Stapler\Config\NativeConfig.
      *
-     * @return \Codesleeve\Stapler\Config\ConfigInterface
+     * @return \Codesleeve\Stapler\Config\ConfigurableInterface
      */
     public static function getConfigInstance()
     {
@@ -199,9 +199,9 @@ class Stapler
     /**
      * Set the configuration object instance.
      *
-     * @param ConfigInterface $config
+     * @param ConfigurableInterface $config
      */
-    public static function setConfigInstance(ConfigInterface $config){
+    public static function setConfigInstance(ConfigurableInterface $config){
         static::$config = $config;
     }
 
