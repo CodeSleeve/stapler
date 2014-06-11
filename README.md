@@ -1,14 +1,9 @@
 #Stapler
-<<<<<<< HEAD
-
 [![Build Status](https://travis-ci.org/CodeSleeve/stapler.png?branch=master)](https://travis-ci.org/CodeSleeve/stapler)
-=======
-[![Build Status](https://travis-ci.org/CodeSleeve/stapler.png?branch=development)](https://travis-ci.org/CodeSleeve/stapler)
 [![Latest Stable Version](https://poser.pugx.org/codesleeve/stapler/v/stable.svg)](https://packagist.org/packages/codesleeve/stapler) 
 [![Total Downloads](https://poser.pugx.org/codesleeve/stapler/downloads.svg)](https://packagist.org/packages/codesleeve/stapler) 
 [![Latest Unstable Version](https://poser.pugx.org/codesleeve/stapler/v/unstable.svg)](https://packagist.org/packages/codesleeve/stapler) 
 [![License](https://poser.pugx.org/codesleeve/stapler/license.svg)](https://packagist.org/packages/codesleeve/stapler)
->>>>>>> development
 
 **Note**: *If you've previously been using this package, then you've been using it with Laravel.  This package is no longer directly coupled to the Laravel framework.  As of 1.0.0, Stapler is now framework agnostic.  In order to take advantage of the Laravel specific features provided by the previous Beta releases (service providers, IOC container, commands, migration generator, etc) , I've created a separate package specifically for the purpose of using Stapler within Laravel:  [Laravel-Stapler](https://github.com/CodeSleeve/laravel-stapler).  If you're using Stapler inside a Laravel application I strongly recommend you use this package (it will save you a bit of boilerplate).*
 
