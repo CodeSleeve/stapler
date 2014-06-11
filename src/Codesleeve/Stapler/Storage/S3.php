@@ -3,7 +3,7 @@
 use Aws\S3\S3Client;
 use Codesleeve\Stapler\Attachment;
 
-class S3 implements StorageInterface
+class S3 implements StorageableInterface
 {
 	/**
 	 * The current attachedFile object being processed.

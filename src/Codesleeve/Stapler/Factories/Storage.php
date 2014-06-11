@@ -11,7 +11,7 @@ class Storage
      * Build a storage instance.
      *
      * @param  AttachedFile $attachment
-     * @return \Codesleeve\Stapler\Storage\StorageInterface
+     * @return \Codesleeve\Stapler\Storage\StorageableInterface
      */
     public static function create(AttachedFile $attachment)
     {

@@ -1,7 +1,7 @@
 <?php namespace Codesleeve\Stapler;
 
 use Codesleeve\Stapler\ORM\StaplerableInterface;
-use Codesleeve\Stapler\Storage\StorageInterface;
+use Codesleeve\Stapler\Storage\StorageableInterface;
 use Codesleeve\Stapler\File\Image\Resizer;
 use Codesleeve\Stapler\Factories\File as FileFactory;
 
@@ -24,7 +24,7 @@ class Attachment
 	/**
 	 * An instance of the underlying storage driver that is being used.
 	 *
-	 * @var StorageInterface.
+	 * @var StorageableInterface.
 	 */
 	protected $storageDriver;
 
@@ -183,9 +183,9 @@ class Attachment
 	/**
 	 * Mutator method for the storageDriver property.
 	 *
-	 * @param  StorageInterface $storageDriver
+	 * @param  StorageableInterface $storageDriver
 	 */
-	public function setStorageDriver(StorageInterface $storageDriver)
+	public function setStorageDriver(StorageableInterface $storageDriver)
 	{
 		$this->storageDriver = $storageDriver;
 	}
@@ -193,7 +193,7 @@ class Attachment
 	/**
 	 * Accessor method for the storageDriver property.
 	 *
-	 * @return StorageInterface
+	 * @return StorageableInterface
 	 */
 	public function getStorageDriver()
 	{

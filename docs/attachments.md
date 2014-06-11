@@ -4,7 +4,7 @@ Attachments are the bread and butter of Stapler.  When you define an attached fi
 ### Properties
 * *Codesleeve\Stapler\ORM\StaplerableInterface* **instance**: The model instance that the attachment belongs to.
 * *Codesleeve\Stapler\AttachmentConfig* **config**: The attachment's config value object.  
-* *Codesleeve\Stapler\Storage\StorageInterface* **storageDriver**: An instance of the underlying storage driver being used by the attachment.	
+* *Codesleeve\Stapler\Storage\StorageableInterface* **storageDriver**: An instance of the underlying storage driver being used by the attachment.	
 * *Codesleeve\Stapler\Interpolator* **interpolator**: An instance of the interpolator class for processing interpolations.
 * *Codesleeve\Stapler\File\FileInterface* **uploadedFile**: The uploaded file object for the attachment.	
 * *Codesleeve\Stapler\File\Image\Resizer* **resizer**: An instance of the resizer library that's being used for image processing.	
@@ -28,7 +28,7 @@ Attachments contain an assortment of methods for working with uploaded files and
 
 * **setStorageDriver**: Mutator method for setting the storageDriver property on the attachment.
 
-* **getStorageDriver**: Accessor method for the storageDriver property on the attachment.  Returns an instance of *Codesleeve\Stapler\Storage\StorageInterface*.  The storageDriver object is responsible handling the underlying storage of an uploaded file across the various storage mediums (file system, S3, etc).
+* **getStorageDriver**: Accessor method for the storageDriver property on the attachment.  Returns an instance of *Codesleeve\Stapler\Storage\StorageableInterface*.  The storageDriver object is responsible handling the underlying storage of an uploaded file across the various storage mediums (file system, S3, etc).
 
 * **setInstance**: Mutator method for setting the instance property on the attachment.
 

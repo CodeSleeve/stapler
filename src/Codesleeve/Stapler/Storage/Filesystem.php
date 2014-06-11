@@ -3,7 +3,7 @@
 use Codesleeve\Stapler\Exceptions;
 use Codesleeve\Stapler\Attachment;
 
-class Filesystem implements StorageInterface
+class Filesystem implements StorageableInterface
 {
 	/**
 	 * The current attachedFile object being processed.
