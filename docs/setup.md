@@ -30,7 +30,7 @@ Stapler works via the use of traits.  In order to add file uploading capabilitie
 ```
 
 ### Database Tables
-A model can have multiple attachments defined (avatar, photo, foo, etc) and in turn each attachment can have multiple sizes (styles) defined.  When an image or file is uploaded, Stapler will handle all the file processing (moving, resizing, etc) and provide an attachment object (as a model property) with methods for working with the uploaded file.  To accomplish this, four fields (named after the attachemnt) will need to be created in the corresponding table for any model/entity containing a file attachment.  For example, for an attachment named 'avatar' defined inside a model named 'User', the following fields would need to be added to the 'users' table:
+A model can have multiple attachments defined (avatar, photo, foo, etc) and in turn each attachment can have multiple sizes (styles) defined.  When an image or file is uploaded, Stapler will handle all the file processing (moving, resizing, etc) and provide an attachment object (as a model property) with methods for working with the uploaded file.  To accomplish this, four fields (named after the attachment) will need to be created in the corresponding table for any model/entity containing a file attachment.  For example, for an attachment named 'avatar' defined inside a model named 'User', the following fields would need to be added to the 'users' table:
 
 *   (string) avatar_file_name
 *   (integer) avatar_file_size
