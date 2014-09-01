@@ -53,7 +53,10 @@ class Filesystem implements StorageableInterface
 	{
 		foreach ($filePaths as $filePath) {
 			$directory = dirname($filePath);
-			$this->emptyDirectory($directory, true);
+			if (file_exists($filePath)) {
+				unlink($filePath);
+				$this->cleanEmptyDirectory($directory);
+			}
 		}
 	}
 
@@ -120,36 +123,21 @@ class Filesystem implements StorageableInterface
 	}
 
 	/**
-	 * Recursively delete the files in a directory.
+	 * Recursively delete empty directories.
 	 *
 	 * @desc Recursively loops through each file in the directory and deletes it.
 	 * @param string $directory
-	 * @param boolean $deleteDirectory
 	 */
-	protected function emptyDirectory($directory, $deleteDirectory = false)
+	protected function cleanEmptyDirectory($directory)
 	{
-		if (!is_dir($directory) || !($directoryHandle = opendir($directory))) {
-			return;
-		}
-
-		while (false !== ($object = readdir($directoryHandle)))
-		{
-			if ($object == '.' || $object == '..') {
-				continue;
-			}
-
-			if (!is_dir($directory.'/'.$object)) {
-				unlink($directory.'/'.$object);
-			}
-			else {
-				$this->emptyDirectory($directory.'/'.$object, true);	// The object is a folder, recurse through it.
-			}
-		}
-
-		if ($deleteDirectory)
-		{
-			closedir($directoryHandle);
+		$iterator = new \FilesystemIterator($directory);
+		$isDirEmpty = !$iterator->valid();
+		if ($isDirEmpty) {
 			rmdir($directory);
+			$directory = dirname($directory);
+			return $this->cleanEmptyDirectory($directory);
+		} else {
+			return true;
 		}
 	}
 }
