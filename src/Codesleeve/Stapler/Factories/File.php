@@ -79,6 +79,13 @@ class File
 		// Get the original name of the file
 		$name = pathinfo($file)['basename'];
 
+		// Remove any query strings at the end of the filename (i.e. Facebook graph profile images)
+		$nameQuery = strpos( $name, "?" );
+
+		if( $nameQuery !== false ) {
+			$name = substr( $name, 0, $nameQuery );
+		}
+
 		// Create a filepath for the file by storing it on disk.
 		$filePath = sys_get_temp_dir() . "/$name";
 		file_put_contents($filePath, $rawFile);
