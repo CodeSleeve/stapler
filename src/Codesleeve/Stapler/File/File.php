@@ -13,9 +13,9 @@ class File extends SymfonyFile implements FileInterface
 	protected $imageMimes = [
 		'bmp'   => 'image/bmp',
 		'gif'   => 'image/gif',
-		'jpeg'  => array('image/jpeg', 'image/pjpeg'),
-		'jpg'   => array('image/jpeg', 'image/pjpeg'),
-		'jpe'   => array('image/jpeg', 'image/pjpeg'),
+		'jpeg'  => ['image/jpeg', 'image/pjpeg'],
+		'jpg'   => ['image/jpeg', 'image/pjpeg'],
+		'jpe'   => ['image/jpeg', 'image/pjpeg'],
 		'png'   => 'image/png',
 		'tiff'  => 'image/tiff',
 		'tif'   => 'image/tiff',

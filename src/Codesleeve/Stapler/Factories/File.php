@@ -1,5 +1,6 @@
 <?php namespace Codesleeve\Stapler\Factories;
 
+use Codesleeve\Stapler\File\Mime\MimeType;
 use Codesleeve\Stapler\File\File as StaplerFile;
 use Codesleeve\Stapler\File\UploadedFile as StaplerUploadedFile;
 use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
@@ -86,18 +87,14 @@ class File
 		$filePath = sys_get_temp_dir() . "/$name";
 		file_put_contents($filePath, $rawFile);
 
-		if (empty($pathinfo['extension'])) {
-			$finfo = finfo_open(FILEINFO_MIME_TYPE);
-			$mimeType = finfo_file($finfo, $filePath);
-			finfo_close($finfo);
+		if (empty($pathinfo['extension'])) 
+		{
+			$mimeType = MimeType::guessWithoutExtension($filePath);
+			$extension = MimeType::getExtensionFromMime($mimeType);
 
-			if (preg_match('/^image\/([a-z]+)$/', $mimeType, $matches)) {
-
-				@unlink($filePath);
-				$filePath = sys_get_temp_dir() . "/$name".".".$matches[1];
-
-				file_put_contents($filePath, $rawFile);
-			}
+			unlink($filePath);
+			$filePath = sys_get_temp_dir() . "/$name" . "." . $extension;
+			file_put_contents($filePath, $rawFile);
 		}
 
 		return new StaplerFile($filePath);
