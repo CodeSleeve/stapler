@@ -22,8 +22,8 @@
         "illuminate/config": "~4"
     },
     "autoload": {
-        "psr-0": {
-            "Codesleeve\\Stapler": "src/"
+        "psr-4": {
+            "Codesleeve\\Stapler\\": "src/"
         }
     },
     "minimum-stability": "dev"
