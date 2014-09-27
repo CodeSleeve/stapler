@@ -70,18 +70,35 @@ class File
 	 */
 	protected static function createFromUrl($file)
 	{
-		$ch = curl_init ($file);
+		$ch = curl_init($file);
 		curl_setopt($ch, CURLOPT_HEADER, 0);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 		$rawFile = curl_exec($ch);
-		curl_close ($ch);
+		curl_close($ch);
 
 		// Get the original name of the file
-		$name = pathinfo($file)['basename'];
+		$pathinfo = pathinfo($file); 
+		$name = urlencode($pathinfo['basename']);
 
 		// Create a filepath for the file by storing it on disk.
 		$filePath = sys_get_temp_dir() . "/$name";
 		file_put_contents($filePath, $rawFile);
+
+		if (empty($pathinfo['extension'])) {
+			$finfo = finfo_open(FILEINFO_MIME_TYPE);
+			$mimeType = finfo_file($finfo, $filePath);
+			finfo_close($finfo);
+
+			if (preg_match('/^image\/([a-z]+)$/', $mimeType, $matches)) {
+
+				@unlink($filePath);
+				$filePath = sys_get_temp_dir() . "/$name".".".$matches[1];
+
+				file_put_contents($filePath, $rawFile);
+			}
+		}
 
 		return new StaplerFile($filePath);
 	}
