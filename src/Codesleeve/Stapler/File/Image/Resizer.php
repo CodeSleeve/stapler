@@ -123,75 +123,6 @@ class Resizer
 	}
 
 	/**
-	 * Resize an image as a landscape (width only)
-	 *
-	 * @param  ImageInterface $image
-	 * @param  string $width - The image's new width.
-	 * @param  string $height - The image's new height.
-	 * @return ImageInterface
-	 */
-	protected function resizeLandscape(ImageInterface $image, $width, $height)
-	{
-		$dimensions = $image->getSize()
-			->widen($width);
-
-		$image = $image->resize($dimensions);
-
-		return $image;
-	}
-
-	/**
-	 * Resize an image as a portrait (height only)
-	 *
-	 * @param  ImageInterface $image
-	 * @param  string $width - The image's new width.
-	 * @param  string $height - The image's new height.
-	 * @return ImageInterface
-	 */
-	protected function resizePortrait(ImageInterface $image, $width, $height)
-	{
-		$dimensions = $image->getSize()
-			->heighten($height);
-
-		$image = $image->resize($dimensions);
-
-		return $image;
-	}
-
-	/**
-	 * Resize an image and then center crop it.
-	 *
-	 * @param  ImageInterface $image
-	 * @param  string $width - The image's new width.
-	 * @param  string $height - The image's new height.
-	 * @return ImageInterface
-	 */
-	protected function resizeCrop(ImageInterface $image, $width, $height)
-  	{
-		list($optimalWidth, $optimalHeight) = $this->getOptimalCrop($image->getSize(), $width, $height);
-
-    	// Find center - this will be used for the crop
-		$centerX = ($optimalWidth / 2) - ($width / 2);
-    	$centerY = ($optimalHeight / 2) - ($height / 2);
-
-		return $image->resize(new Box($optimalWidth, $optimalHeight))
-			->crop(new Point($centerX, $centerY), new Box($width, $height));
-	}
-
-	/**
-	 * Resize an image to an exact width and height.
-	 *
-	 * @param  ImageInterface $image
-	 * @param  string $width - The image's new width.
-	 * @param  string $height - The image's new height.
-	 * @return ImageInterface
-	 */
-	protected function resizeExact(ImageInterface $image, $width, $height)
-	{
-		return $image->resize(new Box($width, $height));
-	}
-
-	/**
 	 * Resize an image as closely as possible to a given
 	 * width and height while still maintaining aspect ratio.
 	 * This method is really just a proxy to other resize methods:
@@ -234,6 +165,79 @@ class Resizer
 	}
 
 	/**
+	 * Resize an image as a landscape (width fixed).
+	 *
+	 * @param  ImageInterface $image
+	 * @param  string $width - The image's new width.
+	 * @param  string $height - The image's new height.
+	 * @return ImageInterface
+	 */
+	protected function resizeLandscape(ImageInterface $image, $width, $height)
+	{
+		$optimalHeight = $this->getSizeByFixedWidth($image, $width);
+		$dimensions = $image->getSize()
+			->widen($width)
+			->heighten($optimalHeight);
+
+		$image = $image->resize($dimensions);
+
+		return $image;
+	}
+
+	/**
+	 * Resize an image as a portrait (height fixed).
+	 *
+	 * @param  ImageInterface $image
+	 * @param  string $width - The image's new width.
+	 * @param  string $height - The image's new height.
+	 * @return ImageInterface
+	 */
+	protected function resizePortrait(ImageInterface $image, $width, $height)
+	{
+		$optimalWidth = $this->getSizeByFixedHeight($image, $height);
+		$dimensions = $image->getSize()
+			->heighten($height)
+			->widen($optimalWidth);
+
+		$image = $image->resize($dimensions);
+
+		return $image;
+	}
+
+	/**
+	 * Resize an image and then center crop it.
+	 *
+	 * @param  ImageInterface $image
+	 * @param  string $width - The image's new width.
+	 * @param  string $height - The image's new height.
+	 * @return ImageInterface
+	 */
+	protected function resizeCrop(ImageInterface $image, $width, $height)
+  	{
+		list($optimalWidth, $optimalHeight) = $this->getOptimalCrop($image->getSize(), $width, $height);
+
+    	// Find center - this will be used for the crop
+		$centerX = ($optimalWidth / 2) - ($width / 2);
+    	$centerY = ($optimalHeight / 2) - ($height / 2);
+
+		return $image->resize(new Box($optimalWidth, $optimalHeight))
+			->crop(new Point($centerX, $centerY), new Box($width, $height));
+	}
+
+	/**
+	 * Resize an image to an exact width and height.
+	 *
+	 * @param  ImageInterface $image
+	 * @param  string $width - The image's new width.
+	 * @param  string $height - The image's new height.
+	 * @return ImageInterface
+	 */
+	protected function resizeExact(ImageInterface $image, $width, $height)
+	{
+		return $image->resize(new Box($width, $height));
+	}
+
+	/**
 	 * Resize an image using a user defined callback.
 	 *
 	 * @param  FileInterface $file
@@ -244,6 +248,39 @@ class Resizer
 	{
 		return call_user_func_array($callable, [$file, $this->imagine]);
 	}
+
+	/**
+	 * Returns the width based on the new image height.
+	 *
+	 * @param  ImageInterface $image
+	 * @param  int $newHeight - The image's new height.
+	 * @return int
+	 */
+	private function getSizeByFixedHeight(ImageInterface $image, $newHeight)
+	{
+		$box = $image->getSize();
+		$ratio = $box->getWidth() / $box->getHeight();
+		$newWidth = $newHeight * $ratio;
+
+		return $newWidth;
+	}
+
+	/**
+	 * Returns the height based on the new image width.
+	 *
+	 * @param  ImageInterface $image
+	 * @param  int $newWidth - The image's new width.
+	 * @return int
+	 */
+	private function getSizeByFixedWidth(ImageInterface $image, $newWidth)
+	{
+		$box = $image->getSize();
+		$ratio = $box->getHeight() / $box->getWidth();
+		$newHeight= $newWidth * $ratio;
+
+		return $newHeight;
+	}
+
 
 	/**
 	 * Attempts to find the best way to crop.
