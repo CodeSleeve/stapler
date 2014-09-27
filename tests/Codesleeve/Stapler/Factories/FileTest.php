@@ -77,6 +77,20 @@ class FileTest extends PHPUnit_Framework_TestCase
 
 	/**
 	 * Test that the file factory can create a Codesleeve\Stapler\UploadedFile
+	 * object from a redriect url
+	 *
+	 * @test
+	 * @return void
+	 */
+	public function it_should_be_able_to_build_a_stapler_uploaded_file_object_from_a_redriect_url()
+	{
+		$uploadedFile = File::create('https://graph.facebook.com/zuck/picture?type=large');
+
+		$this->assertInstanceOf('Codesleeve\Stapler\File\FileInterface', $uploadedFile);
+	}
+
+	/**
+	 * Test that the file factory can create a Codesleeve\Stapler\UploadedFile
 	 * object from a string filepath.
 	 *
 	 * @test
