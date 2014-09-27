@@ -4,9 +4,18 @@ use Codesleeve\Stapler\File\Mime\MimeType;
 use Codesleeve\Stapler\File\File as StaplerFile;
 use Codesleeve\Stapler\File\UploadedFile as StaplerUploadedFile;
 use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
+use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesser;
+use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeExtensionGuesser;
 
 class File
 {
+	/**
+     * A instance of Symfony's MIME type extension guesser interface.
+     *
+     * @var \Symfony\Component\HttpFoundation\File\MimeType\ExtensionGuesserInterface
+     */
+    protected static $mimeTypeExtensionGuesser;
+
 	/**
 	 * Build a Codesleeve\Stapler\UploadedFile object using various file input types.
 	 *
@@ -89,8 +98,8 @@ class File
 
 		if (empty($pathinfo['extension'])) 
 		{
-			$mimeType = MimeType::guessWithoutExtension($filePath);
-			$extension = MimeType::getExtensionFromMime($mimeType);
+			$mimeType = MimeTypeGuesser::getInstance()->guess($filePath);
+			$extension = static::getMimeTypeExtensionGuesserInstance()->guess($mimeType);
 
 			unlink($filePath);
 			$filePath = sys_get_temp_dir() . "/$name" . "." . $extension;
@@ -111,4 +120,27 @@ class File
 	{
 		return new StaplerFile($file, pathinfo($file)['basename']);
 	}
+
+	/**
+     * Return an instance of the Symfony MIME type extension guesser.
+     *
+     * @return \Symfony\Component\HttpFoundation\File\MimeType\MimeTypeExtensionGuesserInterface
+     */
+    public static function getMimeTypeExtensionGuesserInstance()
+    {
+        if (!static::$mimeTypeExtensionGuesser) {
+            static::$mimeTypeExtensionGuesser = new MimeTypeExtensionGuesser;
+        }
+
+        return static::$mimeTypeExtensionGuesser;
+    }
+
+    /**
+     * Set the configuration object instance.
+     *
+     * @param ConfigurableInterface $config
+     */
+    public static function setConfigInstance(ConfigurableInterface $config){
+        static::$config = $config;
+    }
 }
