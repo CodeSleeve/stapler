@@ -112,7 +112,7 @@ class Filesystem implements StorageableInterface
 	 */
 	protected function moveFile($file, $filePath)
 	{
-		if (!rename($file, $filePath))
+		if (!@rename($file, $filePath))
         {
             $error = error_get_last();
             throw new Exceptions\FileException(sprintf('Could not move the file "%s" to "%s" (%s)', $file, $filePath, strip_tags($error['message'])));
