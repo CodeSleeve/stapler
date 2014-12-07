@@ -109,4 +109,14 @@ trait EloquentTrait
 
         parent::setAttribute($key, $value);
     }
+
+    /**
+     * Get all of the current attributes and attachment objects on the model.
+     *
+     * @return mixed
+     */
+    public function getAttributes()
+    {
+        return array_merge($this->attachedFiles, parent::getAttributes());
+    }
 }
