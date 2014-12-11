@@ -77,17 +77,30 @@ class FileTest extends PHPUnit_Framework_TestCase
 
 	/**
 	 * Test that the file factory can create a Codesleeve\Stapler\UploadedFile
-	 * object from a redriect url
+	 * object from a redirect url
 	 *
 	 * @test
 	 * @return void
 	 */
-	public function it_should_be_able_to_build_a_stapler_uploaded_file_object_from_a_redriect_url()
+	public function it_should_be_able_to_build_a_stapler_uploaded_file_object_from_a_redirect_url()
 	{
 		$uploadedFile = File::create('https://graph.facebook.com/zuck/picture?type=large');
 
 		$this->assertInstanceOf('Codesleeve\Stapler\File\FileInterface', $uploadedFile);
-	}
+  }
+
+  /**
+   * Test that file created by file factory is not containing unnecessary quer string
+   *
+   * @test
+   * @group f
+   * @return void
+   */
+  public function it_should_be_able_to_build_a_stapler_uploaded_file_object_without_following_querystring_in_basename() {
+    $uploadedFile = File::create('https://graph.facebook.com/zuck/picture?type=large');
+
+    $this->assertFalse(strpos($uploadedFile->getFileName(), '?'));
+  }
 
 	/**
 	 * Test that the file factory can create a Codesleeve\Stapler\UploadedFile
