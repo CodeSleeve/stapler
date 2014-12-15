@@ -89,7 +89,8 @@ class File
 		curl_close($ch);
 
 		// Get the original name of the file
-		$pathinfo = pathinfo($file); 
+    $parse_url = parse_url($file);
+		$pathinfo = pathinfo($parse_url['path']); 
 		$name = urlencode($pathinfo['basename']);
 
 		// Create a filepath for the file by storing it on disk.
