@@ -90,7 +90,7 @@ class File
 
 		// Get the original name of the file
 		$pathinfo = pathinfo($file); 
-		$name = urlencode($pathinfo['basename']);
+		$name = explode('%3F', urlencode($pathinfo['basename']))[0];
 
 		// Create a filepath for the file by storing it on disk.
 		$filePath = sys_get_temp_dir() . "/$name";
