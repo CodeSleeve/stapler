@@ -149,7 +149,7 @@ class Interpolator
 	 */
 	protected function hash(Attachment $attachment, $styleName = '')
 	{
-		return hash('sha256', $this->id($attachment, $styleName));
+		return hash('sha256', $this->id($attachment, $styleName) . $attachment->size() . $attachment->originalFilename());
 	}
 
 	/**
