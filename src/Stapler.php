@@ -12,7 +12,7 @@ use Aws\S3\S3Client;
  * https://github.com/thoughtbot/paperclip
  *
  * @package Codesleeve/Stapler
- * @version v1.0.0
+ * @version v1.0.03
  * @author Travis Bennett <tandrewbennett@hotmail.com>
  * @link
  */
@@ -152,9 +152,9 @@ class Stapler
     {
         if (!isset(static::$imageProcessors[$type])) {
             static::$imageProcessors[$type] = new $type;
-    	}
+        }
 
-    	return static::$imageProcessors[$type];
+        return static::$imageProcessors[$type];
     }
 
     /**

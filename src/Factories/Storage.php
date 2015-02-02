@@ -17,17 +17,17 @@ class Storage
     {
         switch ($attachment->storage) {
             case 'filesystem':
-        	    return new Filesystem($attachment);
-        		break;
+                return new Filesystem($attachment);
+                break;
 
             case 's3':
                 $s3Client = Stapler::getS3ClientInstance($attachment);
                 return new S3($attachment, $s3Client);
                 break;
 
-        	default:
+            default:
                 return new Filesystem($attachment);
-        		break;
+                break;
         }
     }
 }

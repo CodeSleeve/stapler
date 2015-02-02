@@ -6,18 +6,18 @@ use Codesleeve\Stapler\ORM\EloquentTrait;
 
 class Photo extends Eloquent implements StaplerableInterface
 {
-	use EloquentTrait;
+    use EloquentTrait;
 
-	protected $fillable = ['id'];
+    protected $fillable = ['id'];
 
-	/**
-	 * Constructor method.
-	 * 
-	 * @param array $attributes
-	 */
-	function __construct($attributes = ['id' => 1])
-	{
-		$this->hasAttachedFile('photo', [
+    /**
+     * Constructor method.
+     * 
+     * @param array $attributes
+     */
+    function __construct($attributes = ['id' => 1])
+    {
+        $this->hasAttachedFile('photo', [
             'styles' => [
                 'thumbnail' => '100x100'
             ],
@@ -29,5 +29,5 @@ class Photo extends Eloquent implements StaplerableInterface
         ]);
 
         parent::__construct($attributes);
-	}
+    }
 }
