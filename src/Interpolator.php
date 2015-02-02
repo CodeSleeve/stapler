@@ -49,6 +49,7 @@ class Interpolator
             ':extension' => 'extension',
             ':id' => 'id',
             ':hash' => 'hash',
+            ':secure_hash' => 'secureHash',
             ':id_partition' => 'idPartition',
             ':attachment' => 'attachment',
             ':style' => 'style'
@@ -141,6 +142,18 @@ class Interpolator
     }
 
     /**
+     * Return a secure Bcrypt hash of the attachment's corresponding instance id.
+     *
+     * @param Attachment $attachment
+     * @param  string $styleName
+     * @return void
+     */
+    protected function secureHash(Attachment $attachment, $styleName = '')
+    {
+        return hash('sha256', $this->id($attachment, $styleName) . $attachment->size() . $attachment->originalFilename());
+    }
+
+    /**
      * Return a Bcrypt hash of the attachment's corresponding instance id.
      *
      * @param Attachment $attachment
@@ -149,7 +162,7 @@ class Interpolator
      */
     protected function hash(Attachment $attachment, $styleName = '')
     {
-        return hash('sha256', $this->id($attachment, $styleName) . $attachment->size() . $attachment->originalFilename());
+        return hash('sha256', $this->id($attachment, $styleName));
     }
 
     /**
