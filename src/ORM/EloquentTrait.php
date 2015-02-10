@@ -36,22 +36,12 @@ trait EloquentTrait
     }
 
     /**
-     * The "booting" method of the model.
-     */
-    public static function boot()
-    {
-        parent::boot();
-
-        static::bootStapler();
-    }
-
-    /**
      * Register eloquent event handlers.
      * We'll spin through each of the attached files defined on this class
      * and register callbacks for the events we need to observe in order to
      * handle file uploads.
      */
-    public static function bootStapler()
+    public static function bootEloquentTrait()
     {
         static::saved(function($instance) {
             foreach($instance->attachedFiles as $attachedFile) {
