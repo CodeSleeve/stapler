@@ -22,8 +22,8 @@ class Validator
      */
     protected function validateFilesystemOptions(array $options)
     {
-        if (preg_match("/:id\b/", $options['url']) !== 1 && preg_match("/:id_partition\b/", $options['url']) !== 1 && preg_match("/:hash\b/", $options['url']) !== 1) {
-            throw new Exceptions\InvalidUrlOptionException('Invalid Url: an id, id_partition, or hash interpolation is required.', 1);
+        if (preg_match("/:id\b/", $options['url']) !== 1 && preg_match("/:id_partition\b/", $options['url']) !== 1 && preg_match("/:(secure_)?hash\b/", $options['url']) !== 1) {
+            throw new Exceptions\InvalidUrlOptionException('Invalid Url: an id, id_partition, hash, or secure_hash interpolation is required.', 1);
         }
     }
 
