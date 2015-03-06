@@ -37,6 +37,10 @@ class File
             return static::createFromUrl($file);
         }
 
+        if (preg_match('#^data:[a-z]+/[a-z]+;base64#', $file)) {
+            return static::createFromDataURI($file);
+        }
+
         return static::createFromString($file);
     }
 
@@ -53,6 +57,22 @@ class File
         $staplerFile->validate();
 
         return $staplerFile;
+    }
+
+    protected static function createFromDataURI($file) {
+        $fp = @fopen($file, 'r');
+            
+        if (!$fp) {
+            throw new \Codesleeve\Stapler\Exceptions\FileException('Invalid data URI');
+        }
+        
+        $meta      = stream_get_meta_data($fp);
+        $extension = static::getMimeTypeExtensionGuesserInstance()->guess($meta['mediatype']);
+        $filePath  = sys_get_temp_dir() . DIRECTORY_SEPARATOR . md5($meta['uri']) . "." . $extension;
+
+        file_put_contents($filePath, stream_get_contents($fp));
+
+        return new StaplerFile($filePath);
     }
 
     /**
