@@ -45,6 +45,8 @@ class Interpolator
             ':url' => 'url',
             ':app_root' => 'appRoot',
             ':class' => 'getClass',
+            ':class_name' => 'getClassName',
+            ':namespace' => 'getNamespace',
             ':basename' => 'basename',
             ':extension' => 'extension',
             ':id' => 'id',
@@ -103,6 +105,36 @@ class Interpolator
     protected function getClass(Attachment $attachment, $styleName = '')
     {
         return $this->handleBackslashes($attachment->getInstanceClass());
+    }
+
+    /**
+     * Returns the current class name, not taking into account namespaces, e.g
+     * 'Swingline\Stapler' will become Stapler.
+     *
+     * @param Attachment $attachment
+     * @param string $styleName
+     * @return string
+    */
+    protected function getClassName(Attachment $attachment, $styleName = '')
+    {
+        $classComponents = explode('\\', $attachment->getInstanceClass());
+
+        return end($classComponents);
+    }
+
+    /**
+     * Returns the current class name, exclusively taking into account namespaces, e.g
+     * 'Swingline\Stapler' will become Swingline.
+     *
+     * @param Attachment $attachment
+     * @param string $styleName
+     * @return string
+    */
+    protected function getNamespace(Attachment $attachment, $styleName = '')
+    {
+        $classComponents = explode('\\', $attachment->getInstanceClass());
+
+        return implode('/', array_splice($classComponents, 0, count($classComponents) - 1));
     }
 
     /**
