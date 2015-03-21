@@ -134,7 +134,7 @@ class Interpolator
     {
         $classComponents = explode('\\', $attachment->getInstanceClass());
 
-        return implode('/', array_splice($classComponents, 0, count($classComponents) - 1));
+        return implode('/', array_slice($classComponents, 0, count($classComponents) - 1));
     }
 
     /**
