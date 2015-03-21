@@ -237,7 +237,7 @@ class Interpolator
      * @return mixed
      */
     protected function ensurePrintable($input) {
-        if (!ctype_print($input)) {
+        if (!is_numeric($input) && !ctype_print($input)) {
             // Hash the input data with SHA-256 to represent
             // as printable characters, with minimum chances
             // of the uniqueness being lost.
