@@ -45,6 +45,8 @@ class Interpolator
             ':url' => 'url',
             ':app_root' => 'appRoot',
             ':class' => 'getClass',
+            ':class_name' => 'getClassName',
+            ':namespace' => 'getNamespace',
             ':basename' => 'basename',
             ':extension' => 'extension',
             ':id' => 'id',
@@ -106,6 +108,36 @@ class Interpolator
     }
 
     /**
+     * Returns the current class name, not taking into account namespaces, e.g
+     * 'Swingline\Stapler' will become Stapler.
+     *
+     * @param Attachment $attachment
+     * @param string $styleName
+     * @return string
+    */
+    protected function getClassName(Attachment $attachment, $styleName = '')
+    {
+        $classComponents = explode('\\', $attachment->getInstanceClass());
+
+        return end($classComponents);
+    }
+
+    /**
+     * Returns the current class name, exclusively taking into account namespaces, e.g
+     * 'Swingline\Stapler' will become Swingline.
+     *
+     * @param Attachment $attachment
+     * @param string $styleName
+     * @return string
+    */
+    protected function getNamespace(Attachment $attachment, $styleName = '')
+    {
+        $classComponents = explode('\\', $attachment->getInstanceClass());
+
+        return implode('/', array_slice($classComponents, 0, count($classComponents) - 1));
+    }
+
+    /**
      * Returns the basename portion of the attached file, e.g 'file' for file.jpg.
      *
      * @param Attachment $attachment
@@ -138,7 +170,7 @@ class Interpolator
     */
     protected function id(Attachment $attachment, $styleName = '')
     {
-        return $attachment->getInstance()->getKey();
+        return $this->ensurePrintable($attachment->getInstance()->getKey());
     }
 
     /**
@@ -175,7 +207,7 @@ class Interpolator
     */
     protected function idPartition(Attachment $attachment, $styleName = '')
     {
-        $id = $attachment->getInstance()->getKey();
+        $id = $this->ensurePrintable($attachment->getInstance()->getKey());
 
         if (is_numeric($id))
         {
@@ -226,5 +258,24 @@ class Interpolator
     protected function handleBackslashes($string)
     {
         return str_replace('\\', '/', ltrim($string, '\\'));
+    }
+
+    /**
+     * Utility method to ensure the input data only contains
+     * printable characters. This is especially important when
+     * handling non-printable ID's such as binary UUID's.
+     * 
+     * @param  mixed $input
+     * @return mixed
+     */
+    protected function ensurePrintable($input) {
+        if (!is_numeric($input) && !ctype_print($input)) {
+            // Hash the input data with SHA-256 to represent
+            // as printable characters, with minimum chances
+            // of the uniqueness being lost.
+            return hash('sha256', $input);
+        }
+
+        return $input;
     }
 }
