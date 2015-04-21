@@ -27,7 +27,7 @@ To control the quality of resized images, define your style as an array containi
 'styles' => [
     'thumbnail' => [
         'dimensions' => '50x50',
-        'convert_options' => ['jpeg_quality' => 100]
+        'convert_options' => ['quality' => 100]
     ]
 ]
 ```
@@ -49,7 +49,7 @@ Of course we can combine these options:
 'styles' => [
     'thumbnail' => [
         'dimensions' => '50x50',
-        'convert_options' => ['jpeg_quality' => 100],
+        'convert_options' => ['quality' => 100],
         'auto_orient' => true
     ]
 ]
