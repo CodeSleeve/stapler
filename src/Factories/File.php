@@ -1,7 +1,9 @@
 <?php namespace Codesleeve\Stapler\Factories;
 
+use Codesleeve\Stapler\Stapler;
 use Codesleeve\Stapler\File\Mime\MimeType;
 use Codesleeve\Stapler\File\File as StaplerFile;
+use Codesleeve\Stapler\Exceptions\FileException;
 use Codesleeve\Stapler\File\UploadedFile as StaplerUploadedFile;
 use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
 use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesser;
@@ -61,11 +63,11 @@ class File
 
     protected static function createFromDataURI($file) {
         $fp = @fopen($file, 'r');
-            
+
         if (!$fp) {
             throw new \Codesleeve\Stapler\Exceptions\FileException('Invalid data URI');
         }
-        
+
         $meta      = stream_get_meta_data($fp);
         $extension = static::getMimeTypeExtensionGuesserInstance()->guess($meta['mediatype']);
         $filePath  = sys_get_temp_dir() . DIRECTORY_SEPARATOR . md5($meta['uri']) . "." . $extension;
@@ -105,7 +107,12 @@ class File
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        $rawFile = curl_exec($ch);
+        curl_setopt($ch, CURLOPT_FAILONERROR, 1);
+        curl_setopt_array($ch, Stapler::getConfigInstance()->get('stapler.curl_options'));
+        if ($rawFile = curl_exec($ch) === false) {
+            $errMsg = "Unable to download file: $file\n";
+            throw new FileException($errMsg . curl_error($ch), curl_errno($ch));
+        }
         curl_close($ch);
 
         // Remove the query string if it exists
