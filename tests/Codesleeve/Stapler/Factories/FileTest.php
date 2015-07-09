@@ -84,10 +84,25 @@ class FileTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_be_able_to_build_a_stapler_uploaded_file_object_from_a_redirect_url()
     {
+        $uploadedFile = File::create('https://graph.facebook.com/10102210419817761/picture?type=large');
+
+        $this->assertInstanceOf('Codesleeve\Stapler\File\FileInterface', $uploadedFile);
+    }
+
+    /**
+     * Test that the file factory throws an exception when an invalid URL is specified
+     *
+     * @test
+     * @expectedException        Codesleeve\Stapler\Exceptions\FileException
+     * @expectedExceptionMessageRegExp #Unable to download file:.*#
+     * @return void
+     */
+    public function it_should_fail_when_url_is_invalid()
+    {
         $uploadedFile = File::create('https://graph.facebook.com/zuck/picture?type=large');
 
         $this->assertInstanceOf('Codesleeve\Stapler\File\FileInterface', $uploadedFile);
-  }
+    }
 
     /**
      * Test that file created by file factory is not containing unnecessary quer string
@@ -95,8 +110,8 @@ class FileTest extends PHPUnit_Framework_TestCase
      * @test
      * @return void
      */
-  public function it_should_be_able_to_build_a_stapler_uploaded_file_object_without_following_querystring_in_basename() {
-        $url = "https://graph.facebook.com/zuck/picture?type=large";
+    public function it_should_be_able_to_build_a_stapler_uploaded_file_object_without_following_querystring_in_basename() {
+        $url = "https://graph.facebook.com/10102210419817761/picture?type=large";
         $uploadedFile = File::create($url);
 
         $ch = curl_init($url);
