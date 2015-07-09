@@ -108,7 +108,9 @@ class File
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($ch, CURLOPT_FAILONERROR, 1);
-        curl_setopt_array($ch, Stapler::getConfigInstance()->get('stapler.curl_options'));
+        if ($curl_options = Stapler::getConfigInstance()->get('stapler.curl_options')) {
+            curl_setopt_array($ch, $curl_options);
+        }
         if ($rawFile = curl_exec($ch) === false) {
             $errMsg = "Unable to download file: $file\n";
             throw new FileException($errMsg . curl_error($ch), curl_errno($ch));
