@@ -58,15 +58,15 @@ class NativeConfig implements ConfigurableInterface
      * @param $name
      * @return mixed
      */
-    public function get($name)
+    public function get($name, $default = null)
     {
         list($group, $item) = array_pad(explode('.', $name), 2, null);
 
         if ($item) {
-            return $this->loadItemFromFile($group, $item);
+            return $this->loadItemFromFile($group, $item) ?: $default;
         }
 
-        return $this->loadAllFromFile($group);
+        return $this->loadAllFromFile($group) ?: $default;
     }
 
     /**
