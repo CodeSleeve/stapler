@@ -14,8 +14,8 @@ class NativeConfig implements ConfigurableInterface
             'base_path' => '',
             'storage' => 'filesystem',
             'image_processing_library' => 'Imagine\Gd\Imagine',
-            'default_url' => '/:attachment/:style/missing.png',
-            'default_style' => 'original',
+            'placeholder_url' => '/:attachment/:style/missing.png',
+            'placeholder_style' => 'original',
             'styles' => [],
             'keep_old_files' => false,
             'preserve_files' => false

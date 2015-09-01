@@ -4,6 +4,7 @@ use Codesleeve\Stapler\ORM\StaplerableInterface;
 use Codesleeve\Stapler\Storage\StorageableInterface;
 use Codesleeve\Stapler\File\Image\Resizer;
 use Codesleeve\Stapler\Factories\File as FileFactory;
+use Codesleeve\Stapler\Interfaces\PlaceholderInterface as Placeholder;
 
 class Attachment
 {
@@ -50,6 +51,13 @@ class Attachment
     protected $resizer;
 
     /**
+     * An instance of the placeholder classs for default images.
+     *
+     * @var \Codesleeve\Stapler\Interfaces\PlaceholderInterface
+     */
+    protected $placeholder;
+
+    /**
      * The uploaded/resized files that have been queued up for deletion.
      *
      * @var array
@@ -69,12 +77,14 @@ class Attachment
      * @param AttachmentConfig $config
      * @param Interpolator $interpolator
      * @param Resizer $resizer
+     * @param Placeholder $placeholder
      */
-    function __construct(AttachmentConfig $config, Interpolator $interpolator, Resizer $resizer)
+    function __construct(AttachmentConfig $config, Interpolator $interpolator, Resizer $resizer, Placeholder $placeholder)
     {
         $this->config = $config;
         $this->interpolator = $interpolator;
         $this->resizer = $resizer;
+        $this->placeholder = $placeholder;
     }
 
     /**
@@ -171,13 +181,33 @@ class Attachment
     }
 
     /**
-     * Accessor method for the uploadedFile property.
+     * Accessor method for the resizer property.
      *
      * @return Resizer
      */
     public function getResizer()
     {
         return $this->resizer;
+    }
+
+    /**
+     * Mutator method for the placeholder property.
+     *
+     * @param Placeholder $placeholder
+     */
+    public function setPlaceholder(Placeholder $placeholder)
+    {
+        $this->placeholder = $placeholder;
+    }
+
+    /**
+     * Accessor method for the placeholder property.
+     *
+     * @return Placeholder
+     */
+    public function getPlaceholder()
+    {
+        return $this->placeholder;
     }
 
     /**
@@ -581,11 +611,7 @@ class Attachment
     */
     protected function defaultUrl($styleName = '')
     {
-        if ($url = $this->default_url) {
-            return $this->getInterpolator()->interpolate($url, $this, $styleName);
-        }
-
-        return '';
+        return $this->getPlaceholder()->placehold($this->placeholder_url, $this, $styleName);
     }
 
     /**

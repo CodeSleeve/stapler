@@ -22,7 +22,7 @@ class Photo extends Eloquent implements StaplerableInterface
                 'thumbnail' => '100x100'
             ],
             'url' => '/system/:attachment/:id_partition/:style/:filename',
-            'default_url' => '/defaults/:style/missing.png',
+            'placeholder_url' => '/defaults/:style/missing.png',
             'convert_options' => [
                 'thumbnail' => ['quality' => 100, 'auto-orient' => true]
             ]

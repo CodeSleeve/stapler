@@ -49,7 +49,7 @@ class InterpolatorTest extends PHPUnit_Framework_TestCase
      * @test
      * @return void
      */
-    public function it_should_be_able_to_interpolate_a_string_using_the_default_style()
+    public function it_should_be_able_to_interpolate_a_string_using_the_placeholder_style()
     {
         $input = '/system/:class/:attachment/:id/:style/:filename';
         
@@ -147,7 +147,7 @@ class InterpolatorTest extends PHPUnit_Framework_TestCase
     protected function build_mock_attachment($interpolator, $className = 'TestModel')
     {
         $instance = $this->build_mock_instance();
-        $attachmentConfig = new AttachmentConfig('photo', ['styles' => [], 'default_style' => 'original']);
+        $attachmentConfig = new AttachmentConfig('photo', ['styles' => [], 'placeholder_style' => 'original']);
         $imagine = m::mock('Imagine\Image\ImagineInterface');
         $resizer = new \Codesleeve\Stapler\File\Image\Resizer($imagine);
         

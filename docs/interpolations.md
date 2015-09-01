@@ -1,5 +1,5 @@
 ## Interpolations
-With Stapler, uploaded files are accessed by configuring/defining path, url, and default_url strings which point to your uploaded file assets.  This is done via string interpolations.  Currently, the following interpolations are available for use:
+With Stapler, uploaded files are accessed by configuring/defining path, url, and placeholder_url strings which point to your uploaded file assets.  This is done via string interpolations.  Currently, the following interpolations are available for use:
 
 *   **:attachment** - The name of the file attachment as declared in the hasAttachedFile function, e.g 'avatar'.
 *   **:class**  - The classname of the model containing the file attachment, e.g User.  Stapler can handle namespacing of classes.

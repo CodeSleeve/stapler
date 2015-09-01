@@ -245,7 +245,7 @@ class Interpolator
     */
     protected function style(Attachment $attachment, $styleName = '')
     {
-        return $styleName ?: $attachment->default_style;
+        return $styleName ?: $attachment->placeholder_style;
     }
 
     /**

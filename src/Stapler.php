@@ -1,6 +1,7 @@
 <?php namespace Codesleeve\Stapler;
 
 use Codesleeve\Stapler\Config\ConfigurableInterface;
+use Codesleeve\Stapler\Interfaces\PlaceholderInterface;
 use Codesleeve\Stapler\File\Image\Resizer;
 use Aws\S3\S3Client;
 
@@ -45,6 +46,13 @@ class Stapler
      * @var \Codesleeve\Stapler\File\Image\Resizer
      */
     protected static $resizer;
+
+    /**
+     * An instance of the placeholder class for creating placeholder images.
+     *
+     * @var \Codesleeve\Stapler\Placeholder
+     */
+    protected static $placeholder;
 
     /**
      * A configuration object instance.
@@ -158,6 +166,32 @@ class Stapler
     }
 
     /**
+     * Return a placeholder object instance.
+     *
+     * @return \Codesleeve\Stapler\Placeholder
+     */
+    public static function getPlaceholderInstance()
+    {
+        if (static::$placeholder === null)
+        {
+            static::$placeholder = new Placeholder;
+        }
+
+        return static::$placeholder;
+    }
+
+    /**
+     * Return a placeholder object instance.
+     *
+     * @param string $type
+     * @return \Codesleeve\Stapler\Placeholder
+     */
+    public static function setPlaceholderInstance(PlaceholderInterface $placeholder)
+    {
+        static::$placeholder = $placeholder;
+    }
+
+    /**
      * Return an S3Client object for a specific attachment type.
      * If no instance has been defined yet we'll buld one and then
      * cache it on the s3Clients property (for the current request only).
@@ -201,7 +235,8 @@ class Stapler
      *
      * @param ConfigurableInterface $config
      */
-    public static function setConfigInstance(ConfigurableInterface $config){
+    public static function setConfigInstance(ConfigurableInterface $config)
+    {
         static::$config = $config;
     }
 

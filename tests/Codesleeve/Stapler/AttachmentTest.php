@@ -70,7 +70,7 @@ class AttachmentTest extends PHPUnit_Framework_TestCase
      * @test
      * @return void
      */
-    public function it_should_be_able_to_return_the_default_url_for_an_attachment_if_no_style_is_given()
+    public function it_should_be_able_to_return_the_placeholder_url_for_an_attachment_if_no_style_is_given()
     {
         $attachment = $this->build_attachment();
         $symfonyUploadedFile = new SymfonyUploadedFile(__DIR__ . '/Fixtures/empty.gif', 'empty.gif', null, null, null, true);
@@ -106,7 +106,7 @@ class AttachmentTest extends PHPUnit_Framework_TestCase
      * @test
      * @return void
      */
-    public function it_should_be_able_to_return_the_default_path_for_an_attachment_if_no_style_is_given($value='')
+    public function it_should_be_able_to_return_the_placeholder_path_for_an_attachment_if_no_style_is_given($value='')
     {
         $attachment = $this->build_attachment();
         $symfonyUploadedFile = new SymfonyUploadedFile(__DIR__ . '/Fixtures/empty.gif', 'empty.gif', null, null, null, true);
@@ -185,7 +185,7 @@ class AttachmentTest extends PHPUnit_Framework_TestCase
         $interpolator = new Interpolator;
         $attachmentConfig = new \Codesleeve\Stapler\AttachmentConfig('photo', [
             'styles' => [], 
-            'default_style' => 'original',
+            'placeholder_style' => 'original',
             'url' => '/system/:attachment/:id_partition/:style/:filename',
             'path' => ':app_root/public:url',
         ]);

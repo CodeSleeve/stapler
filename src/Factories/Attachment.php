@@ -18,9 +18,9 @@ class Attachment
     {
         $options = static::mergeOptions($options);
         Stapler::getValidatorInstance()->validateOptions($options);
-        list($config, $interpolator, $resizer) = static::buildDependencies($name, $options);
+        list($config, $interpolator, $resizer, $placeholder) = static::buildDependencies($name, $options);
 
-        $attachment = new AttachmentObject($config, $interpolator, $resizer);
+        $attachment = new AttachmentObject($config, $interpolator, $resizer, $placeholder);
         $storageDriver = StorageFactory::create($attachment);
         $attachment->setStorageDriver($storageDriver);
 
@@ -40,7 +40,8 @@ class Attachment
         return [
             new AttachmentConfig($name, $options),
             Stapler::getInterpolatorInstance(),
-            Stapler::getResizerInstance($options['image_processing_library'])
+            Stapler::getResizerInstance($options['image_processing_library']),
+            Stapler::getPlaceholderInstance(),
         ];
     }
 

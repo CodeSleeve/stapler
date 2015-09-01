@@ -34,18 +34,18 @@ Class Photo extends Eloquent implements StaplerableInterface
     public function __construct(array $attributes = array()) 
     {
         // Define an attachment named 'foo', with both thumbnail (100x100) and large (300x300) styles, 
-        // using custom url and default_url configurations:
+        // using custom url and placeholder_url configurations:
         $this->hasAttachedFile('foo', [
             'styles' => [
                 'thumbnail' => '100x100',
                 'large' => '300x300'
             ],
             'url' => '/system/:attachment/:id_partition/:style/:filename',
-            'default_url' => '/:attachment/:style/missing.jpg'
+            'placeholder_url' => '/:attachment/:style/missing.jpg'
         ]);
         
         // Define an attachment named 'bar', with both thumbnail (100x100) and large (300x300) styles, 
-        // using custom url and default_url configurations, with the keep_old_files flag set to true 
+        // using custom url and placeholder_url configurations, with the keep_old_files flag set to true 
         // (so that older file uploads aren't deleted from the file system) and image cropping turned on:
         $this->hasAttachedFile('bar', [
             'styles' => [
@@ -89,7 +89,7 @@ Class Photo extends Eloquent implements StaplerableInterface
                 'micro'     => '50X50'
             ],
             'url' => '/system/:attachment/:id_partition/:style/:filename',
-            'default_url' => '/defaults/:style/missing.png'
+            'placeholder_url' => '/defaults/:style/missing.png'
         ]);
         
         // Define an attachment named 'quux' that stores images remotely in an S3 bucket.
@@ -107,7 +107,7 @@ Class Photo extends Eloquent implements StaplerableInterface
             's3_object_config' => [
                 'bucket' => 'your.s3.bucket'
             ],
-            'default_url' => '/defaults/:style/missing.png',
+            'placeholder_url' => '/defaults/:style/missing.png',
             'keep_old_files' => true
         ]);
 
@@ -154,7 +154,7 @@ Display a resized thumbnail style image belonging to a user record
 Display the original image style (unmodified image):
 <img src="<?= $photo->foo->url('original') ?>">
 
-This also displays the unmodified original image (unless the :default_style interpolation has been set to a different style):
+This also displays the unmodified original image (unless the :placeholder_style interpolation has been set to a different style):
 <img src="<?= $photo->foo->url() ?>">
 ```
 

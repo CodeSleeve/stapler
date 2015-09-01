@@ -10,9 +10,10 @@ The following configuration settings apply to stapler in general.
 
 *   **storage**: The underlying storage driver to uploaded files.  Defaults to filesystem (local storage) but can also be set to 's3' for use with AWS S3.
 *   **image_processing_libarary**: The underlying image processing library being used.  Defaults to GD but can also be set to Imagick or Gmagick.
-*   **default_url**: The default file returned when no file upload is present for a record.
-*   **default_style**: The default style returned from the Stapler file location helper methods.  An unaltered version of uploaded file
-    is always stored within the 'original' style, however the default_style can be set to point to any of the defined syles within the styles array.
+*   **placeholder**: The class to use for returning placeholders when no file upload is present for a record.
+*   **placeholder_url**: The placeholder file returned when no file upload is present for a record.
+*   **placeholder_style**: The placeholder style returned from the Stapler file location helper methods. An unaltered version of uploaded file
+    is always stored within the 'original' style, however the placeholder_style can be set to point to any of the defined syles within the styles array.
 *   **styles**: An array of image sizes defined for the file attachment.  Stapler will attempt to use to format the file upload
     into the defined style.
 *   **keep_old_files**: Set this to true in order to prevent older file uploads from being deleted from the file system when a record is updated.
@@ -22,8 +23,9 @@ The following configuration settings apply to stapler in general.
 Default values:
 *   **storage**: 'filesystem'
 *   **image_processing_library**: 'GD'
-*   **default_url**: '/:attachment/:style/missing.png'
-*   **default_style**: 'original'
+*   **placeholder**: null
+*   **placeholder_url**: '/:attachment/:style/missing.png'
+*   **placeholder_style**: 'original'
 *   **styles**: []
 *   **keep_old_files**: false
 *   **preserve_old_files**: false
