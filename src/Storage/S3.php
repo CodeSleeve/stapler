@@ -68,7 +68,11 @@ class S3 implements StorageableInterface
     public function remove(array $filePaths)
     {
         if ($filePaths) {
-            $this->s3Client->deleteObjects(['Bucket' => $this->attachedFile->s3_object_config['Bucket'], 'Objects' => $this->getKeys($filePaths)]);
+            if (defined('Aws\S3\S3Client::LATEST_API_VERSION')) {
+                $this->s3Client->deleteObjects(['Bucket' => $this->attachedFile->s3_object_config['Bucket'], 'Objects' => $this->getKeys($filePaths)]);
+            } else {
+                $this->s3Client->deleteObjects(['Bucket' => $this->attachedFile->s3_object_config['Bucket'], 'Delete' => ['Objects' => $this->getKeys($filePaths)]]);
+            }
         }
     }
 
