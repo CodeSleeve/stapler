@@ -14,7 +14,7 @@ To create styles for an attachment, simply define them (you may use any style na
     'thumbnail' => '50x50',
     'large' => '150x150',
     'landscape' => '150',
-    'portrait' => 'portrait' => 'x150',
+    'portrait' => 'x150',
     'foo' => '75x75',
     'fooCropped' => '75x75#'
 ]
