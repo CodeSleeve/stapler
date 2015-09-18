@@ -1,4 +1,6 @@
-<?php namespace Codesleeve\Stapler;
+<?php
+
+namespace Codesleeve\Stapler;
 
 class AttachmentConfig
 {
@@ -26,11 +28,12 @@ class AttachmentConfig
     /**
      * Constructor method.
      *
-     * @throws  Exceptions\InvalidAttachmentConfigurationException
+     * @throws Exceptions\InvalidAttachmentConfigurationException
+     *
      * @param string $name
-     * @param array $options
+     * @param array  $options
      */
-    function __construct($name, array $options)
+    public function __construct($name, array $options)
     {
         if (!array_key_exists('styles', $options)) {
             throw new Exceptions\InvalidAttachmentConfigurationException("Attachment configuration options must contain a 'styles' key", 1);
@@ -45,7 +48,7 @@ class AttachmentConfig
      * Handle the dynamic setting of attachment options.
      *
      * @param string $name
-     * @param mixed $value
+     * @param mixed  $value
      */
     public function __set($name, $value)
     {
@@ -56,13 +59,13 @@ class AttachmentConfig
      * Handle the dynamic retrieval of attachment options.
      * Style options will be converted into a php stcClass.
      *
-     * @param  string $optionName
+     * @param string $optionName
+     *
      * @return mixed
      */
     public function __get($optionName)
     {
-        if (array_key_exists($optionName, $this->options))
-        {
+        if (array_key_exists($optionName, $this->options)) {
             if ($optionName == 'styles') {
                 return $this->styles;
             }
@@ -70,14 +73,15 @@ class AttachmentConfig
             return $this->options[$optionName];
         }
 
-        return null;
+        return;
     }
 
     /**
      * Convert the styles array into an array of Style objects.
      * Both array keys and array values will be converted to object properties.
      *
-     * @param  mixed $styles
+     * @param mixed $styles
+     *
      * @return array
      */
     protected function buildStyleObjects($styles)

@@ -1,4 +1,6 @@
-<?php namespace Codesleeve\Stapler\Factories;
+<?php
+
+namespace Codesleeve\Stapler\Factories;
 
 use Codesleeve\Stapler\Attachment as AttachedFile;
 use Codesleeve\Stapler\Storage\Filesystem;
@@ -10,7 +12,8 @@ class Storage
     /**
      * Build a storage instance.
      *
-     * @param  AttachedFile $attachment
+     * @param AttachedFile $attachment
+     *
      * @return \Codesleeve\Stapler\Storage\StorageableInterface
      */
     public static function create(AttachedFile $attachment)
@@ -22,6 +25,7 @@ class Storage
 
             case 's3':
                 $s3Client = Stapler::getS3ClientInstance($attachment);
+
                 return new S3($attachment, $s3Client);
                 break;
 

@@ -1,4 +1,6 @@
-<?php namespace Codesleeve\Stapler;
+<?php
+
+namespace Codesleeve\Stapler;
 
 use Codesleeve\Stapler\ORM\StaplerableInterface;
 use Codesleeve\Stapler\Storage\StorageableInterface;
@@ -64,13 +66,13 @@ class Attachment
     protected $queuedForWrite = [];
 
     /**
-     * Constructor method
+     * Constructor method.
      *
      * @param AttachmentConfig $config
-     * @param Interpolator $interpolator
-     * @param Resizer $resizer
+     * @param Interpolator     $interpolator
+     * @param Resizer          $resizer
      */
-    function __construct(AttachmentConfig $config, Interpolator $interpolator, Resizer $resizer)
+    public function __construct(AttachmentConfig $config, Interpolator $interpolator, Resizer $resizer)
     {
         $this->config = $config;
         $this->interpolator = $interpolator;
@@ -81,7 +83,7 @@ class Attachment
      * Handle the dynamic setting of attachment options.
      *
      * @param string $name
-     * @param mixed $value
+     * @param mixed  $value
      */
     public function __set($name, $value)
     {
@@ -92,7 +94,8 @@ class Attachment
      * Handle the dynamic retrieval of attachment options.
      * Style options will be converted into a php stcClass.
      *
-     * @param  string $optionName
+     * @param string $optionName
+     *
      * @return mixed
      */
     public function __get($optionName)
@@ -143,7 +146,6 @@ class Attachment
      * Mutator method for the interpolator property.
      *
      * @param Interpolator $interpolator
-     * @return void
      */
     public function setInterpolator(Interpolator $interpolator)
     {
@@ -183,7 +185,7 @@ class Attachment
     /**
      * Mutator method for the storageDriver property.
      *
-     * @param  StorageableInterface $storageDriver
+     * @param StorageableInterface $storageDriver
      */
     public function setStorageDriver(StorageableInterface $storageDriver)
     {
@@ -227,7 +229,7 @@ class Attachment
     /**
      * Mutator method for the config property.
      *
-     * @param  AttachmentConfig $config
+     * @param AttachmentConfig $config
      */
     public function setConfig(AttachmentConfig $config)
     {
@@ -269,8 +271,9 @@ class Attachment
      * This allows us to call methods on the underlying
      * storage driver directly via the attachment.
      *
-     * @param  string  $method
-     * @param  array   $parameters
+     * @param string $method
+     * @param array  $parameters
+     *
      * @return mixed
      */
     public function __call($method, $parameters)
@@ -286,8 +289,9 @@ class Attachment
      * Generates the url to an uploaded file (or a resized version of it).
      *
      * @param string $styleName
+     *
      * @return string
-    */
+     */
     public function url($styleName = '')
     {
         if ($this->originalFilename()) {
@@ -298,12 +302,13 @@ class Attachment
     }
 
     /**
-     * Generates the file system path to an uploaded file (or a resized version of it). 
+     * Generates the file system path to an uploaded file (or a resized version of it).
      * This is used for saving files, etc.
      *
      * @param string $styleName
+     *
      * @return string
-    */
+     */
     public function path($styleName = '')
     {
         if ($this->originalFilename()) {
@@ -351,7 +356,7 @@ class Attachment
      * Returns the size of the file as originally assigned to this attachment's model.
      * Lives in the <attachment>_file_size attribute of the model.
      *
-     * @return integer
+     * @return int
      */
     public function size()
     {
@@ -389,15 +394,13 @@ class Attachment
             return;
         }
 
-        foreach ($this->styles as $style)
-        {
+        foreach ($this->styles as $style) {
             $fileLocation = $this->storage == 'filesystem' ? $this->path('original') : $this->url('original');
             $file = FileFactory::create($fileLocation);
 
             if ($style->dimensions && $file->isImage()) {
                 $file = $this->resizer->resize($file, $style);
-            }
-            else {
+            } else {
                 $file = $file->getRealPath();
             }
 
@@ -409,8 +412,8 @@ class Attachment
     /**
      * Process the write queue.
      *
-     * @param  StaplerableInterface $instance
-    */
+     * @param StaplerableInterface $instance
+     */
     public function afterSave(StaplerableInterface $instance)
     {
         $this->instance = $instance;
@@ -420,12 +423,12 @@ class Attachment
     /**
      * Queue up this attachments files for deletion.
      *
-     * @param  StaplerableInterface $instance
+     * @param StaplerableInterface $instance
      */
     public function beforeDelete(StaplerableInterface $instance)
     {
         $this->instance = $instance;
-        
+
         if (!$this->preserve_files) {
             $this->clear();
         }
@@ -434,8 +437,8 @@ class Attachment
     /**
      * Process the delete queue.
      *
-     * @param  StaplerableInterface $instance
-    */
+     * @param StaplerableInterface $instance
+     */
     public function afterDelete(StaplerableInterface $instance)
     {
         $this->instance = $instance;
@@ -446,7 +449,7 @@ class Attachment
      * Removes all uploaded files (from storage) for this attachment.
      * This method does not clear out attachment attributes on the model instance.
      *
-     * @param  array $stylesToClear
+     * @param array $stylesToClear
      */
     public function destroy(array $stylesToClear = [])
     {
@@ -457,14 +460,13 @@ class Attachment
     /**
      * Queues up all or some of this attachments uploaded files/images for deletion.
      *
-     * @param  array $stylesToClear
+     * @param array $stylesToClear
      */
     public function clear(array $stylesToClear = [])
     {
         if ($stylesToClear) {
             $this->queueSomeForDeletion($stylesToClear);
-        }
-        else {
+        } else {
             $this->queueAllForDeletion();
         }
     }
@@ -481,8 +483,8 @@ class Attachment
     /**
      * Set an attachment attribute on the underlying model instance.
      *
-     * @param  string $property
-     * @param  mixed $value
+     * @param string $property
+     * @param mixed  $value
      */
     public function instanceWrite($property, $value)
     {
@@ -496,10 +498,10 @@ class Attachment
      */
     public function clearAttributes()
     {
-        $this->instanceWrite('file_name', NULL);
-        $this->instanceWrite('file_size', NULL);
-        $this->instanceWrite('content_type', NULL);
-        $this->instanceWrite('updated_at', NULL);
+        $this->instanceWrite('file_name', null);
+        $this->instanceWrite('file_size', null);
+        $this->instanceWrite('content_type', null);
+        $this->instanceWrite('updated_at', null);
     }
 
     /**
@@ -507,12 +509,10 @@ class Attachment
      */
     protected function flushWrites()
     {
-        foreach ($this->queuedForWrite as $style)
-        {
+        foreach ($this->queuedForWrite as $style) {
             if ($style->dimensions && $this->uploadedFile->isImage()) {
                 $file = $this->resizer->resize($this->uploadedFile, $style);
-            }
-            else {
+            } else {
                 $file = $this->uploadedFile->getRealPath();
             }
 
@@ -544,12 +544,11 @@ class Attachment
      * Add a subset (filtered via style) of the uploaded files for this attachment
      * to the queuedForDeletion queue.
      *
-     * @param  array $stylesToClear
+     * @param array $stylesToClear
      */
     protected function queueSomeForDeletion(array $stylesToClear)
     {
-        $filePaths = array_map(function($styleToClear)
-        {
+        $filePaths = array_map(function ($styleToClear) {
             return $this->path($styleToClear);
         }, $stylesToClear);
 
@@ -564,9 +563,8 @@ class Attachment
         if (!$this->originalFilename()) {
             return;
         }
-        
-        $filePaths = array_map(function($style)
-        {
+
+        $filePaths = array_map(function ($style) {
             return $this->path($style->name);
         }, $this->styles);
 
@@ -577,8 +575,9 @@ class Attachment
      * Generates the default url if no file attachment is present.
      *
      * @param string $styleName
+     *
      * @return string
-    */
+     */
     protected function defaultUrl($styleName = '')
     {
         if ($url = $this->default_url) {
@@ -592,10 +591,11 @@ class Attachment
      * Generates the default path if no file attachment is present.
      *
      * @param string $styleName
+     *
      * @return string
-    */
+     */
     protected function defaultPath($styleName = '')
     {
-        return $this->public_path . $this->defaultUrl($styleName);
+        return $this->public_path.$this->defaultUrl($styleName);
     }
 }

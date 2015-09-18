@@ -1,4 +1,6 @@
-<?php namespace Codesleeve\Stapler\File\Image;
+<?php
+
+namespace Codesleeve\Stapler\File\Image;
 
 use PHPUnit_Framework_TestCase;
 use Codesleeve\Stapler\File\UploadedFile;
@@ -12,8 +14,6 @@ class ResizerTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Setup method.
-     *
-     * @return void
      */
     public function setUp()
     {
@@ -21,8 +21,6 @@ class ResizerTest extends PHPUnit_Framework_TestCase
 
     /**
      * Teardown method.
-     *
-     * @return void
      */
     public function tearDown()
     {
@@ -33,7 +31,6 @@ class ResizerTest extends PHPUnit_Framework_TestCase
      * Test the resize crop method.
      *
      * @test
-     * @return void
      */
     public function it_should_be_able_to_resize_and_crop_an_image()
     {
@@ -55,7 +52,6 @@ class ResizerTest extends PHPUnit_Framework_TestCase
      * Test resize cropping edge case.
      *
      * @test
-     * @return void
      */
     public function it_should_be_able_to_resize_and_crop_an_edge_case()
     {
@@ -74,13 +70,13 @@ class ResizerTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-    * Helper method to build a mock Stapler UploadedFile object.
-    *
-    * @return UploadedFile
-    */
+     * Helper method to build a mock Stapler UploadedFile object.
+     *
+     * @return UploadedFile
+     */
     protected function buildUploadedFile()
     {
-        $path = realpath(__DIR__ . '/../../Fixtures/empty.gif');
+        $path = realpath(__DIR__.'/../../Fixtures/empty.gif');
         $originalName = 'Test.gif';
         $symfonyUploadedFile = new SymfonyUploadedFile($path, $originalName, null, null, null, true);
 
@@ -88,14 +84,15 @@ class ResizerTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-    * Helper method to build a mock Image object.
-    *
-    * @param  integer $originalSize
-    * @param  integer $expectedResize
-    * @param  integer $expectedCropPoint
-    * @param  integer $expectedCropBox
-    * @return Image
-    */
+     * Helper method to build a mock Image object.
+     *
+     * @param int $originalSize
+     * @param int $expectedResize
+     * @param int $expectedCropPoint
+     * @param int $expectedCropBox
+     *
+     * @return Image
+     */
     protected function buildMockImage($originalSize, $expectedResize, $expectedCropPoint = null, $expectedCropBox = null)
     {
         $image = $this->getMock('Imagine\Image\ImageInterface');
@@ -103,14 +100,15 @@ class ResizerTest extends PHPUnit_Framework_TestCase
         $image->expects($this->once())->method('resize')->with($expectedResize)->will($this->returnValue($image));
         $image->expects($this->once())->method('crop')->with($expectedCropPoint, $expectedCropBox)->will($this->returnValue($image));
         $image->expects($this->once())->method('save');
-        
+
         return $image;
     }
 
     /**
      * Helper method to build a mock Imagine instance.
      *
-     * @param  Image $image
+     * @param Image $image
+     *
      * @return Imagine
      */
     protected function buildMockImageProcessor($image)
@@ -124,9 +122,10 @@ class ResizerTest extends PHPUnit_Framework_TestCase
     /**
      * Helper method to build a mock style object.
      *
-     * @param  string $name
-     * @param  string $value
-     * @param  array $convertOptions
+     * @param string $name
+     * @param string $value
+     * @param array  $convertOptions
+     *
      * @return Object
      */
     protected function buildMockStyleObject($name, $value, $convertOptions = [])

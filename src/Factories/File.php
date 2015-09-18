@@ -1,6 +1,7 @@
-<?php namespace Codesleeve\Stapler\Factories;
+<?php
 
-use Codesleeve\Stapler\File\Mime\MimeType;
+namespace Codesleeve\Stapler\Factories;
+
 use Codesleeve\Stapler\File\File as StaplerFile;
 use Codesleeve\Stapler\File\UploadedFile as StaplerUploadedFile;
 use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
@@ -19,8 +20,9 @@ class File
     /**
      * Build a Codesleeve\Stapler\UploadedFile object using various file input types.
      *
-     * @param  mixed $file
-     * @param  boolean $testing
+     * @param mixed $file
+     * @param bool  $testing
+     *
      * @return \Codesleeve\Stapler\File\UploadedFile
      */
     public static function create($file, $testing = false)
@@ -33,7 +35,7 @@ class File
             return static::createFromArray($file, $testing);
         }
 
-        if (substr($file, 0, 7) == "http://" || substr($file, 0, 8) == "https://") {
+        if (substr($file, 0, 7) == 'http://' || substr($file, 0, 8) == 'https://') {
             return static::createFromUrl($file);
         }
 
@@ -48,7 +50,8 @@ class File
      * Compose a \Codesleeve\Stapler\File\UploadedFile object from
      * a \Symfony\Component\HttpFoundation\File\UploadedFile object.
      *
-     * @param  \Symfony\Component\HttpFoundation\File\UploadedFile $file
+     * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file
+     *
      * @return \Codesleeve\Stapler\File\UploadedFile
      */
     protected static function createFromObject(SymfonyUploadedFile $file)
@@ -59,16 +62,17 @@ class File
         return $staplerFile;
     }
 
-    protected static function createFromDataURI($file) {
+    protected static function createFromDataURI($file)
+    {
         $fp = @fopen($file, 'r');
-            
+
         if (!$fp) {
             throw new \Codesleeve\Stapler\Exceptions\FileException('Invalid data URI');
         }
-        
-        $meta      = stream_get_meta_data($fp);
+
+        $meta = stream_get_meta_data($fp);
         $extension = static::getMimeTypeExtensionGuesserInstance()->guess($meta['mediatype']);
-        $filePath  = sys_get_temp_dir() . DIRECTORY_SEPARATOR . md5($meta['uri']) . "." . $extension;
+        $filePath = sys_get_temp_dir().DIRECTORY_SEPARATOR.md5($meta['uri']).'.'.$extension;
 
         file_put_contents($filePath, stream_get_contents($fp));
 
@@ -80,8 +84,9 @@ class File
      * raw php $_FILES array date.  We assume here that the $_FILES array
      * has been formated using the Stapler::arrangeFiles utility method.
      *
-     * @param  array $file
-     * @param  boolean $testing
+     * @param array $file
+     * @param bool  $testing
+     *
      * @return \Codesleeve\Stapler\File\File
      */
     protected static function createFromArray(array $file, $testing)
@@ -95,7 +100,8 @@ class File
      * Fetch a remote file using a string URL and convert it into
      * an instance of Codesleeve\Stapler\File\File.
      *
-     * @param  string $file
+     * @param string $file
+     *
      * @return \Codesleeve\Stapler\File\File
      */
     protected static function createFromUrl($file)
@@ -119,16 +125,15 @@ class File
         $name = $pathinfo['basename'];
 
         // Create a filepath for the file by storing it on disk.
-        $filePath = sys_get_temp_dir() . "/$name";
+        $filePath = sys_get_temp_dir()."/$name";
         file_put_contents($filePath, $rawFile);
 
-        if (empty($pathinfo['extension']))
-        {
+        if (empty($pathinfo['extension'])) {
             $mimeType = MimeTypeGuesser::getInstance()->guess($filePath);
             $extension = static::getMimeTypeExtensionGuesserInstance()->guess($mimeType);
 
             unlink($filePath);
-            $filePath = sys_get_temp_dir() . "/$name" . "." . $extension;
+            $filePath = sys_get_temp_dir()."/$name".'.'.$extension;
             file_put_contents($filePath, $rawFile);
         }
 
@@ -139,7 +144,8 @@ class File
      * Fetch a local file using a string location and convert it into
      * an instance of \Codesleeve\Stapler\File\File.
      *
-     * @param  string $file
+     * @param string $file
+     *
      * @return \Codesleeve\Stapler\File\File
      */
     protected static function createFromString($file)
@@ -155,7 +161,7 @@ class File
     public static function getMimeTypeExtensionGuesserInstance()
     {
         if (!static::$mimeTypeExtensionGuesser) {
-            static::$mimeTypeExtensionGuesser = new MimeTypeExtensionGuesser;
+            static::$mimeTypeExtensionGuesser = new MimeTypeExtensionGuesser();
         }
 
         return static::$mimeTypeExtensionGuesser;
@@ -166,7 +172,8 @@ class File
      *
      * @param ConfigurableInterface $config
      */
-    public static function setConfigInstance(ConfigurableInterface $config){
+    public static function setConfigInstance(ConfigurableInterface $config)
+    {
         static::$config = $config;
     }
 }

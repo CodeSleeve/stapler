@@ -1,4 +1,6 @@
-<?php namespace Codesleeve\Stapler;
+<?php
+
+namespace Codesleeve\Stapler;
 
 use PHPUnit_Framework_TestCase;
 use Mockery as m;
@@ -7,8 +9,6 @@ class StaplerTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Setup method.
-     *
-     * @return void
      */
     public function setUp()
     {
@@ -16,8 +16,6 @@ class StaplerTest extends PHPUnit_Framework_TestCase
 
     /**
      * Teardown method.
-     *
-     * @return void
      */
     public function tearDown()
     {
@@ -29,7 +27,6 @@ class StaplerTest extends PHPUnit_Framework_TestCase
      * constant.
      *
      * @test
-     * @return void
      */
     public function it_should_be_able_to_define_a_stapler_null_constant()
     {
@@ -43,7 +40,6 @@ class StaplerTest extends PHPUnit_Framework_TestCase
      * the Interpolator class.
      *
      * @test
-     * @return void
      */
     public function it_should_be_able_to_create_a_singleton_interpolator_instance()
     {
@@ -59,7 +55,6 @@ class StaplerTest extends PHPUnit_Framework_TestCase
      * the Validator class.
      *
      * @test
-     * @return void
      */
     public function it_should_be_able_to_create_a_singleton_validator_instance()
     {
@@ -75,7 +70,6 @@ class StaplerTest extends PHPUnit_Framework_TestCase
      * the Resizer class.
      *
      * @test
-     * @return void
      */
     public function it_should_be_able_to_create_a_singleton_resizer_instance()
     {
@@ -91,7 +85,6 @@ class StaplerTest extends PHPUnit_Framework_TestCase
      * ImagineInterface.
      *
      * @test
-     * @return void
      */
     public function it_should_be_able_to_create_a_singleton_imagine_interface_instance()
     {
@@ -107,18 +100,17 @@ class StaplerTest extends PHPUnit_Framework_TestCase
      * Aws\S3\S3Client for each model/attachment combo.
      *
      * @test
-     * @return void
      */
     public function it_should_be_able_to_create_a_singleton_s3_client_instance_for_each_model_attachment_combo()
     {
         $dummyConfig = new AttachmentConfig('TestAttachment', [
-            'styles' => [], 
+            'styles' => [],
             's3_client_config' => [
-                'key' => '', 
-                'secret' => '', 
-                'region' => '', 
-                'scheme' => 'http'
-            ]
+                'key' => '',
+                'secret' => '',
+                'region' => '',
+                'scheme' => 'http',
+            ],
         ]);
         $mockAttachment = m::mock('Codesleeve\Stapler\Attachment')->makePartial();
         $mockAttachment->shouldReceive('getInstanceClass')->twice()->andReturn('TestModel');
@@ -136,7 +128,6 @@ class StaplerTest extends PHPUnit_Framework_TestCase
      * Codesleeve\Stapler\Config\NativeConfig.
      *
      * @test
-     * @return void
      */
     public function it_should_be_able_to_create_a_singleton_native_config_instance()
     {
@@ -153,14 +144,13 @@ class StaplerTest extends PHPUnit_Framework_TestCase
      * Codesleeve\Stapler\Config\IlluminateConfig.
      *
      * @test
-     * @return void
      */
     public function it_should_be_able_to_create_set_singleton_config_instance()
     {
         $loaderInterface = m::mock('Illuminate\Config\loaderInterface');
         $illuminateConfig = new \Illuminate\Config\Repository($loaderInterface, 'testing');
         $config1 = new Config\IlluminateConfig($illuminateConfig, 'test');
-        
+
         Stapler::setConfigInstance($config1);
         $config2 = Stapler::getConfigInstance();
 

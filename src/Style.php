@@ -1,4 +1,6 @@
-<?php namespace Codesleeve\Stapler;
+<?php
+
+namespace Codesleeve\Stapler;
 
 class Style
 {
@@ -21,7 +23,7 @@ class Style
      * Whether or not the image should be auto-oriented
      * using embedded EXIF data.
      *
-     * @var boolean
+     * @var bool
      */
     public $autoOrient = false;
 
@@ -37,17 +39,17 @@ class Style
      * Constructor method.
      *
      * @throws Exceptions\InvalidStyleConfigurationException
+     *
      * @param string $name
-     * @param mixed $value
+     * @param mixed  $value
      */
-    function __construct($name, $value)
+    public function __construct($name, $value)
     {
         $this->name = $name;
 
-        if (is_array($value)) 
-        {
+        if (is_array($value)) {
             if (!array_key_exists('dimensions', $value)) {
-                throw new Exceptions\InvalidStyleConfigurationException("Error Processing Request", 1);
+                throw new Exceptions\InvalidStyleConfigurationException('Error Processing Request', 1);
             }
 
             $this->dimensions = $value['dimensions'];
@@ -62,7 +64,7 @@ class Style
 
             return;
         }
-        
+
         $this->dimensions = $value;
     }
 }

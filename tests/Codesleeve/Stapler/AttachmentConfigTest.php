@@ -1,15 +1,14 @@
-<?php namespace Codesleeve\Stapler;
+<?php
+
+namespace Codesleeve\Stapler;
 
 use PHPUnit_Framework_TestCase;
 use Mockery as m;
-use Codesleeve\Stapler\AttachmentConfig;
 
 class AttachmentConfigTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Setup method.
-     *
-     * @return void
      */
     public function setUp()
     {
@@ -18,8 +17,6 @@ class AttachmentConfigTest extends PHPUnit_Framework_TestCase
 
     /**
      * Teardown method.
-     *
-     * @return void
      */
     public function tearDown()
     {
@@ -31,7 +28,6 @@ class AttachmentConfigTest extends PHPUnit_Framework_TestCase
      * name of it's correpsonding attachment.
      *
      * @test
-     * @return void
      */
     public function it_should_be_able_to_store_the_name_of_an_attachment()
     {
@@ -45,7 +41,6 @@ class AttachmentConfigTest extends PHPUnit_Framework_TestCase
      * config options.
      *
      * @test
-     * @return void
      */
     public function it_should_be_able_to_dynamically_retrieve_config_values()
     {
@@ -59,7 +54,6 @@ class AttachmentConfigTest extends PHPUnit_Framework_TestCase
      * Test that the AttachmentConfig class can dynamically set new config options.
      *
      * @test
-     * @return void
      */
     public function it_should_be_able_to_dynamically_set_config_values()
     {
@@ -75,6 +69,7 @@ class AttachmentConfigTest extends PHPUnit_Framework_TestCase
      * array of style objects if style options are passed in.
      *
      * @test
+     *
      * @param string $value [description]
      */
     public function it_should_be_able_build_an_array_of_style_objects()
@@ -91,7 +86,6 @@ class AttachmentConfigTest extends PHPUnit_Framework_TestCase
      *
      * @test
      * @expectedException \Codesleeve\Stapler\Exceptions\InvalidAttachmentConfigurationException
-     * @return void
      */
     public function it_should_throw_an_exception_if_no_styles_key_is_present()
     {

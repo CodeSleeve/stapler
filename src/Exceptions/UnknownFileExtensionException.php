@@ -1,7 +1,9 @@
-<?php namespace Codesleeve\Stapler\Exceptions;
+<?php
+
+namespace Codesleeve\Stapler\Exceptions;
 
 use Exception;
 
-class UnknownFileExtensionException extends Exception {
-
+class UnknownFileExtensionException extends Exception
+{
 }

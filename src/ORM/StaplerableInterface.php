@@ -1,4 +1,6 @@
-<?php namespace Codesleeve\Stapler\ORM;
+<?php
+
+namespace Codesleeve\Stapler\ORM;
 
 interface StaplerableInterface
 {
@@ -14,14 +16,15 @@ interface StaplerableInterface
      * This function acts as a quasi constructor for this trait.
      *
      * @param string $name
-     * @param array $options
+     * @param array  $options
      */
     public function hasAttachedFile($name, array $options = []);
 
     /**
      * Handle the dynamic retrieval of attachment objects.
      *
-     * @param  string $key
+     * @param string $key
+     *
      * @return mixed
      */
     public function getAttribute($key);
@@ -29,8 +32,8 @@ interface StaplerableInterface
     /**
      * Handle the dynamic setting of attachment objects.
      *
-     * @param  string $key
-     * @param  mixed $value
+     * @param string $key
+     * @param mixed  $value
      */
     public function setAttribute($key, $value);
 }

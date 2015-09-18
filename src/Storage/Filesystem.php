@@ -1,4 +1,6 @@
-<?php namespace Codesleeve\Stapler\Storage;
+<?php
+
+namespace Codesleeve\Stapler\Storage;
 
 use Codesleeve\Stapler\Exceptions;
 use Codesleeve\Stapler\Attachment;
@@ -13,11 +15,11 @@ class Filesystem implements StorageableInterface
     public $attachedFile;
 
     /**
-     * Constructor method
+     * Constructor method.
      *
      * @param Attachment $attachedFile
      */
-    function __construct(Attachment $attachedFile)
+    public function __construct(Attachment $attachedFile)
     {
         $this->attachedFile = $attachedFile;
     }
@@ -25,7 +27,8 @@ class Filesystem implements StorageableInterface
     /**
      * Return the url for a file upload.
      *
-     * @param  string $styleName
+     * @param string $styleName
+     *
      * @return string
      */
     public function url($styleName)
@@ -36,7 +39,8 @@ class Filesystem implements StorageableInterface
     /**
      * Return the path (on disk) of a file upload.
      *
-     * @param  string $styleName
+     * @param string $styleName
+     *
      * @return string
      */
     public function path($styleName)
@@ -62,8 +66,8 @@ class Filesystem implements StorageableInterface
      * The file can be an actual uploaded file object or the path to
      * a resized image file on disk.
      *
-     * @param  string $file
-     * @param  string $filePath
+     * @param string $file
+     * @param string $filePath
      */
     public function move($file, $filePath)
     {
@@ -75,7 +79,7 @@ class Filesystem implements StorageableInterface
     /**
      * Determine if a style directory needs to be built and if so create it.
      *
-     * @param  string $filePath
+     * @param string $filePath
      */
     protected function buildDirectory($filePath)
     {
@@ -91,14 +95,13 @@ class Filesystem implements StorageableInterface
      * Does not ignore umask.
      *
      * @param string $filePath
-     * @param integer $overrideFilePermissions
+     * @param int    $overrideFilePermissions
      */
     protected function setPermissions($filePath, $overrideFilePermissions)
     {
         if ($overrideFilePermissions) {
             chmod($filePath, $overrideFilePermissions & ~umask());
-        }
-        elseif (is_null($overrideFilePermissions)) {
+        } elseif (is_null($overrideFilePermissions)) {
             chmod($filePath, 0666 & ~umask());
         }
     }
@@ -106,14 +109,14 @@ class Filesystem implements StorageableInterface
     /**
      * Attempt to move and uploaded file to it's intended location on disk.
      *
-     * @param  string $file
-     * @param  string $filePath
+     * @param string $file
+     * @param string $filePath
+     *
      * @throws Exceptions\FileException
      */
     protected function moveFile($file, $filePath)
     {
-        if (!@rename($file, $filePath))
-        {
+        if (!@rename($file, $filePath)) {
             $error = error_get_last();
             throw new Exceptions\FileException(sprintf('Could not move the file "%s" to "%s" (%s)', $file, $filePath, strip_tags($error['message'])));
         }
@@ -123,8 +126,9 @@ class Filesystem implements StorageableInterface
      * Recursively delete the files in a directory.
      *
      * @desc Recursively loops through each file in the directory and deletes it.
+     *
      * @param string $directory
-     * @param boolean $deleteDirectory
+     * @param bool   $deleteDirectory
      */
     protected function emptyDirectory($directory, $deleteDirectory = false)
     {
@@ -132,22 +136,19 @@ class Filesystem implements StorageableInterface
             return;
         }
 
-        while (false !== ($object = readdir($directoryHandle)))
-        {
+        while (false !== ($object = readdir($directoryHandle))) {
             if ($object == '.' || $object == '..') {
                 continue;
             }
 
             if (!is_dir($directory.'/'.$object)) {
                 unlink($directory.'/'.$object);
-            }
-            else {
+            } else {
                 $this->emptyDirectory($directory.'/'.$object, true);    // The object is a folder, recurse through it.
             }
         }
 
-        if ($deleteDirectory)
-        {
+        if ($deleteDirectory) {
             closedir($directoryHandle);
             rmdir($directory);
         }

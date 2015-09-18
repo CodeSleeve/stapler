@@ -1,4 +1,6 @@
-<?php namespace Codesleeve\Stapler;
+<?php
+
+namespace Codesleeve\Stapler;
 
 class Validator
 {
@@ -6,7 +8,7 @@ class Validator
      * Validate the attachment options for an attachment type.
      * A url is required to have either an :id or an :id_partition interpolation.
      *
-     * @param  array $options
+     * @param array $options
      */
     public function validateOptions(array $options)
     {
@@ -18,7 +20,8 @@ class Validator
      * driver is set to 'filesystem'.
      *
      * @throws Exceptions\InvalidUrlOptionException
-     * @param  array $options
+     *
+     * @param array $options
      */
     protected function validateFilesystemOptions(array $options)
     {
@@ -32,7 +35,8 @@ class Validator
      * driver is set to 's3'.
      *
      * @throws Exceptions\InvalidUrlOptionException
-     * @param  array $options
+     *
+     * @param array $options
      */
     protected function validateS3Options(array $options)
     {

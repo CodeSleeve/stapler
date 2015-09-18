@@ -1,4 +1,6 @@
-<?php namespace Codesleeve\Stapler\Factories;
+<?php
+
+namespace Codesleeve\Stapler\Factories;
 
 use Codesleeve\Stapler\Stapler;
 use Codesleeve\Stapler\AttachmentConfig;
@@ -11,7 +13,8 @@ class Attachment
      * Create a new attachment object.
      *
      * @param string $name
-     * @param array $options
+     * @param array  $options
+     *
      * @return \Codesleeve\Stapler\Attachment
      */
     public static function create($name, array $options)
@@ -32,7 +35,8 @@ class Attachment
      * a new attachment object.
      *
      * @param string $name
-     * @param array $options
+     * @param array  $options
+     *
      * @return array
      */
     protected static function buildDependencies($name, array $options)
@@ -40,7 +44,7 @@ class Attachment
         return [
             new AttachmentConfig($name, $options),
             Stapler::getInterpolatorInstance(),
-            Stapler::getResizerInstance($options['image_processing_library'])
+            Stapler::getResizerInstance($options['image_processing_library']),
         ];
     }
 
@@ -50,7 +54,8 @@ class Attachment
      * We start with overall stapler options.  Next we merge in storage driver specific options.
      * Finally we'll merge in attachment specific options on top of that.
      *
-     * @param  array $options
+     * @param array $options
+     *
      * @return array
      */
     protected static function mergeOptions(array $options)
@@ -60,7 +65,7 @@ class Attachment
         $options = array_merge($defaultOptions, (array) $options);
         $storage = $options['storage'];
         $options = array_replace_recursive($config->get($storage), $options);
-        $options['styles'] = array_merge( (array) $options['styles'], ['original' => '']);
+        $options['styles'] = array_merge((array) $options['styles'], ['original' => '']);
 
         return $options;
     }

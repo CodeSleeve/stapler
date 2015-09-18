@@ -1,4 +1,6 @@
-<?php namespace Codesleeve\Stapler;
+<?php
+
+namespace Codesleeve\Stapler;
 
 use Codesleeve\Stapler\Config\ConfigurableInterface;
 use Codesleeve\Stapler\File\Image\Resizer;
@@ -11,9 +13,10 @@ use Aws\S3\S3Client;
  * paperclip plugin (rails) from which this package is inspired.
  * https://github.com/thoughtbot/paperclip
  *
- * @package Codesleeve/Stapler
  * @version v1.0.03
+ *
  * @author Travis Bennett <tandrewbennett@hotmail.com>
+ *
  * @link
  */
 class Stapler
@@ -97,9 +100,8 @@ class Stapler
      */
     public static function getInterpolatorInstance()
     {
-        if (static::$interpolator === null)
-        {
-            static::$interpolator = new Interpolator;
+        if (static::$interpolator === null) {
+            static::$interpolator = new Interpolator();
         }
 
         return static::$interpolator;
@@ -114,8 +116,7 @@ class Stapler
      */
     public static function getValidatorInstance()
     {
-        if (static::$validator === null)
-        {
+        if (static::$validator === null) {
             static::$validator = new Validator();
         }
 
@@ -126,6 +127,7 @@ class Stapler
      * Return a resizer object instance.
      *
      * @param string $type
+     *
      * @return \Codesleeve\Stapler\File\Image\Resizer
      */
     public static function getResizerInstance($type)
@@ -134,8 +136,7 @@ class Stapler
 
         if (static::$resizer === null) {
             static::$resizer = new Resizer($imagineInstance);
-        }
-        else {
+        } else {
             static::$resizer->setImagine($imagineInstance);
         }
 
@@ -146,12 +147,13 @@ class Stapler
      * Return an instance of Imagine interface.
      *
      * @param string $type
+     *
      * @return \Imagine\Image\ImagineInterface
      */
     public static function getImagineInstance($type)
     {
         if (!isset(static::$imageProcessors[$type])) {
-            static::$imageProcessors[$type] = new $type;
+            static::$imageProcessors[$type] = new $type();
         }
 
         return static::$imageProcessors[$type];
@@ -162,7 +164,8 @@ class Stapler
      * If no instance has been defined yet we'll buld one and then
      * cache it on the s3Clients property (for the current request only).
      *
-     * @param  Attachment $attachedFile
+     * @param Attachment $attachedFile
+     *
      * @return S3Client
      */
     public static function getS3ClientInstance(Attachment $attachedFile)
@@ -190,7 +193,7 @@ class Stapler
     public static function getConfigInstance()
     {
         if (!static::$config) {
-            static::$config = new Config\NativeConfig;
+            static::$config = new Config\NativeConfig();
         }
 
         return static::$config;
@@ -201,7 +204,8 @@ class Stapler
      *
      * @param ConfigurableInterface $config
      */
-    public static function setConfigInstance(ConfigurableInterface $config){
+    public static function setConfigInstance(ConfigurableInterface $config)
+    {
         static::$config = $config;
     }
 
@@ -210,6 +214,7 @@ class Stapler
      * this class's attachedFile object.
      *
      * @param $attachedFile
+     *
      * @return S3Client
      */
     protected static function buildS3Client(Attachment $attachedFile)

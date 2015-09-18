@@ -1,4 +1,6 @@
-<?php namespace Codesleeve\Stapler\Config;
+<?php
+
+namespace Codesleeve\Stapler\Config;
 
 use Illuminate\Config\Repository;
 
@@ -22,9 +24,9 @@ class IlluminateConfig implements ConfigurableInterface
      * Constructor method.
      *
      * @param Repository $config
-     * @param string $packageName
+     * @param string     $packageName
      */
-    function __construct(Repository $config, $packageName)
+    public function __construct(Repository $config, $packageName)
     {
         $this->config = $config;
         $this->packageName = $packageName;
@@ -34,9 +36,11 @@ class IlluminateConfig implements ConfigurableInterface
      * Retrieve a configuration value.
      *
      * @param $name
+     *
      * @return mixed
      */
-    public function get($name){
+    public function get($name)
+    {
         return $this->config->get("$this->packageName::$name");
     }
 
@@ -45,9 +49,11 @@ class IlluminateConfig implements ConfigurableInterface
      *
      * @param $name
      * @param $value
+     *
      * @return mixed
      */
-    public function set($name, $value){
+    public function set($name, $value)
+    {
         return $this->config->set("$this->packageName::$name", $value);
     }
 }

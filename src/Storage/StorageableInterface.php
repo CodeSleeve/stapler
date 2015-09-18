@@ -1,11 +1,14 @@
-<?php namespace Codesleeve\Stapler\Storage;
+<?php
+
+namespace Codesleeve\Stapler\Storage;
 
 interface StorageableInterface
 {
     /**
      * Return the url for a file upload.
      *
-     * @param  string $styleName
+     * @param string $styleName
+     *
      * @return string
      */
     public function url($styleName);
@@ -14,7 +17,8 @@ interface StorageableInterface
      * For filesystem storage this method returns the path (on disk) of a file upload.
      * For s3 storage this method returns the key an uploaded object is stored under in a bucket.
      *
-     * @param  string $styleName
+     * @param string $styleName
+     *
      * @return string
      */
     public function path($styleName);
@@ -23,7 +27,6 @@ interface StorageableInterface
      * Remove an attached file.
      *
      * @param array $filePaths
-     * @return void
      */
     public function remove(array $filePaths);
 
@@ -32,9 +35,8 @@ interface StorageableInterface
      * The file can be an actual uploaded file object or the path to
      * a resized image file on disk.
      *
-     * @param  string $file
-     * @param  string $filePath
-     * @return void
+     * @param string $file
+     * @param string $filePath
      */
     public function move($file, $filePath);
 }

@@ -1,4 +1,6 @@
-<?php namespace Codesleeve\Stapler\File;
+<?php
+
+namespace Codesleeve\Stapler\File;
 
 use Symfony\Component\HttpFoundation\File\File as SymfonyFile;
 
@@ -11,21 +13,21 @@ class File extends SymfonyFile implements FileInterface
      * @var array
      */
     protected $imageMimes = [
-        'bmp'   => 'image/bmp',
-        'gif'   => 'image/gif',
-        'jpeg'  => ['image/jpeg', 'image/pjpeg'],
-        'jpg'   => ['image/jpeg', 'image/pjpeg'],
-        'jpe'   => ['image/jpeg', 'image/pjpeg'],
-        'png'   => 'image/png',
-        'tiff'  => 'image/tiff',
-        'tif'   => 'image/tiff',
+        'bmp' => 'image/bmp',
+        'gif' => 'image/gif',
+        'jpeg' => ['image/jpeg', 'image/pjpeg'],
+        'jpg' => ['image/jpeg', 'image/pjpeg'],
+        'jpe' => ['image/jpeg', 'image/pjpeg'],
+        'png' => 'image/png',
+        'tiff' => 'image/tiff',
+        'tif' => 'image/tiff',
     ];
 
     /**
      * Method for determining whether the uploaded file is
      * an image type.
      *
-     * @return boolean
+     * @return bool
      */
     public function isImage()
     {
@@ -34,10 +36,8 @@ class File extends SymfonyFile implements FileInterface
         // The $imageMimes property contains an array of file extensions and
         // their associated MIME types. We will loop through them and look for
         // the MIME type of the current SymfonyUploadedFile.
-        foreach ($this->imageMimes as $imageMime)
-        {
-            if (in_array($mime, (array) $imageMime))
-            {
+        foreach ($this->imageMimes as $imageMime) {
+            if (in_array($mime, (array) $imageMime)) {
                 return true;
             }
         }

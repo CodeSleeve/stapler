@@ -1,4 +1,6 @@
-<?php namespace Codesleeve\Stapler\Factories;
+<?php
+
+namespace Codesleeve\Stapler\Factories;
 
 use PHPUnit_Framework_TestCase;
 
@@ -6,8 +8,6 @@ class AttachmentTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Setup method.
-     *
-     * @return void
      */
     public function setUp()
     {
@@ -15,8 +15,6 @@ class AttachmentTest extends PHPUnit_Framework_TestCase
 
     /**
      * Teardown method.
-     *
-     * @return void
      */
     public function tearDown()
     {
@@ -27,7 +25,6 @@ class AttachmentTest extends PHPUnit_Framework_TestCase
      * of the Attachment class.
      *
      * @test
-     * @return void
      */
     public function it_should_be_able_to_build_an_attachment_object()
     {

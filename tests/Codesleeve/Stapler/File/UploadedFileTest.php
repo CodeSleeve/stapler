@@ -1,4 +1,6 @@
-<?php namespace Codesleeve\Stapler\Tests\File;
+<?php
+
+namespace Codesleeve\Stapler\Tests\File;
 
 use PHPUnit_Framework_TestCase;
 use Codesleeve\Stapler\File\UploadedFile;
@@ -9,8 +11,6 @@ class UploadedFileTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Setup method.
-     *
-     * @return void
      */
     public function setUp()
     {
@@ -18,8 +18,6 @@ class UploadedFileTest extends PHPUnit_Framework_TestCase
 
     /**
      * Teardown method.
-     *
-     * @return void
      */
     public function tearDown()
     {
@@ -32,7 +30,6 @@ class UploadedFileTest extends PHPUnit_Framework_TestCase
      *
      * @test
      * @expectedException Codesleeve\Stapler\Exceptions\FileException
-     * @return void
      */
     public function it_should_throw_an_exception_if_the_file_upload_is_invalid()
     {
@@ -46,7 +43,6 @@ class UploadedFileTest extends PHPUnit_Framework_TestCase
      * file type that has been uploaded is an image.
      *
      * @test
-     * @return void
      */
     public function it_should_be_able_to_detect_the_if_the_file_is_an_image()
     {
@@ -62,7 +58,6 @@ class UploadedFileTest extends PHPUnit_Framework_TestCase
      * name of the underlying uploaded file.
      *
      * @test
-     * @return void
      */
     public function it_should_be_able_to_get_the_name_of_the_uploaded_file()
     {
@@ -78,7 +73,6 @@ class UploadedFileTest extends PHPUnit_Framework_TestCase
      * underlying uploaded file.
      *
      * @test
-     * @return void
      */
     public function it_should_be_able_to_get_the_size_of_the_uploaded_file()
     {
@@ -94,7 +88,6 @@ class UploadedFileTest extends PHPUnit_Framework_TestCase
      * of the underlyjng uploaded file.
      *
      * @test
-     * @return void
      */
     public function it_should_be_able_to_get_the_mime_type_of_the_uploaded_file()
     {
@@ -130,14 +123,15 @@ class UploadedFileTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-    * Helper method to build a mock Symfony UploadedFile object.
-    *
-    * @param  boolean $testing
-    * @return UploadedFile
-    */
+     * Helper method to build a mock Symfony UploadedFile object.
+     *
+     * @param bool $testing
+     *
+     * @return UploadedFile
+     */
     protected function buildSymfonyUploadedFile($testing = true)
     {
-        $path = __DIR__ . '/../Fixtures/empty.gif';
+        $path = __DIR__.'/../Fixtures/empty.gif';
         $originalName = 'empty.gif';
 
         return new SymfonyUploadedFile($path, $originalName, null, null, null, $testing);

@@ -1,4 +1,6 @@
-<?php namespace Codesleeve\Stapler;
+<?php
+
+namespace Codesleeve\Stapler;
 
 use PHPUnit_Framework_TestCase;
 use Mockery as m;
@@ -7,8 +9,6 @@ class StyleTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Setup method.
-     *
-     * @return void
      */
     public function setUp()
     {
@@ -17,8 +17,6 @@ class StyleTest extends PHPUnit_Framework_TestCase
 
     /**
      * Teardown method.
-     *
-     * @return void
      */
     public function tearDown()
     {
@@ -39,7 +37,6 @@ class StyleTest extends PHPUnit_Framework_TestCase
      * of dimensions.
      *
      * @test
-     * @return void
      */
     public function it_should_be_able_to_accept_a_string_value()
     {
@@ -55,10 +52,10 @@ class StyleTest extends PHPUnit_Framework_TestCase
      * parse.
      *
      * @test
-     * @param  string $value 
-     * @return void
+     *
+     * @param string $value
      */
-    public function it_should_be_able_to_accept_an_array_of_values($value='')
+    public function it_should_be_able_to_accept_an_array_of_values($value = '')
     {
         $convertOptions = ['resolution-units' => 'ppi', 'resolution-x' => 300, 'resolution-y' => 300, 'jpeg_quality' => 100];
         $styleValue = ['dimensions' => '50x50', 'auto_orient' => true, 'convert_options' => $convertOptions];
@@ -76,7 +73,6 @@ class StyleTest extends PHPUnit_Framework_TestCase
      *
      * @test
      * @expectedException \Codesleeve\Stapler\Exceptions\InvalidStyleConfigurationException
-     * @return void
      */
     public function it_should_throw_an_exception_if_passed_an_array_of_values_withou_a_dimensions_key()
     {

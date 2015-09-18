@@ -1,15 +1,14 @@
-<?php namespace Codesleeve\Stapler\Factories;
+<?php
+
+namespace Codesleeve\Stapler\Factories;
 
 use PHPUnit_Framework_TestCase;
-use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
 use Mockery as m;
 
 class StorageTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Setup method.
-     *
-     * @return void
      */
     public function setUp()
     {
@@ -17,8 +16,6 @@ class StorageTest extends PHPUnit_Framework_TestCase
 
     /**
      * Teardown method.
-     *
-     * @return void
      */
     public function tearDown()
     {
@@ -30,7 +27,6 @@ class StorageTest extends PHPUnit_Framework_TestCase
      * storage driver.
      *
      * @test
-     * @return void
      */
     public function it_should_be_able_to_create_a_filesystem_storeage_instance()
     {
@@ -46,7 +42,6 @@ class StorageTest extends PHPUnit_Framework_TestCase
      * storage driver.
      *
      * @test
-     * @return void
      */
     public function it_should_be_able_to_create_an_s3_storeage_instance()
     {
@@ -62,7 +57,6 @@ class StorageTest extends PHPUnit_Framework_TestCase
      * storage driver by default.
      *
      * @test
-     * @return void
      */
     public function it_should_be_able_to_create_a_filesystem_storeage_instance_by_default()
     {
@@ -76,7 +70,8 @@ class StorageTest extends PHPUnit_Framework_TestCase
     /**
      * Build a mock attachment object.
      *
-     * @param  string $type
+     * @param string $type
+     *
      * @return \Codesleeve\Stapler\Attachment
      */
     protected function buildMockAttachment($type = null)
