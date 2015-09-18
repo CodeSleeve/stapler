@@ -138,24 +138,4 @@ class StaplerTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Codesleeve\Stapler\Config\ConfigurableInterface', $config1);
         $this->assertSame($config1, $config2);
     }
-
-    /**
-     * Test that the stapler class can build a single instance of
-     * Codesleeve\Stapler\Config\IlluminateConfig.
-     *
-     * @test
-     */
-    public function it_should_be_able_to_create_set_singleton_config_instance()
-    {
-        $loaderInterface = m::mock('Illuminate\Config\loaderInterface');
-        $illuminateConfig = new \Illuminate\Config\Repository($loaderInterface, 'testing');
-        $config1 = new Config\IlluminateConfig($illuminateConfig, 'test');
-
-        Stapler::setConfigInstance($config1);
-        $config2 = Stapler::getConfigInstance();
-
-        $this->assertInstanceOf('Codesleeve\Stapler\Config\IlluminateConfig', $config1);
-        $this->assertInstanceOf('Codesleeve\Stapler\Config\ConfigurableInterface', $config1);
-        $this->assertSame($config1, $config2);
-    }
 }

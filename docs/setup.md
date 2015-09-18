@@ -4,7 +4,7 @@ Before you can begin using Stapler, there's a few things you're going to have to
 
 ```php
 // Boot stapler:
-Stapler::boot();
+\Codesleeve\Stapler\Stapler::boot();
 
 // Set the configuration driver (we're using the default config driver here; if you choose to implement your own you'll need to implement Codesleeve\Stapler\Config\ConfigurableInterface):
 $config = new Codesleeve\Stapler\Config\NativeConfig;
@@ -23,7 +23,7 @@ Stapler works via the use of traits.  In order to add file uploading capabilitie
 ```php
 	use Codesleeve\Stapler\ORM\StaplerableInterface;
 	use Codesleeve\Stapler\ORM\EloquentTrait;
-	
+
 	class FooModel extends Eloquent implements StaplerableInterface{
 		use EloquentTrait;
 	}
