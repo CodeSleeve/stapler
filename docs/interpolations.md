@@ -2,7 +2,8 @@
 With Stapler, uploaded files are accessed by configuring/defining path, url, and default_url strings which point to your uploaded file assets.  This is done via string interpolations.  Currently, the following interpolations are available for use:
 
 *   **:attachment** - The name of the file attachment as declared in the hasAttachedFile function, e.g 'avatar'.
-*   **:class**  - The classname of the model containing the file attachment, e.g User.  Stapler can handle namespacing of classes.
+*   **:class**  - The class name of the model containing the file attachment, e.g User.  This will include the class namespace.
+*   **:class_name** - The class name of the model, without its namespace.
 *   **:extension** - The file extension type of the uploaded file, e.g 'jpg'.
 *   **:filename** - The name of the uploaded file, e.g 'some_file.jpg'.
 *   **:id** - The id of the corresponding database record for the uploaded file.
