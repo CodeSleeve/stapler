@@ -13,7 +13,7 @@ class IlluminateConfig implements ConfigurableInterface
 
     /**
      * The name of the package this driver is being used with.
-     * 
+     *
      * @var string
      */
     protected $packageName;
@@ -33,18 +33,19 @@ class IlluminateConfig implements ConfigurableInterface
     /**
      * Retrieve a configuration value.
      *
-     * @param $name
+     * @param string $name
+     * @param mixed $default
      * @return mixed
      */
-    public function get($name){
-        return $this->config->get("$this->packageName::$name");
+    public function get($name, $default ){
+        return $this->config->get("$this->packageName::$name", $default);
     }
 
     /**
      * Set a configuration value.
      *
-     * @param $name
-     * @param $value
+     * @param string $name
+     * @param mixed $value
      * @return mixed
      */
     public function set($name, $value){

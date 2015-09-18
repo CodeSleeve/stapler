@@ -24,7 +24,24 @@ class Interpolator
         foreach ($this->interpolations() as $key => $value)
         {
             if (strpos($string, $key) !== false) {
-                $string = preg_replace("/$key\b/", $this->$value($attachment, $styleName), $string);
+                if (is_string($value)) {
+                    $replacement = $this->$value($attachment, $styleName);
+                } elseif ($value instanceof \Closure) {
+                    $replacement = $value($attachment, $styleName);
+                } elseif (is_array($value)) {
+                    if (count($value) == 1) {
+                        // If only a class name is specified, use the default "handle" method
+                        $value[] = 'handle';
+                    }
+                    if (!is_callable($value)) {
+                        throw new \InvalidArgumentException("Invalid interpolation: '$key' => " . print_r($value, true));
+                    }
+                    $replacement = call_user_func($value, $attachment, $styleName);
+
+                } else {
+                    throw new \InvalidArgumentException("Invalid interpolation: '$key' => " . print_r($value, true));
+                }
+                $string = preg_replace("/$key\b/", $replacement, $string);
             }
         }
 
@@ -40,7 +57,7 @@ class Interpolator
     */
     protected function interpolations()
     {
-        return [
+        return array_merge([
             ':filename' => 'filename',
             ':url' => 'url',
             ':app_root' => 'appRoot',
@@ -55,7 +72,7 @@ class Interpolator
             ':id_partition' => 'idPartition',
             ':attachment' => 'attachment',
             ':style' => 'style'
-        ];
+        ], Stapler::getConfigInstance()->get('stapler.custom_interpolations', []));
     }
 
     /**
@@ -264,7 +281,7 @@ class Interpolator
      * Utility method to ensure the input data only contains
      * printable characters. This is especially important when
      * handling non-printable ID's such as binary UUID's.
-     * 
+     *
      * @param  mixed $input
      * @return mixed
      */
