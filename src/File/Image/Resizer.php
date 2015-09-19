@@ -38,7 +38,7 @@ class Resizer
      */
     public function resize(FileInterface $file, Style $style)
     {
-        $filePath = tempnam(sys_get_temp_dir(), 'STP').'.'.$file->getFilename();
+        $filePath = $this->randomFilePath($file->getFilename());
         list($width, $height, $option) = $this->parseStyleDimensions($style);
         $method = 'resize'.ucfirst($option);
 
@@ -361,5 +361,26 @@ class Resizer
         }
 
         return $image->strip();
+    }
+
+    /**
+     * Given the name of a file, generate temp a path
+     * with a radomized filename.
+     *
+     * @param  string $filename
+     * @return string
+     */
+    protected function randomFilePath($filename)
+    {
+        $chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        $filePath = sys_get_temp_dir() . '/stapler.';
+
+        for ($i = 0; $i < 10; $i++) {
+            $filePath .= $chars[mt_rand(0, 35)];
+        }
+
+        $filePath .= '_' . $filename;
+
+        return $filePath;
     }
 }

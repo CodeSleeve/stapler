@@ -90,6 +90,8 @@ class S3 implements StorageableInterface
 
         $this->ensureBucketExists($mergedConfig['Bucket']);
         $this->s3Client->putObject($mergedConfig);
+
+        @unlink($file);
     }
 
     /**
