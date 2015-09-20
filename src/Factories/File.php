@@ -4,6 +4,7 @@ namespace Codesleeve\Stapler\Factories;
 
 use Codesleeve\Stapler\File\File as StaplerFile;
 use Codesleeve\Stapler\File\UploadedFile as StaplerUploadedFile;
+use Codesleeve\Stapler\Interfaces\Config as ConfigInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
 use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesser;
 use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeExtensionGuesser;
@@ -62,6 +63,13 @@ class File
         return $staplerFile;
     }
 
+    /**
+     * Compose a \Codesleeve\Stapler\File\UploadedFile object from a
+     * data uri.
+     *
+     * @param  string $file
+     * @return \Codesleeve\Stapler\File\File
+     */
     protected static function createFromDataURI($file)
     {
         $fp = @fopen($file, 'r');
@@ -72,7 +80,7 @@ class File
 
         $meta = stream_get_meta_data($fp);
         $extension = static::getMimeTypeExtensionGuesserInstance()->guess($meta['mediatype']);
-        $filePath = sys_get_temp_dir().DIRECTORY_SEPARATOR.md5($meta['uri']).'.'.$extension;
+        $filePath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . md5($meta['uri']) . '.' . $extension;
 
         file_put_contents($filePath, stream_get_contents($fp));
 
@@ -170,9 +178,9 @@ class File
     /**
      * Set the configuration object instance.
      *
-     * @param ConfigurableInterface $config
+     * @param ConfigInterface $config
      */
-    public static function setConfigInstance(ConfigurableInterface $config)
+    public static function setConfigInstance(ConfigInterface $config)
     {
         static::$config = $config;
     }

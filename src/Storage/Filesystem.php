@@ -2,10 +2,11 @@
 
 namespace Codesleeve\Stapler\Storage;
 
+use Codesleeve\Stapler\Interfaces\Storage as StorageInterface;
 use Codesleeve\Stapler\Exceptions;
 use Codesleeve\Stapler\Attachment;
 
-class Filesystem implements StorageableInterface
+class Filesystem implements StorageInterface
 {
     /**
      * The current attachedFile object being processed.

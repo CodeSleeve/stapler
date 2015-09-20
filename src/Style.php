@@ -2,7 +2,9 @@
 
 namespace Codesleeve\Stapler;
 
-class Style
+use Codesleeve\Stapler\Interfaces\Style as StyleInterface;
+
+class Style implements StyleInterface
 {
     /**
      * The name of the style.
@@ -30,7 +32,7 @@ class Style
     /**
      * An array of values used by Imagine Image to control
      * image quality, DPI, etc when saving an image.
-     * 
+     *
      * @var array
      */
     public $convertOptions = [];

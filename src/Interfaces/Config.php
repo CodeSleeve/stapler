@@ -1,8 +1,8 @@
 <?php
 
-namespace Codesleeve\Stapler\Config;
+namespace Codesleeve\Stapler\Interfaces;
 
-interface ConfigurableInterface
+interface Config
 {
     /**
      * Retrieve a configuration value.

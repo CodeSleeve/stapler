@@ -4,7 +4,6 @@ namespace Codesleeve\Stapler\Factories;
 
 use Codesleeve\Stapler\Stapler;
 use Codesleeve\Stapler\AttachmentConfig;
-use Codesleeve\Stapler\Attachment as AttachmentObject;
 use Codesleeve\Stapler\Factories\Storage as StorageFactory;
 
 class Attachment
@@ -23,7 +22,9 @@ class Attachment
         Stapler::getValidatorInstance()->validateOptions($options);
         list($config, $interpolator, $resizer) = static::buildDependencies($name, $options);
 
-        $attachment = new AttachmentObject($config, $interpolator, $resizer);
+        $className = Stapler::getConfigInstance()->get('bindings.attachment');
+        $attachment = new $className($config, $interpolator, $resizer);
+
         $storageDriver = StorageFactory::create($attachment);
         $attachment->setStorageDriver($storageDriver);
 

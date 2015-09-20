@@ -2,7 +2,9 @@
 
 namespace Codesleeve\Stapler;
 
-class Validator
+use Codesleeve\Stapler\Interfaces\Validator as ValidatorInterface;
+
+class Validator implements ValidatorInterface
 {
     /**
      * Validate the attachment options for an attachment type.

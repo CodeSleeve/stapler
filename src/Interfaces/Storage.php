@@ -1,8 +1,8 @@
 <?php
 
-namespace Codesleeve\Stapler\Storage;
+namespace Codesleeve\Stapler\Interfaces;
 
-interface StorageableInterface
+interface Storage
 {
     /**
      * Return the url for a file upload.

@@ -86,10 +86,12 @@ class AttachmentConfig
      */
     protected function buildStyleObjects($styles)
     {
+        $config = Stapler::getConfigInstance();
+        $className = $config->get('bindings.style');
         $styleObjects = [];
 
         foreach ($styles as $styleName => $styleValue) {
-            $styleObjects[] = new Style($styleName, $styleValue);
+            $styleObjects[] = new $className($styleName, $styleValue);
         }
 
         return $styleObjects;

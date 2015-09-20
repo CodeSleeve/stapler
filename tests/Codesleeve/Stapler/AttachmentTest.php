@@ -15,6 +15,8 @@ class AttachmentTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         parent::setUp();
+
+        Stapler::boot();
     }
 
     /**
@@ -43,7 +45,7 @@ class AttachmentTest extends PHPUnit_Framework_TestCase
     /**
      * Calling the url method with a style parameter should
      * return the url for that style.
-     * 
+     *
      * @test
      */
     public function it_should_be_able_to_return_an_attachment_url_for_a_style()
@@ -60,7 +62,7 @@ class AttachmentTest extends PHPUnit_Framework_TestCase
     /**
      * Calling the url method without a style parameter should
      * return the url for the default style.
-     * 
+     *
      * @test
      */
     public function it_should_be_able_to_return_the_default_url_for_an_attachment_if_no_style_is_given()
@@ -77,7 +79,7 @@ class AttachmentTest extends PHPUnit_Framework_TestCase
     /**
      * Calling the path method with a style parameter should
      * return the path for that style.
-     * 
+     *
      * @test
      */
     public function it_should_be_able_to_return_an_attachment_path_for_a_style()
@@ -94,7 +96,7 @@ class AttachmentTest extends PHPUnit_Framework_TestCase
     /**
      * Calling the path method without a style parameter should
      * return the path for the default style.
-     * 
+     *
      * @test
      */
     public function it_should_be_able_to_return_the_default_path_for_an_attachment_if_no_style_is_given($value = '')
@@ -168,8 +170,6 @@ class AttachmentTest extends PHPUnit_Framework_TestCase
      */
     protected function build_attachment()
     {
-        Stapler::boot();
-
         $instance = $this->build_mock_instance();
         $interpolator = new Interpolator();
         $attachmentConfig = new \Codesleeve\Stapler\AttachmentConfig('photo', [
@@ -193,7 +193,7 @@ class AttachmentTest extends PHPUnit_Framework_TestCase
 
     /**
      * Build a mock model instance.
-     * 
+     *
      * @return mixed
      */
     protected function build_mock_instance()

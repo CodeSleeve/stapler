@@ -30,6 +30,6 @@ class AttachmentTest extends PHPUnit_Framework_TestCase
     {
         $attachment = Attachment::create('testAttachment', []);
 
-        $this->assertInstanceOf('Codesleeve\Stapler\Attachment', $attachment);
+        $this->assertInstanceOf('Codesleeve\Stapler\Interfaces\Attachment', $attachment);
     }
 }

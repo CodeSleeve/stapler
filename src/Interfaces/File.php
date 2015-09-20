@@ -1,8 +1,8 @@
 <?php
 
-namespace Codesleeve\Stapler\File;
+namespace Codesleeve\Stapler\Interfaces;
 
-interface FileInterface
+interface File
 {
     /**
      * Return the name of the file.

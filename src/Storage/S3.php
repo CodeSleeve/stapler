@@ -2,10 +2,11 @@
 
 namespace Codesleeve\Stapler\Storage;
 
+use Codesleeve\Stapler\Interfaces\Storage as StorageInterface;
 use Aws\S3\S3Client;
 use Codesleeve\Stapler\Attachment;
 
-class S3 implements StorageableInterface
+class S3 implements StorageInterface
 {
     /**
      * The current attachedFile object being processed.

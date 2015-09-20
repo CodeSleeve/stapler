@@ -2,7 +2,9 @@
 
 namespace Codesleeve\Stapler\Config;
 
-class NativeConfig implements ConfigurableInterface
+use Codesleeve\Stapler\Interfaces\Config as ConfigInterface;
+
+class NativeConfig implements ConfigInterface
 {
     /**
      * An array of configuration values that have been
@@ -40,6 +42,13 @@ class NativeConfig implements ConfigurableInterface
             ],
             'path' => ':attachment/:id/:style/:filename',
         ],
+        'bindings' => [
+            'attachment' => '\Codesleeve\Stapler\Attachment',
+            'interpolator' => '\Codesleeve\Stapler\Interpolator',
+            'resizer' => '\Codesleeve\Stapler\File\Image\Resizer',
+            'style' => '\Codesleeve\Stapler\Style',
+            'validator' => '\Codesleeve\Stapler\Validator',
+        ]
     ];
 
     /**

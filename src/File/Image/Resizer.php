@@ -2,14 +2,15 @@
 
 namespace Codesleeve\Stapler\File\Image;
 
-use Codesleeve\Stapler\File\FileInterface;
-use Codesleeve\Stapler\Style;
+use Codesleeve\Stapler\Interfaces\Resizer as ResizerInterface;
+use Codesleeve\Stapler\Interfaces\File as FileInterface;
+use Codesleeve\Stapler\Interfaces\Style as StyleInterface;
 use Imagine\Image\ImagineInterface;
 use Imagine\Image\ImageInterface;
 use Imagine\Image\Box;
 use Imagine\Image\Point;
 
-class Resizer
+class Resizer implements ResizerInterface
 {
     /**
      * Instance of Imagine Interface.
@@ -31,12 +32,12 @@ class Resizer
     /**
      * Resize an image using the computed settings.
      *
-     * @param FileInterface $file
-     * @param Style         $style
+     * @param FileInterface  $file
+     * @param StyleInterface $style
      *
      * @return string
      */
-    public function resize(FileInterface $file, Style $style)
+    public function resize(FileInterface $file, StyleInterface $style)
     {
         $filePath = $this->randomFilePath($file->getFilename());
         list($width, $height, $option) = $this->parseStyleDimensions($style);
@@ -77,11 +78,11 @@ class Resizer
      * Parse the given style dimensions to extract out the file processing options,
      * perform any necessary image resizing for a given style.
      *
-     * @param Style $style
+     * @param StyleInterface $style
      *
      * @return array
      */
-    protected function parseStyleDimensions(Style $style)
+    protected function parseStyleDimensions(StyleInterface $style)
     {
         if (is_callable($style->dimensions)) {
             return [null, null, 'custom'];

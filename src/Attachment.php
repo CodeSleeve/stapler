@@ -2,12 +2,14 @@
 
 namespace Codesleeve\Stapler;
 
+use Codesleeve\Stapler\Interfaces\Attachment as AttachmentInterface;
+use Codesleeve\Stapler\Interfaces\Interpolator as InterpolatorInterface;
+use Codesleeve\Stapler\Interfaces\Resizer as ResizerInterface;
+use Codesleeve\Stapler\Interfaces\Storage as StorageInterface;
 use Codesleeve\Stapler\ORM\StaplerableInterface;
-use Codesleeve\Stapler\Storage\StorageableInterface;
-use Codesleeve\Stapler\File\Image\Resizer;
 use Codesleeve\Stapler\Factories\File as FileFactory;
 
-class Attachment
+class Attachment implements AttachmentInterface
 {
     /**
      * The model instance that the attachment belongs to.
@@ -26,21 +28,21 @@ class Attachment
     /**
      * An instance of the underlying storage driver that is being used.
      *
-     * @var StorageableInterface.
+     * @var StorageInterface.
      */
     protected $storageDriver;
 
     /**
      * An instance of the interpolator class for processing interpolations.
      *
-     * @var Interpolator
+     * @var InterpolatorInterface
      */
     protected $interpolator;
 
     /**
      * The uploaded file object for the attachment.
      *
-     * @var \Codesleeve\Stapler\File\FileInterface
+     * @var \Codesleeve\Stapler\Interfaces\File
      */
     protected $uploadedFile;
 
@@ -69,10 +71,10 @@ class Attachment
      * Constructor method.
      *
      * @param AttachmentConfig $config
-     * @param Interpolator     $interpolator
-     * @param Resizer          $resizer
+     * @param InterpolatorInterface     $interpolator
+     * @param ResizerInterface          $resizer
      */
-    public function __construct(AttachmentConfig $config, Interpolator $interpolator, Resizer $resizer)
+    public function __construct(AttachmentConfig $config, InterpolatorInterface $interpolator, ResizerInterface $resizer)
     {
         $this->config = $config;
         $this->interpolator = $interpolator;
@@ -135,7 +137,7 @@ class Attachment
     /**
      * Accessor method for the uploadedFile property.
      *
-     * @return \Codesleeve\Stapler\File\FileInterface
+     * @return \Codesleeve\Stapler\Interfaces\File
      */
     public function getUploadedFile()
     {
@@ -145,9 +147,9 @@ class Attachment
     /**
      * Mutator method for the interpolator property.
      *
-     * @param Interpolator $interpolator
+     * @param InterpolatorInterface $interpolator
      */
-    public function setInterpolator(Interpolator $interpolator)
+    public function setInterpolator(InterpolatorInterface $interpolator)
     {
         $this->interpolator = $interpolator;
     }
@@ -155,7 +157,7 @@ class Attachment
     /**
      * Accessor method for the interpolator property.
      *
-     * @return Interpolator
+     * @return InterpolatorInterface
      */
     public function getInterpolator()
     {
@@ -165,9 +167,9 @@ class Attachment
     /**
      * Mutator method for the resizer property.
      *
-     * @param Resizer $resizer
+     * @param ResizerInterface $resizer
      */
-    public function setResizer(Resizer $resizer)
+    public function setResizer(ResizerInterface $resizer)
     {
         $this->resizer = $resizer;
     }
@@ -185,9 +187,9 @@ class Attachment
     /**
      * Mutator method for the storageDriver property.
      *
-     * @param StorageableInterface $storageDriver
+     * @param StorageInterface $storageDriver
      */
-    public function setStorageDriver(StorageableInterface $storageDriver)
+    public function setStorageDriver(StorageInterface $storageDriver)
     {
         $this->storageDriver = $storageDriver;
     }
@@ -195,7 +197,7 @@ class Attachment
     /**
      * Accessor method for the storageDriver property.
      *
-     * @return StorageableInterface
+     * @return StorageInterface
      */
     public function getStorageDriver()
     {
