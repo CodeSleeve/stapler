@@ -66,7 +66,7 @@ class Interpolator implements InterpolatorInterface
      * Returns the file name.
      *
      * @param AttachmentInterface $attachment
-     * @param string     $styleName
+     * @param string              $styleName
      *
      * @return string
      */
@@ -79,7 +79,7 @@ class Interpolator implements InterpolatorInterface
      * Generates the url to a file upload.
      *
      * @param AttachmentInterface $attachment
-     * @param string     $styleName
+     * @param string              $styleName
      *
      * @return string
      */
@@ -92,7 +92,7 @@ class Interpolator implements InterpolatorInterface
      * Returns the application root of the project.
      *
      * @param AttachmentInterface $attachment
-     * @param string     $styleName
+     * @param string              $styleName
      *
      * @return string
      */
@@ -106,7 +106,7 @@ class Interpolator implements InterpolatorInterface
      * 'Swingline\Stapler' will become Swingline/Stapler.
      *
      * @param AttachmentInterface $attachment
-     * @param string     $styleName
+     * @param string              $styleName
      *
      * @return string
      */
@@ -136,7 +136,7 @@ class Interpolator implements InterpolatorInterface
      * 'Swingline\Stapler' will become Swingline.
      *
      * @param AttachmentInterface $attachment
-     * @param string     $styleName
+     * @param string              $styleName
      *
      * @return string
      */
@@ -151,7 +151,7 @@ class Interpolator implements InterpolatorInterface
      * Returns the basename portion of the attached file, e.g 'file' for file.jpg.
      *
      * @param AttachmentInterface $attachment
-     * @param string     $styleName
+     * @param string              $styleName
      *
      * @return string
      */
@@ -164,7 +164,7 @@ class Interpolator implements InterpolatorInterface
      * Returns the extension of the attached file, e.g 'jpg' for file.jpg.
      *
      * @param AttachmentInterface $attachment
-     * @param string     $styleName
+     * @param string              $styleName
      *
      * @return string
      */
@@ -190,7 +190,7 @@ class Interpolator implements InterpolatorInterface
      * Return a secure Bcrypt hash of the attachment's corresponding instance id.
      *
      * @param AttachmentInterface $attachment
-     * @param string     $styleName
+     * @param string              $styleName
      */
     protected function secureHash(AttachmentInterface $attachment, $styleName = '')
     {
@@ -201,7 +201,7 @@ class Interpolator implements InterpolatorInterface
      * Return a Bcrypt hash of the attachment's corresponding instance id.
      *
      * @param AttachmentInterface $attachment
-     * @param string     $styleName
+     * @param string              $styleName
      */
     protected function hash(AttachmentInterface $attachment, $styleName = '')
     {
@@ -213,7 +213,7 @@ class Interpolator implements InterpolatorInterface
      * return /000/001/234 for an id of 1234.
      *
      * @param AttachmentInterface $attachment
-     * @param string     $styleName
+     * @param string              $styleName
      *
      * @return mixed
      */
@@ -235,7 +235,7 @@ class Interpolator implements InterpolatorInterface
      * "avatars" for an attachment of :avatar.
      *
      * @param AttachmentInterface $attachment
-     * @param string     $styleName
+     * @param string              $styleName
      *
      * @return string
      */
@@ -248,7 +248,7 @@ class Interpolator implements InterpolatorInterface
      * Returns the style, or the default style if an empty style is supplied.
      *
      * @param AttachmentInterface $attachment
-     * @param string     $styleName
+     * @param string              $styleName
      *
      * @return string
      */

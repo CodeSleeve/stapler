@@ -14,7 +14,7 @@ use Aws\S3\S3Client;
  * paperclip plugin (rails) from which this package is inspired.
  * https://github.com/thoughtbot/paperclip
  *
- * @version v1.0.03
+ * @version v1.1.0
  *
  * @author Travis Bennett <tandrewbennett@hotmail.com>
  *
