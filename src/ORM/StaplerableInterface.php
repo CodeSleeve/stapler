@@ -36,4 +36,20 @@ interface StaplerableInterface
      * @param mixed  $value
      */
     public function setAttribute($key, $value);
+
+    /**
+     * Return the image paths (across all styles) for a given attachment.
+     *
+     * @param  string $attachmentName
+     * @return array
+     */
+    public function pathsForAttachment($attachmentName);
+
+    /**
+     * Return the image urls (across all styles) for a given attachment.
+     *
+     * @param  string $attachmentName
+     * @return array
+     */
+    public function urlsForAttachment($attachmentName);
 }

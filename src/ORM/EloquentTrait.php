@@ -119,4 +119,46 @@ trait EloquentTrait
     {
         return array_merge($this->attachedFiles, parent::getAttributes());
     }
+
+    /**
+     * Return the image paths (across all styles) for a given attachment.
+     *
+     * @param  string $attachmentName
+     * @return array
+     */
+    public function pathsForAttachment($attachmentName)
+    {
+        $paths = [];
+
+        if (isset($this->attachedFiles[$attachmentName])) {
+            $attachment = $this->attachedFiles[$attachmentName];
+
+            foreach ($attachment->styles as $style) {
+                $paths[$style->name] = $attachment->path($style->name);
+            }
+        }
+
+        return $paths;
+    }
+
+    /**
+     * Return the image urls (across all styles) for a given attachment.
+     *
+     * @param  string $attachmentName
+     * @return array
+     */
+    public function urlsForAttachment($attachmentName)
+    {
+        $urls = [];
+
+        if (isset($this->attachedFiles[$attachmentName])) {
+            $attachment = $this->attachedFiles[$attachmentName];
+
+            foreach ($attachment->styles as $style) {
+                $urls[$style->name] = $attachment->url($style->name);
+            }
+        }
+
+        return $urls;
+    }
 }
