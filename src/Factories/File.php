@@ -119,7 +119,7 @@ class File
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        if(function_exists('curl_exe_follow'))
+        if(function_exists('curl_exec_follow'))
         {
           $rawFile = curl_exec_follow($ch);
         } else {
