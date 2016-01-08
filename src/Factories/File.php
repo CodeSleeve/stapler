@@ -119,7 +119,12 @@ class File
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        $rawFile = curl_exec($ch);
+        if(function_exists('curl_exe_follow'))
+        {
+          $rawFile = curl_exec_follow($ch);
+        } else {
+          $rawFile = curl_exec($ch);
+        }
         curl_close($ch);
 
         // Remove the query string if it exists
