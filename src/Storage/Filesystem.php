@@ -34,7 +34,7 @@ class Filesystem implements StorageInterface
      */
     public function url($styleName)
     {
-        return $this->attachedFile->getInterpolator()->interpolate($this->attachedFile->url, $this->attachedFile, $styleName);
+        return $this->attachedFile->getInterpolator()->interpolate($this->attachedFile->url, $this->attachedFile, $styleName, true);
     }
 
     /**
