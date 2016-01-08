@@ -1,8 +1,9 @@
-<?php namespace Codesleeve\Stapler\Factories;
+<?php
+
+namespace Codesleeve\Stapler\Factories;
 
 use Codesleeve\Stapler\Stapler;
 use Codesleeve\Stapler\AttachmentConfig;
-use Codesleeve\Stapler\Attachment as AttachmentObject;
 use Codesleeve\Stapler\Factories\Storage as StorageFactory;
 
 class Attachment
@@ -11,7 +12,8 @@ class Attachment
      * Create a new attachment object.
      *
      * @param string $name
-     * @param array $options
+     * @param array  $options
+     *
      * @return \Codesleeve\Stapler\Attachment
      */
     public static function create($name, array $options)
@@ -20,7 +22,9 @@ class Attachment
         Stapler::getValidatorInstance()->validateOptions($options);
         list($config, $interpolator, $resizer) = static::buildDependencies($name, $options);
 
-        $attachment = new AttachmentObject($config, $interpolator, $resizer);
+        $className = Stapler::getConfigInstance()->get('bindings.attachment');
+        $attachment = new $className($config, $interpolator, $resizer);
+
         $storageDriver = StorageFactory::create($attachment);
         $attachment->setStorageDriver($storageDriver);
 
@@ -32,7 +36,8 @@ class Attachment
      * a new attachment object.
      *
      * @param string $name
-     * @param array $options
+     * @param array  $options
+     *
      * @return array
      */
     protected static function buildDependencies($name, array $options)
@@ -40,7 +45,7 @@ class Attachment
         return [
             new AttachmentConfig($name, $options),
             Stapler::getInterpolatorInstance(),
-            Stapler::getResizerInstance($options['image_processing_library'])
+            Stapler::getResizerInstance($options['image_processing_library']),
         ];
     }
 
@@ -50,7 +55,8 @@ class Attachment
      * We start with overall stapler options.  Next we merge in storage driver specific options.
      * Finally we'll merge in attachment specific options on top of that.
      *
-     * @param  array $options
+     * @param array $options
+     *
      * @return array
      */
     protected static function mergeOptions(array $options)
@@ -60,7 +66,7 @@ class Attachment
         $options = array_merge($defaultOptions, (array) $options);
         $storage = $options['storage'];
         $options = array_replace_recursive($config->get($storage), $options);
-        $options['styles'] = array_merge( (array) $options['styles'], ['original' => '']);
+        $options['styles'] = array_merge((array) $options['styles'], ['original' => '']);
 
         return $options;
     }

@@ -12,14 +12,14 @@
     "require": {
         "php": ">=5.4",
         "symfony/http-foundation": "~2.3",
-        "imagine/imagine": "~0.5.0",
-        "doctrine/inflector": "v1.0"
+        "imagine/imagine": "~0.6.2",
+        "doctrine/inflector": "~1"
     },
     "require-dev": {
         "mockery/mockery": "0.8.0",
         "aws/aws-sdk-php": "2.4.*@dev",
-        "illuminate/database": "~4",
-        "illuminate/config": "~4"
+        "illuminate/database": "4.*|5.*",
+        "illuminate/config": "4.*|5.*"
     },
     "autoload": {
         "psr-4": {

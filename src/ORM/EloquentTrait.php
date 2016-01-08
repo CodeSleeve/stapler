@@ -1,4 +1,6 @@
-<?php namespace Codesleeve\Stapler\ORM;
+<?php
+
+namespace Codesleeve\Stapler\ORM;
 
 use Codesleeve\Stapler\Factories\Attachment as AttachmentFactory;
 
@@ -26,7 +28,7 @@ trait EloquentTrait
      * This function acts as a quasi constructor for this trait.
      *
      * @param string $name
-     * @param array $options
+     * @param array  $options
      */
     public function hasAttachedFile($name, array $options = [])
     {
@@ -53,20 +55,20 @@ trait EloquentTrait
      */
     public static function bootStapler()
     {
-        static::saved(function($instance) {
-            foreach($instance->attachedFiles as $attachedFile) {
+        static::saved(function ($instance) {
+            foreach ($instance->attachedFiles as $attachedFile) {
                 $attachedFile->afterSave($instance);
             }
         });
 
-        static::deleting(function($instance) {
-            foreach($instance->attachedFiles as $attachedFile) {
+        static::deleting(function ($instance) {
+            foreach ($instance->attachedFiles as $attachedFile) {
                 $attachedFile->beforeDelete($instance);
             }
         });
 
-        static::deleted(function($instance) {
-            foreach($instance->attachedFiles as $attachedFile) {
+        static::deleted(function ($instance) {
+            foreach ($instance->attachedFiles as $attachedFile) {
                 $attachedFile->afterDelete($instance);
             }
         });
@@ -75,13 +77,13 @@ trait EloquentTrait
     /**
      * Handle the dynamic retrieval of attachment objects.
      *
-     * @param  string $key
+     * @param string $key
+     *
      * @return mixed
      */
     public function getAttribute($key)
     {
-        if (array_key_exists($key, $this->attachedFiles))
-        {
+        if (array_key_exists($key, $this->attachedFiles)) {
             return $this->attachedFiles[$key];
         }
 
@@ -91,15 +93,13 @@ trait EloquentTrait
     /**
      * Handle the dynamic setting of attachment objects.
      *
-     * @param  string $key
-     * @param  mixed $value
+     * @param string $key
+     * @param mixed  $value
      */
     public function setAttribute($key, $value)
     {
-        if (array_key_exists($key, $this->attachedFiles))
-        {
-            if ($value)
-            {
+        if (array_key_exists($key, $this->attachedFiles)) {
+            if ($value) {
                 $attachedFile = $this->attachedFiles[$key];
                 $attachedFile->setUploadedFile($value);
             }
@@ -108,5 +108,57 @@ trait EloquentTrait
         }
 
         parent::setAttribute($key, $value);
+    }
+
+    /**
+     * Get all of the current attributes and attachment objects on the model.
+     *
+     * @return mixed
+     */
+    public function getAttributes()
+    {
+        return array_merge($this->attachedFiles, parent::getAttributes());
+    }
+
+    /**
+     * Return the image paths (across all styles) for a given attachment.
+     *
+     * @param  string $attachmentName
+     * @return array
+     */
+    public function pathsForAttachment($attachmentName)
+    {
+        $paths = [];
+
+        if (isset($this->attachedFiles[$attachmentName])) {
+            $attachment = $this->attachedFiles[$attachmentName];
+
+            foreach ($attachment->styles as $style) {
+                $paths[$style->name] = $attachment->path($style->name);
+            }
+        }
+
+        return $paths;
+    }
+
+    /**
+     * Return the image urls (across all styles) for a given attachment.
+     *
+     * @param  string $attachmentName
+     * @return array
+     */
+    public function urlsForAttachment($attachmentName)
+    {
+        $urls = [];
+
+        if (isset($this->attachedFiles[$attachmentName])) {
+            $attachment = $this->attachedFiles[$attachmentName];
+
+            foreach ($attachment->styles as $style) {
+                $urls[$style->name] = $attachment->url($style->name);
+            }
+        }
+
+        return $urls;
     }
 }

@@ -1,6 +1,10 @@
-<?php namespace Codesleeve\Stapler\Config;
+<?php
 
-class NativeConfig implements ConfigurableInterface
+namespace Codesleeve\Stapler\Config;
+
+use Codesleeve\Stapler\Interfaces\Config as ConfigInterface;
+
+class NativeConfig implements ConfigInterface
 {
     /**
      * An array of configuration values that have been
@@ -18,7 +22,7 @@ class NativeConfig implements ConfigurableInterface
             'default_style' => 'original',
             'styles' => [],
             'keep_old_files' => false,
-            'preserve_files' => false
+            'preserve_files' => false,
         ],
         'filesystem' => [
             'url' => '/system/:class/:attachment/:id_partition/:style/:filename',
@@ -36,7 +40,14 @@ class NativeConfig implements ConfigurableInterface
                 'Bucket' => '',
                 'ACL' => 'public-read',
             ],
-            'path' => ':attachment/:id/:style/:filename'
+            'path' => ':attachment/:id/:style/:filename',
+        ],
+        'bindings' => [
+            'attachment' => '\Codesleeve\Stapler\Attachment',
+            'interpolator' => '\Codesleeve\Stapler\Interpolator',
+            'resizer' => '\Codesleeve\Stapler\File\Image\Resizer',
+            'style' => '\Codesleeve\Stapler\Style',
+            'validator' => '\Codesleeve\Stapler\Validator',
         ]
     ];
 
@@ -45,7 +56,7 @@ class NativeConfig implements ConfigurableInterface
      *
      * @param array $items
      */
-    function __construct(array $items = null)
+    public function __construct(array $items = null)
     {
         if ($items) {
             $this->items = $items;
@@ -56,6 +67,7 @@ class NativeConfig implements ConfigurableInterface
      * Retrieve a configuration value.
      *
      * @param $name
+     *
      * @return mixed
      */
     public function get($name)
@@ -81,8 +93,7 @@ class NativeConfig implements ConfigurableInterface
 
         if ($item) {
             $this->items[$group][$item] = $value;
-        }
-        else {
+        } else {
             $this->items[$group] = $value;
         }
     }
@@ -103,7 +114,7 @@ class NativeConfig implements ConfigurableInterface
 
     /**
      * Load all configuration items from a specific
-     * configuration group
+     * configuration group.
      *
      * @param string $group
      */
@@ -114,4 +125,3 @@ class NativeConfig implements ConfigurableInterface
         }
     }
 }
-

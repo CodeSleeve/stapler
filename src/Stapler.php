@@ -1,6 +1,9 @@
-<?php namespace Codesleeve\Stapler;
+<?php
 
-use Codesleeve\Stapler\Config\ConfigurableInterface;
+namespace Codesleeve\Stapler;
+
+use Codesleeve\Stapler\Interfaces\Attachment as AttachmentInterface;
+use Codesleeve\Stapler\Interfaces\Config as ConfigInterface;
 use Codesleeve\Stapler\File\Image\Resizer;
 use Aws\S3\S3Client;
 
@@ -11,9 +14,10 @@ use Aws\S3\S3Client;
  * paperclip plugin (rails) from which this package is inspired.
  * https://github.com/thoughtbot/paperclip
  *
- * @package Codesleeve/Stapler
- * @version v1.0.0
+ * @version v1.1.0
+ *
  * @author Travis Bennett <tandrewbennett@hotmail.com>
+ *
  * @link
  */
 class Stapler
@@ -28,28 +32,28 @@ class Stapler
     /**
      * An instance of the interpolator class for processing interpolations.
      *
-     * @var \Codesleeve\Stapler\Interpolator
+     * @var \Codesleeve\Stapler\Interfaces\Interpolator
      */
     protected static $interpolator;
 
     /**
      * An instance of the validator class for validating attachment configurations.
      *
-     * @var \Codesleeve\Stapler\Validator
+     * @var \Codesleeve\Stapler\Interfaces\Validator
      */
     protected static $validator;
 
     /**
      * An instance of the resizer class for processing images.
      *
-     * @var \Codesleeve\Stapler\File\Image\Resizer
+     * @var \Codesleeve\Stapler\Interfaces\Resizer
      */
     protected static $resizer;
 
     /**
      * A configuration object instance.
      *
-     * @var \Codesleeve\Stapler\Config\ConfigurableInterface
+     * @var ConfigInterface
      */
     protected static $config;
 
@@ -93,13 +97,13 @@ class Stapler
      * If there's currently no instance in memory we'll create one
      * and then hang it as a property on this class.
      *
-     * @return \Codesleeve\Stapler\Interpolator
+     * @return \Codesleeve\Stapler\Interfaces\Interpolator
      */
     public static function getInterpolatorInstance()
     {
-        if (static::$interpolator === null)
-        {
-            static::$interpolator = new Interpolator;
+        if (static::$interpolator === null) {
+            $className = static::$config->get('bindings.interpolator');
+            static::$interpolator = new $className();
         }
 
         return static::$interpolator;
@@ -110,13 +114,13 @@ class Stapler
      * If there's currently no instance in memory we'll create one
      * and then hang it as a property on this class.
      *
-     * @return \Codesleeve\Stapler\Interpolator
+     * @return \Codesleeve\Stapler\Interfaces\Validator
      */
     public static function getValidatorInstance()
     {
-        if (static::$validator === null)
-        {
-            static::$validator = new Validator();
+        if (static::$validator === null) {
+            $className = static::$config->get('bindings.validator');
+            static::$validator = new $className();
         }
 
         return static::$validator;
@@ -126,16 +130,17 @@ class Stapler
      * Return a resizer object instance.
      *
      * @param string $type
-     * @return \Codesleeve\Stapler\File\Image\Resizer
+     *
+     * @return \Codesleeve\Stapler\Interfaces\Resizer
      */
     public static function getResizerInstance($type)
     {
         $imagineInstance = static::getImagineInstance($type);
 
         if (static::$resizer === null) {
-            static::$resizer = new Resizer($imagineInstance);
-        }
-        else {
+            $className = static::$config->get('bindings.resizer');
+            static::$resizer = new $className($imagineInstance);
+        } else {
             static::$resizer->setImagine($imagineInstance);
         }
 
@@ -146,15 +151,16 @@ class Stapler
      * Return an instance of Imagine interface.
      *
      * @param string $type
+     *
      * @return \Imagine\Image\ImagineInterface
      */
     public static function getImagineInstance($type)
     {
         if (!isset(static::$imageProcessors[$type])) {
-            static::$imageProcessors[$type] = new $type;
-    	}
+            static::$imageProcessors[$type] = new $type();
+        }
 
-    	return static::$imageProcessors[$type];
+        return static::$imageProcessors[$type];
     }
 
     /**
@@ -162,10 +168,11 @@ class Stapler
      * If no instance has been defined yet we'll buld one and then
      * cache it on the s3Clients property (for the current request only).
      *
-     * @param  Attachment $attachedFile
+     * @param AttachmentInterface $attachedFile
+     *
      * @return S3Client
      */
-    public static function getS3ClientInstance(Attachment $attachedFile)
+    public static function getS3ClientInstance(AttachmentInterface $attachedFile)
     {
         $modelName = $attachedFile->getInstanceClass();
         $attachmentName = $attachedFile->getConfig()->name;
@@ -185,12 +192,12 @@ class Stapler
      * If no instance is currently set, we'll return an instance
      * of Codesleeve\Stapler\Config\NativeConfig.
      *
-     * @return \Codesleeve\Stapler\Config\ConfigurableInterface
+     * @return ConfigInterface
      */
     public static function getConfigInstance()
     {
         if (!static::$config) {
-            static::$config = new Config\NativeConfig;
+            static::$config = new Config\NativeConfig();
         }
 
         return static::$config;
@@ -199,9 +206,10 @@ class Stapler
     /**
      * Set the configuration object instance.
      *
-     * @param ConfigurableInterface $config
+     * @param ConfigInterface $config
      */
-    public static function setConfigInstance(ConfigurableInterface $config){
+    public static function setConfigInstance(ConfigInterface $config)
+    {
         static::$config = $config;
     }
 
@@ -210,9 +218,10 @@ class Stapler
      * this class's attachedFile object.
      *
      * @param $attachedFile
+     *
      * @return S3Client
      */
-    protected static function buildS3Client(Attachment $attachedFile)
+    protected static function buildS3Client(AttachmentInterface $attachedFile)
     {
         return S3Client::factory($attachedFile->s3_client_config);
     }

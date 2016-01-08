@@ -1,11 +1,14 @@
-<?php namespace Codesleeve\Stapler\Config;
+<?php
 
-interface ConfigurableInterface
+namespace Codesleeve\Stapler\Interfaces;
+
+interface Config
 {
     /**
      * Retrieve a configuration value.
      *
      * @param string $name
+     *
      * @return mixed
      */
     public function get($name);
@@ -14,7 +17,8 @@ interface ConfigurableInterface
      * Set a configuration value.
      *
      * @param string $name
-     * @param mixed $value
+     * @param mixed  $value
+     *
      * @return mixed
      */
     public function set($name, $value);

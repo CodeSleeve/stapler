@@ -17,23 +17,23 @@ Class Photo extends Eloquent implements StaplerableInterface
 {
     // We'll need to use the Stapler Eloquent trait in our model (see setup for more info).
     use EloquentTrait;
-    
+
     /**
-     * We can add our attachments to the fillable array so that they're 
+     * We can add our attachments to the fillable array so that they're
      * mass assignable on the model.
      *
      * @var array
      */
     protected $fillable = ['foo', 'bar', 'baz', 'qux', 'quux'];
-    
+
     /**
      * Inside our model's constructor, we'll define some stapler attachments:
      *
      * @param attributes
      */
-    public function __construct(array $attributes = array()) 
+    public function __construct(array $attributes = array())
     {
-        // Define an attachment named 'foo', with both thumbnail (100x100) and large (300x300) styles, 
+        // Define an attachment named 'foo', with both thumbnail (100x100) and large (300x300) styles,
         // using custom url and default_url configurations:
         $this->hasAttachedFile('foo', [
             'styles' => [
@@ -43,9 +43,9 @@ Class Photo extends Eloquent implements StaplerableInterface
             'url' => '/system/:attachment/:id_partition/:style/:filename',
             'default_url' => '/:attachment/:style/missing.jpg'
         ]);
-        
-        // Define an attachment named 'bar', with both thumbnail (100x100) and large (300x300) styles, 
-        // using custom url and default_url configurations, with the keep_old_files flag set to true 
+
+        // Define an attachment named 'bar', with both thumbnail (100x100) and large (300x300) styles,
+        // using custom url and default_url configurations, with the keep_old_files flag set to true
         // (so that older file uploads aren't deleted from the file system) and image cropping turned on:
         $this->hasAttachedFile('bar', [
             'styles' => [
@@ -55,7 +55,7 @@ Class Photo extends Eloquent implements StaplerableInterface
             'url' => '/system/:attachment/:id_partition/:style/:filename',
             'keep_old_files' => true
         ]);
-        
+
         // Define an attachment named 'baz' that has a watermarked style.  Here, we define a style named 'watermarked'
         // that's a closure (so that we can do some complex watermarking stuff):
         $this->hasAttachedFile('baz', [
@@ -80,9 +80,9 @@ Class Photo extends Eloquent implements StaplerableInterface
             ],
             'url' => '/system/:attachment/:id_partition/:style/:filename'
         ]);
-        
+
         // Define an attachment named 'qux'.  In this attachment, we'll use alternative style notation to define a slightly more
-        // complex thumbnail style.  In this example, the thumbnail style will be a 100x100px auto-oriented image with 100% quality: 
+        // complex thumbnail style.  In this example, the thumbnail style will be a 100x100px auto-oriented image with 100% quality:
         $this->hasAttachedFile('qux', [
             'styles' => [
                 'thumbnail' => ['dimensions' => '100x100', 'auto-orient' => true, 'convert_options' => ['quality' => 100]],
@@ -91,7 +91,7 @@ Class Photo extends Eloquent implements StaplerableInterface
             'url' => '/system/:attachment/:id_partition/:style/:filename',
             'default_url' => '/defaults/:style/missing.png'
         ]);
-        
+
         // Define an attachment named 'quux' that stores images remotely in an S3 bucket.
         $this->hasAttachedFile('quux', [
             'styles' => [
@@ -105,7 +105,7 @@ Class Photo extends Eloquent implements StaplerableInterface
                 'region' => 'yourBucketRegion'
             ],
             's3_object_config' => [
-                'bucket' => 'your.s3.bucket'
+                'Bucket' => 'your.s3.bucket'
             ],
             'default_url' => '/defaults/:style/missing.png',
             'keep_old_files' => true
@@ -135,7 +135,7 @@ $photo->foo = $_FILES['foo'];
 $photo->save();
 
 // Regardless of what framework we're using, we can always assign a remote url as an attachment value.
-// This is very useful when working with third party API's such as facebook, twitter, etc.  
+// This is very useful when working with third party API's such as facebook, twitter, etc.
 // Note that this feature requires that the CURL extension is included as part of your PHP installation.
 $photo->foo = "http://foo.com/bar.jpg";
 $photo->save();
@@ -184,7 +184,7 @@ $photo->foo = STAPLER_NULL;
 $photo->save();
 ```
 
-The destroy method is similar, however it doesn't clear out the attachment attributes on the model and doesn't require us to save the record in order to remove uploaded files.  It's also filterable; we can pass in array of the syles we want to clear:  
+The destroy method is similar, however it doesn't clear out the attachment attributes on the model and doesn't require us to save the record in order to remove uploaded files.  It's also filterable; we can pass in array of the syles we want to clear:
 ```php
 // Remove all of the attachments's uploaded files (across all styles) from storage.
 $photo->foo->destroy();

@@ -14,7 +14,7 @@ To create styles for an attachment, simply define them (you may use any style na
     'thumbnail' => '50x50',
     'large' => '150x150',
     'landscape' => '150',
-    'portrait' => 'portrait' => 'x150',
+    'portrait' => 'x150',
     'foo' => '75x75',
     'fooCropped' => '75x75#'
 ]
@@ -27,7 +27,7 @@ To control the quality of resized images, define your style as an array containi
 'styles' => [
     'thumbnail' => [
         'dimensions' => '50x50',
-        'convert_options' => ['jpeg_quality' => 100]
+        'convert_options' => ['quality' => 100]
     ]
 ]
 ```
@@ -49,7 +49,7 @@ Of course we can combine these options:
 'styles' => [
     'thumbnail' => [
         'dimensions' => '50x50',
-        'convert_options' => ['jpeg_quality' => 100],
+        'convert_options' => ['quality' => 100],
         'auto_orient' => true
     ]
 ]
