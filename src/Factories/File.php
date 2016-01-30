@@ -40,7 +40,7 @@ class File
             return static::createFromUrl($file);
         }
 
-        if (preg_match('#^data:[a-z]+/[a-z]+;base64#', $file)) {
+        if (preg_match('#^data:[-\w]+/[-\w\+\.]+;base64#', $file)) {
             return static::createFromDataURI($file);
         }
 
