@@ -3,13 +3,29 @@ Attachments are the bread and butter of Stapler.  When you define an attached fi
 
 ### Properties
 * *Codesleeve\Stapler\ORM\StaplerableInterface* **instance**: The model instance that the attachment belongs to.
-* *Codesleeve\Stapler\AttachmentConfig* **config**: The attachment's config value object.  
-* *Codesleeve\Stapler\Storage\StorageableInterface* **storageDriver**: An instance of the underlying storage driver being used by the attachment.	
+* *Codesleeve\Stapler\AttachmentConfig* **config**: The attachment's config value object.
+* *Codesleeve\Stapler\Storage\StorageableInterface* **storageDriver**: An instance of the underlying storage driver being used by the attachment.
 * *Codesleeve\Stapler\Interpolator* **interpolator**: An instance of the interpolator class for processing interpolations.
-* *Codesleeve\Stapler\File\FileInterface* **uploadedFile**: The uploaded file object for the attachment.	
-* *Codesleeve\Stapler\File\Image\Resizer* **resizer**: An instance of the resizer library that's being used for image processing.	
+* *Codesleeve\Stapler\File\FileInterface* **uploadedFile**: The uploaded file object for the attachment.
+* *Codesleeve\Stapler\File\Image\Resizer* **resizer**: An instance of the resizer library that's being used for image processing.
 * *array* **queuedForDeletion**: An array of uploaded file objects queued up for deletion by Stapler.
 * *array* **queuedForWrite**: An array of uploaded file objects queued up to be written to storage by Stapler.
+
+### Casting to JSON
+As of Stapler 1.2.0, Attachments implement the `JsonSerializable` interface and will now be automatically cast to a JSON object when called with `json_encode`.
+This JSON object contains the paths and urls for each style defined on the attachment:
+```js
+"avatar": {
+    "thumbnail": {
+        "path": "path/to/foo/bar/baz/thumbnail/file.something",
+        "url": "url/to/foo/bar/baz/thumbnail/file.something"
+    },
+    "original": {
+        "path": "path/to/foo/bar/baz/original/file.somethin",
+        "url": "url/to/foo/bar/baz/thumbnail/file.something"
+    }
+}
+```
 
 ### Methods
 Attachments contain an assortment of methods for working with uploaded files and their properties:
@@ -75,3 +91,7 @@ Attachments contain an assortment of methods for working with uploaded files and
 * **instanceWrite**: Set an attachment attribute on the underlying model instance.  Accepts the name of an attachment property ('size', 'content_type', etc) as well as the value that should be set for the property.
 
 * **clearAttributes**: Clear (set to null) all attachment related model attributes.
+
+* **jsonSerialize**: Returns a json representation of an attachment. This is very useful when returning ORM instances as JSON and from an API.
+
+
