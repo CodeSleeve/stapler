@@ -21,3 +21,11 @@ public static function boot()
     static::bootStapler();
 }
 ```
+
+When using the [Illuminate Database component](https://github.com/illuminate/database) without Laravel, make sure the event dispatcher is set!
+```
+// Set the event dispatcher
+use Illuminate\Events\Dispatcher;
+use Illuminate\Container\Container;
+$capsule->setEventDispatcher(new Dispatcher(new Container));
+```
