@@ -45,12 +45,17 @@ class S3 implements StorageInterface
      * Return the url for a file upload.
      *
      * @param string $styleName
+     * @param string $expires
      *
      * @return string
      */
-    public function url($styleName)
+    public function url($styleName, $expires = null)
     {
-        return $this->s3Client->getObjectUrl($this->attachedFile->s3_object_config['Bucket'], $this->path($styleName), null, ['PathStyle' => true]);
+        if (!$expires) {
+            $expires = $this->attachedFile->s3_object_url_expires;
+        }
+
+        return $this->s3Client->getObjectUrl($this->attachedFile->s3_object_config['Bucket'], $this->path($styleName), $expires, ['PathStyle' => true]);
     }
 
     /**

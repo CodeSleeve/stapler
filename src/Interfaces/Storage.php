@@ -8,10 +8,11 @@ interface Storage
      * Return the url for a file upload.
      *
      * @param string $styleName
+     * @param string $expires
      *
      * @return string
      */
-    public function url($styleName);
+    public function url($styleName, $expires = null);
 
     /**
      * For filesystem storage this method returns the path (on disk) of a file upload.
