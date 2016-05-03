@@ -69,6 +69,7 @@ Description:
   * **Bucket**: The bucket where you wish to store your objects.  Every object in Amazon S3 is stored in a bucket.  If the specified bucket doesn't exist Stapler will attempt to create it.  The bucket name will not be interpolated.
   * **ACL**: This is a string/array that should be one of the canned access policies that S3 provides (private, public-read, public-read-write, authenticated-read, bucket-owner-read, bucket-owner-full-control). The default for Stapler is public-read.  An associative array (style => permission) may be passed to specify permissions on a per style basis.
 * **path**: This is the key under the bucket in which the file will be stored. The URL will be constructed from the bucket and the path. This is what you will want to interpolate. Keys should be unique, like filenames, and despite the fact that S3 (strictly speaking) does not support directories, you can still use a / to separate parts of your file name.
+* **s3_object_url_expires**: This is a string representing a default expiration time for object URLs.  This adheres to the AWS expiration format (eg. +1 minutes) as described [here](http://docs.aws.amazon.com/aws-sdk-php/latest/class-Aws.S3.S3Client.html#_getObjectUrl).  This will almost always be used in conjunction with a 'private' ACL.
 
 Default values:
 * **s3_client_config**
@@ -80,3 +81,4 @@ Default values:
   *  **Bucket**: ''
   *  **ACL**: 'public-read'
 * **path**: ':attachment/:id/:style/:filename'
+* **s3_object_url_expires**: null
