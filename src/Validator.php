@@ -14,7 +14,11 @@ class Validator implements ValidatorInterface
      */
     public function validateOptions(array $options)
     {
-        $options['storage'] == 'filesystem' ? $this->validateFilesystemOptions($options) : $this->validateS3Options($options);
+        if ($options['storage'] === 'filesystem') {
+            $this->validateFilesystemOptions($options);
+        } else if ($options['storage'] === 's3'){
+            $this->validateS3Options($options);
+        }
     }
 
     /**
