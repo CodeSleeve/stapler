@@ -3,7 +3,7 @@
 namespace Codesleeve\Stapler\Factories;
 
 use Codesleeve\Stapler\Stapler;
-use Codesleeve\Stapler\Attachment;
+use Codesleeve\Stapler\Attachment as AttachedFile;
 use Codesleeve\Stapler\Storage\Local as LocalStorage;
 use Codesleeve\Stapler\Storage\S3 as S3Storage;
 use Codesleeve\Stapler\Storage\Rackspace as RackspaceStorage;
@@ -13,11 +13,11 @@ class Storage
     /**
      * Build a storage instance.
      *
-     * @param Attachment $attachment
+     * @param AttachedFile $attachment
      *
      * @return \Codesleeve\Stapler\Interfaces\Storage
      */
-    public static function create(Attachment $attachment)
+    public static function create(AttachedFile $attachment)
     {
         $filesystem = Stapler::filesystemForAttachment($attachment);
 
