@@ -89,8 +89,7 @@ class File
 
     /**
      * Build a Codesleeve\Stapler\File\File object from the
-     * raw php $_FILES array date.  We assume here that the $_FILES array
-     * has been formated using the Stapler::arrangeFiles utility method.
+     * raw php $_FILES array date.
      *
      * @param array $file
      * @param bool  $testing
