@@ -2,10 +2,16 @@
 
 namespace Codesleeve\Stapler;
 
-use Codesleeve\Stapler\Interfaces\Attachment as AttachmentInterface;
-use Codesleeve\Stapler\Interfaces\Config as ConfigInterface;
 use Codesleeve\Stapler\File\Image\Resizer;
+use Codesleeve\Stapler\Interfaces\Config as ConfigInterface;
+use Codesleeve\Stapler\Interfaces\Attachment as AttachmentInterface;
 use Aws\S3\S3Client;
+use OpenCloud\OpenStack;
+use OpenCloud\Rackspace;
+use League\Flysystem\Filesystem;
+use League\Flysystem\FilesystemInterface;
+use League\Flysystem\AwsS3v3\AwsS3Adapter;
+use League\Flysystem\Rackspace\RackspaceAdapter;
 
 /**
  * Easy file attachment management for Eloquent (Laravel 4).
@@ -68,15 +74,15 @@ class Stapler
     protected static $imageProcessors = [];
 
     /**
-     * A key value store of S3 clients.
-     * Because S3 clients are model-attachment specific, each
+     * A key value store of filesystems.
+     * Because filesystems are model-attachment specific, each
      * time we create a new one (for a given model/attachment combo)
      * we'll need to cache it here in order to prevent
      * memory leaks.
      *
      * @var array
      */
-    protected static $s3Clients = [];
+    protected static $filesystems = [];
 
     /**
      * Boot up stapler.
@@ -164,27 +170,27 @@ class Stapler
     }
 
     /**
-     * Return an S3Client object for a specific attachment type.
+     * Return a filesystem adapter object for a specific attachment type.
      * If no instance has been defined yet we'll buld one and then
-     * cache it on the s3Clients property (for the current request only).
+     * cache it on the adapters property (for the current request only).
      *
      * @param AttachmentInterface $attachedFile
      *
-     * @return S3Client
+     * @return FilesystemInterface
      */
-    public static function getS3ClientInstance(AttachmentInterface $attachedFile)
+    public static function filesystemForAttachment(AttachmentInterface $attachedFile)
     {
         $modelName = $attachedFile->getInstanceClass();
         $attachmentName = $attachedFile->getConfig()->name;
         $key = "$modelName.$attachmentName";
 
-        if (array_key_exists($key, static::$s3Clients)) {
-            return static::$s3Clients[$key];
+        if (!array_key_exists($key, static::$filesystems)) {
+            static::$filesystems[$key] = static::buildFilesystem($attachedFile);
         }
 
-        static::$s3Clients[$key] = static::buildS3Client($attachedFile);
+        $filesystem = static::$filesystems[$key];
 
-        return static::$s3Clients[$key];
+        return static::$filesystems[$key];
     }
 
     /**
@@ -214,15 +220,37 @@ class Stapler
     }
 
     /**
-     * Build an S3Client instance using the information defined in
-     * this class's attachedFile object.
+     * Build a flysystem storage adapter using the storage configuration
+     * for an attached file.
      *
      * @param $attachedFile
      *
-     * @return S3Client
+     * @return FilesystemInterface|void
      */
-    protected static function buildS3Client(AttachmentInterface $attachedFile)
+    protected static function buildFilesystem(AttachmentInterface $attachedFile)
     {
-        return S3Client::factory($attachedFile->s3_client_config);
+        if ($attachedFile->storage === 's3') {
+            $client = S3Client::factory([
+                'credentials' => ['key' => $attachedFile->s3_client_config['key'], 'secret' => $attachedFile->s3_client_config['secret']],
+                'region'      => $attachedFile->s3_client_config['region'],
+                'version'     => 'latest'
+            ]);
+
+            $bucket = $attachedFile->s3_object_config['Bucket'];
+            $adapter = new AwsS3Adapter($client, $bucket);
+
+            return new Filesystem($adapter);
+        } else if ($attachedFile->storage === 'rackspace') {
+            $client = new Rackspace(Rackspace::US_IDENTITY_ENDPOINT, [
+                'username' => $attachedFile->username,
+                'apiKey' => $attachedFile->apiKey
+            ]);
+
+            $store = $client->objectStoreService('cloudFiles', $attachedFile->region);
+            $container = $store->getContainer($attachedFile->container);
+            $adapter = new RackspaceAdapter($container);
+
+            return new Filesystem($adapter);
+        }
     }
 }
