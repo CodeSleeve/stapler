@@ -2,11 +2,9 @@
 
 namespace Codesleeve\Stapler\Factories;
 
-use Codesleeve\Stapler\Stapler;
-use Codesleeve\Stapler\Attachment as AttachedFile;
-use Codesleeve\Stapler\Storage\Local as LocalStorage;
-use Codesleeve\Stapler\Storage\S3 as S3Storage;
-use Codesleeve\Stapler\Storage\Rackspace as RackspaceStorage;
+use Codesleeve\Stapler\{Stapler, Attachment as AttachedFile};
+use Codesleeve\Stapler\Storage\{Local as LocalStorage, S3 as S3Storage, Rackspace as RackspaceStorage};
+use Codesleeve\Stapler\Interfaces\Storage as StorageInterface;
 
 class Storage
 {
@@ -15,27 +13,29 @@ class Storage
      *
      * @param AttachedFile $attachment
      *
-     * @return \Codesleeve\Stapler\Interfaces\Storage
+     * @return StorageInterface
      */
-    public static function create(AttachedFile $attachment)
+    public static function create(AttachedFile $attachment) : StorageInterface
     {
-        $filesystem = Stapler::filesystemForAttachment($attachment);
-
         switch ($attachment->storage) {
             case 'local':
-                return new LocalStorage($attachment, $filesystem);
+                return new LocalStorage($attachment);
                 break;
 
             case 's3':
+                $filesystem = Stapler::filesystemForAttachment($attachment);
+
                 return new S3Storage($attachment, $filesystem);
                 break;
 
             case 'rackspace':
+                $filesystem = Stapler::filesystemForAttachment($attachment);
+
                 return new RackspaceStorage($attachment, $filesystem);
                 break;
 
             default:
-                return new LocalStorage($attachment, $filesystem);
+                return new LocalStorage($attachment);
                 break;
         }
     }

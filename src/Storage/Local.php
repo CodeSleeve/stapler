@@ -32,7 +32,7 @@ class Local implements StorageInterface
      *
      * @return string
      */
-    public function url($styleName)
+    public function url(string $styleName) : string
     {
         return $this->attachedFile->getInterpolator()->interpolate($this->attachedFile->url, $this->attachedFile, $styleName);
     }
@@ -44,7 +44,7 @@ class Local implements StorageInterface
      *
      * @return string
      */
-    public function path($styleName)
+    public function path(string $styleName) : string
     {
         return $this->attachedFile->getInterpolator()->interpolate($this->attachedFile->path, $this->attachedFile, $styleName);
     }
@@ -70,7 +70,7 @@ class Local implements StorageInterface
      * @param string $file
      * @param string $filePath
      */
-    public function move($file, $filePath)
+    public function move(string $file, string $filePath)
     {
         $this->buildDirectory($filePath);
         $this->moveFile($file, $filePath);
@@ -82,7 +82,7 @@ class Local implements StorageInterface
      *
      * @param string $filePath
      */
-    protected function buildDirectory($filePath)
+    protected function buildDirectory(string $filePath)
     {
         $directory = dirname($filePath);
 
@@ -96,9 +96,9 @@ class Local implements StorageInterface
      * Does not ignore umask.
      *
      * @param string $filePath
-     * @param int    $overrideFilePermissions
+     * @param bool   $overrideFilePermissions
      */
-    protected function setPermissions($filePath, $overrideFilePermissions)
+    protected function setPermissions(string $filePath, bool $overrideFilePermissions)
     {
         if ($overrideFilePermissions) {
             chmod($filePath, $overrideFilePermissions & ~umask());
@@ -115,7 +115,7 @@ class Local implements StorageInterface
      *
      * @throws Exceptions\FileException
      */
-    protected function moveFile($file, $filePath)
+    protected function moveFile(string $file, string $filePath)
     {
         if (!@rename($file, $filePath)) {
             $error = error_get_last();
@@ -126,12 +126,10 @@ class Local implements StorageInterface
     /**
      * Recursively delete the files in a directory.
      *
-     * @desc Recursively loops through each file in the directory and deletes it.
-     *
      * @param string $directory
      * @param bool   $deleteDirectory
      */
-    protected function emptyDirectory($directory, $deleteDirectory = false)
+    protected function emptyDirectory(string $directory, bool $deleteDirectory = false)
     {
         if (!is_dir($directory) || !($directoryHandle = opendir($directory))) {
             return;

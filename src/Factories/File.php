@@ -2,12 +2,10 @@
 
 namespace Codesleeve\Stapler\Factories;
 
-use Codesleeve\Stapler\File\File as StaplerFile;
-use Codesleeve\Stapler\File\UploadedFile as StaplerUploadedFile;
-use Codesleeve\Stapler\Interfaces\Config as ConfigInterface;
+use Codesleeve\Stapler\File\{File as StaplerFile, UploadedFile as StaplerUploadedFile};
+use Codesleeve\Stapler\Interfaces\{Config as ConfigInterface, File as FileInterface};
 use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
-use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesser;
-use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeExtensionGuesser;
+use Symfony\Component\HttpFoundation\File\MimeType\{MimeTypeGuesser, MimeTypeExtensionGuesser};
 
 class File
 {
@@ -19,14 +17,38 @@ class File
     protected static $mimeTypeExtensionGuesser;
 
     /**
+     * Return an instance of the Symfony MIME type extension guesser.
+     *
+     * @return \Symfony\Component\HttpFoundation\File\MimeType\MimeTypeExtensionGuesserInterface
+     */
+    public static function getMimeTypeExtensionGuesserInstance()
+    {
+        if (!static::$mimeTypeExtensionGuesser) {
+            static::$mimeTypeExtensionGuesser = new MimeTypeExtensionGuesser();
+        }
+
+        return static::$mimeTypeExtensionGuesser;
+    }
+
+    /**
+     * Set the configuration object instance.
+     *
+     * @param ConfigInterface $config
+     */
+    public static function setConfigInstance(ConfigInterface $config)
+    {
+        static::$config = $config;
+    }
+
+    /**
      * Build a Codesleeve\Stapler\UploadedFile object using various file input types.
      *
      * @param mixed $file
      * @param bool  $testing
      *
-     * @return \Codesleeve\Stapler\File\UploadedFile
+     * @return FileInterface
      */
-    public static function create($file, $testing = false)
+    public static function create($file, bool $testing = false) : FileInterface
     {
         if ($file instanceof SymfonyUploadedFile) {
             return static::createFromObject($file);
@@ -51,11 +73,11 @@ class File
      * Compose a \Codesleeve\Stapler\File\UploadedFile object from
      * a \Symfony\Component\HttpFoundation\File\UploadedFile object.
      *
-     * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file
+     * @param SymfonyUploadedFile $file
      *
-     * @return \Codesleeve\Stapler\File\UploadedFile
+     * @return StaplerUploadedFile
      */
-    protected static function createFromObject(SymfonyUploadedFile $file)
+    protected static function createFromObject(SymfonyUploadedFile $file) : StaplerUploadedFile
     {
         $staplerFile = new StaplerUploadedFile($file);
         $staplerFile->validate();
@@ -67,10 +89,10 @@ class File
      * Compose a \Codesleeve\Stapler\File\UploadedFile object from a
      * data uri.
      *
-     * @param  string $file
-     * @return \Codesleeve\Stapler\File\File
+     * @param  mixed $file
+     * @return StaplerFile
      */
-    protected static function createFromDataURI($file)
+    protected static function createFromDataURI($file) : StaplerFile
     {
         $fp = @fopen($file, 'r');
 
@@ -88,15 +110,15 @@ class File
     }
 
     /**
-     * Build a Codesleeve\Stapler\File\File object from the
+     * Build a Codesleeve\Stapler\File\UploadedFile object from the
      * raw php $_FILES array date.
      *
      * @param array $file
      * @param bool  $testing
      *
-     * @return \Codesleeve\Stapler\File\File
+     * @return StaplerUploadedFile
      */
-    protected static function createFromArray(array $file, $testing)
+    protected static function createFromArray(array $file, bool $testing) : StaplerUploadedFile
     {
         $file = new SymfonyUploadedFile($file['tmp_name'], $file['name'], $file['type'], $file['size'], $file['error'], $testing);
 
@@ -109,9 +131,9 @@ class File
      *
      * @param string $file
      *
-     * @return \Codesleeve\Stapler\File\File
+     * @return StaplerFile
      */
-    protected static function createFromUrl($file)
+    protected static function createFromUrl($file) : StaplerFile
     {
         $ch = curl_init($file);
         curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -153,34 +175,10 @@ class File
      *
      * @param string $file
      *
-     * @return \Codesleeve\Stapler\File\File
+     * @return StaplerFile
      */
-    protected static function createFromString($file)
+    protected static function createFromString(string $file) : StaplerFile
     {
         return new StaplerFile($file, pathinfo($file)['basename']);
-    }
-
-    /**
-     * Return an instance of the Symfony MIME type extension guesser.
-     *
-     * @return \Symfony\Component\HttpFoundation\File\MimeType\MimeTypeExtensionGuesserInterface
-     */
-    public static function getMimeTypeExtensionGuesserInstance()
-    {
-        if (!static::$mimeTypeExtensionGuesser) {
-            static::$mimeTypeExtensionGuesser = new MimeTypeExtensionGuesser();
-        }
-
-        return static::$mimeTypeExtensionGuesser;
-    }
-
-    /**
-     * Set the configuration object instance.
-     *
-     * @param ConfigInterface $config
-     */
-    public static function setConfigInstance(ConfigInterface $config)
-    {
-        static::$config = $config;
     }
 }

@@ -11,16 +11,16 @@ trait EloquentTrait
      *
      * @var array
      */
-    protected $attachedFiles = [];
+    protected $attachments = [];
 
     /**
-     * Accessor method for the $attachedFiles property.
+     * Accessor method for the $attachments property.
      *
      * @return array
      */
-    public function getAttachedFiles()
+    public function getAttachments() : array
     {
-        return $this->attachedFiles;
+        return $this->attachments;
     }
 
     /**
@@ -30,11 +30,11 @@ trait EloquentTrait
      * @param string $name
      * @param array  $options
      */
-    public function hasAttachedFile($name, array $options = [])
+    public function addAttachment(string $name, array $options = [])
     {
         $attachment = AttachmentFactory::create($name, $options);
         $attachment->setInstance($this);
-        $this->attachedFiles[$name] = $attachment;
+        $this->attachments[$name] = $attachment;
     }
 
     /**
@@ -56,20 +56,20 @@ trait EloquentTrait
     public static function bootStapler()
     {
         static::saved(function ($instance) {
-            foreach ($instance->attachedFiles as $attachedFile) {
-                $attachedFile->afterSave($instance);
+            foreach ($instance->attachments as $attachment) {
+                $attachment->afterSave($instance);
             }
         });
 
         static::deleting(function ($instance) {
-            foreach ($instance->attachedFiles as $attachedFile) {
-                $attachedFile->beforeDelete($instance);
+            foreach ($instance->attachments as $attachment) {
+                $attachment->beforeDelete($instance);
             }
         });
 
         static::deleted(function ($instance) {
-            foreach ($instance->attachedFiles as $attachedFile) {
-                $attachedFile->afterDelete($instance);
+            foreach ($instance->attachments as $attachment) {
+                $attachment->afterDelete($instance);
             }
         });
     }
@@ -83,8 +83,8 @@ trait EloquentTrait
      */
     public function getAttribute($key)
     {
-        if (array_key_exists($key, $this->attachedFiles)) {
-            return $this->attachedFiles[$key];
+        if (array_key_exists($key, $this->attachments)) {
+            return $this->attachments[$key];
         }
 
         return parent::getAttribute($key);
@@ -98,10 +98,10 @@ trait EloquentTrait
      */
     public function setAttribute($key, $value)
     {
-        if (array_key_exists($key, $this->attachedFiles)) {
+        if (array_key_exists($key, $this->attachments)) {
             if ($value) {
-                $attachedFile = $this->attachedFiles[$key];
-                $attachedFile->setUploadedFile($value);
+                $attachment = $this->attachments[$key];
+                $attachment->setUploadedFile($value);
             }
 
             return;
@@ -117,7 +117,7 @@ trait EloquentTrait
      */
     public function getAttributes()
     {
-        return array_merge($this->attachedFiles, parent::getAttributes());
+        return array_merge($this->attachments, parent::getAttributes());
     }
 
     /**
@@ -126,12 +126,12 @@ trait EloquentTrait
      * @param  string $attachmentName
      * @return array
      */
-    public function pathsForAttachment($attachmentName)
+    public function pathsForAttachment(string $attachmentName) : array
     {
         $paths = [];
 
-        if (isset($this->attachedFiles[$attachmentName])) {
-            $attachment = $this->attachedFiles[$attachmentName];
+        if (isset($this->attachments[$attachmentName])) {
+            $attachment = $this->attachments[$attachmentName];
 
             foreach ($attachment->styles as $style) {
                 $paths[$style->name] = $attachment->path($style->name);
@@ -147,12 +147,12 @@ trait EloquentTrait
      * @param  string $attachmentName
      * @return array
      */
-    public function urlsForAttachment($attachmentName)
+    public function urlsForAttachment(string $attachmentName) : array
     {
         $urls = [];
 
-        if (isset($this->attachedFiles[$attachmentName])) {
-            $attachment = $this->attachedFiles[$attachmentName];
+        if (isset($this->attachments[$attachmentName])) {
+            $attachment = $this->attachments[$attachmentName];
 
             foreach ($attachment->styles as $style) {
                 $urls[$style->name] = $attachment->url($style->name);

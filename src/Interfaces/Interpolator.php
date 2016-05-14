@@ -15,5 +15,5 @@ interface Interpolator
      *
      * @return string
      */
-    public function interpolate($string, AttachmentInterface $attachment, $styleName = '');
+    public function interpolate($string, AttachmentInterface $attachment, string $styleName = '') : string;
 }

@@ -11,7 +11,7 @@ interface Config
      *
      * @return mixed
      */
-    public function get($name);
+    public function get(string $name);
 
     /**
      * Set a configuration value.
@@ -21,5 +21,5 @@ interface Config
      *
      * @return mixed
      */
-    public function set($name, $value);
+    public function set(string $name, $value);
 }

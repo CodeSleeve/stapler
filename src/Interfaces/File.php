@@ -14,7 +14,7 @@ interface File
     /**
      * Return the size of the file.
      *
-     * @return string
+     * @return int|null
      */
     public function getSize();
 
@@ -31,5 +31,5 @@ interface File
      *
      * @return bool
      */
-    public function isImage();
+    public function isImage() : bool;
 }

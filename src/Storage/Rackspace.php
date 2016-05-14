@@ -13,7 +13,7 @@ class Rackspace extends CloudStorage implements StorageInterface
      *
      * @return string|void
      */
-    public function url($styleName)
+    public function url(string $styleName) : string
     {
         $cdn = $this->filesystem
             ->getAdapter()
@@ -35,7 +35,7 @@ class Rackspace extends CloudStorage implements StorageInterface
      * @param string $file
      * @param string $filePath
      */
-    public function move($file, $filePath)
+    public function move(string $file, string $filePath)
     {
         $this->filesystem->put($filePath, fopen($file, 'r'));
         @unlink($file);

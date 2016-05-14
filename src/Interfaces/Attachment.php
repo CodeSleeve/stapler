@@ -107,23 +107,23 @@ interface Attachment
     /**
      * Accessor method for the Config property.
      *
-     * @return array
+     * @return AttachmentConfig
      */
-    public function getConfig();
+    public function getConfig() : AttachmentConfig;
 
     /**
      * Accessor method for the QueuedForDeletion property.
      *
      * @return array
      */
-    public function getQueuedForDeletion();
+    public function getQueuedForDeletion() : array;
 
     /**
      * Mutator method for the QueuedForDeletion property.
      *
      * @param array $array
      */
-    public function setQueuedForDeletion($array);
+    public function setQueuedForDeletion(array $array);
 
     /**
      * Generates the url to an uploaded file (or a resized version of it).
@@ -132,7 +132,7 @@ interface Attachment
      *
      * @return string
      */
-    public function url($styleName = '');
+    public function url(string $styleName = '') : string;
 
     /**
      * Generates the file system path to an uploaded file (or a resized version of it).
@@ -142,14 +142,14 @@ interface Attachment
      *
      * @return string
      */
-    public function path($styleName = '');
+    public function path(string $styleName = '') : string;
 
     /**
      * Returns the creation time of the file as originally assigned to this attachment's model.
      * Lives in the <attachment>_created_at attribute of the model.
      * This attribute may conditionally exist on the model, it is not one of the four required fields.
      *
-     * @return string
+     * @return mixed
      */
     public function createdAt();
 
@@ -157,7 +157,7 @@ interface Attachment
      * Returns the last modified time of the file as originally assigned to this attachment's model.
      * Lives in the <attachment>_updated_at attribute of the model.
      *
-     * @return string
+     * @return mixed
      */
     public function updatedAt();
 

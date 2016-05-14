@@ -30,7 +30,7 @@ class File extends SymfonyFile implements FileInterface
      *
      * @return bool
      */
-    public function isImage()
+    public function isImage() : bool
     {
         $mime = $this->getMimeType();
 
