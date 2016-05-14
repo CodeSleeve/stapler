@@ -14,12 +14,12 @@ class Photo extends Eloquent implements StaplerableInterface
 
     /**
      * Constructor method.
-     * 
+     *
      * @param array $attributes
      */
     public function __construct($attributes = ['id' => 1])
     {
-        $this->hasAttachedFile('photo', [
+        $this->addAttachment('photo', [
             'styles' => [
                 'thumbnail' => '100x100',
             ],

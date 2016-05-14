@@ -4,6 +4,7 @@ namespace Codesleeve\Stapler\Factories;
 
 use PHPUnit_Framework_TestCase;
 use Mockery as m;
+use Codesleeve\Stapler\AttachmentConfig;
 
 class StorageTest extends PHPUnit_Framework_TestCase
 {
@@ -23,18 +24,18 @@ class StorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test that the Storage factory can create an instance of the filesystem
+     * Test that the Storage factory can create an instance of the local
      * storage driver.
      *
      * @test
      */
-    public function it_should_be_able_to_create_a_filesystem_storeage_instance()
+    public function it_should_be_able_to_create_a_local_storeage_instance()
     {
-        $attachment = $this->buildMockAttachment('filesystem');
+        $attachment = $this->buildMockAttachment('local');
 
         $storage = Storage::create($attachment);
 
-        $this->assertInstanceOf('Codesleeve\Stapler\Storage\Filesystem', $storage);
+        $this->assertInstanceOf('Codesleeve\Stapler\Storage\Local', $storage);
     }
 
     /**
@@ -45,7 +46,7 @@ class StorageTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_be_able_to_create_an_s3_storeage_instance()
     {
-        $attachment = $this->buildMockAttachment('s3');
+        $attachment = $this->buildMockS3Attachment();
 
         $storage = Storage::create($attachment);
 
@@ -53,22 +54,22 @@ class StorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test that the Storage factory should create an instance of the filesystem
+     * Test that the Storage factory should create an instance of the local
      * storage driver by default.
      *
      * @test
      */
-    public function it_should_be_able_to_create_a_filesystem_storeage_instance_by_default()
+    public function it_should_be_able_to_create_a_local_storeage_instance_by_default()
     {
         $attachment = $this->buildMockAttachment();
 
         $storage = Storage::create($attachment);
 
-        $this->assertInstanceOf('Codesleeve\Stapler\Storage\Filesystem', $storage);
+        $this->assertInstanceOf('Codesleeve\Stapler\Storage\Local', $storage);
     }
 
     /**
-     * Build a mock attachment object.
+     * Build a mock attachment object that uses local storage
      *
      * @param string $type
      *
@@ -77,9 +78,34 @@ class StorageTest extends PHPUnit_Framework_TestCase
     protected function buildMockAttachment($type = null)
     {
         $attachment = m::mock('Codesleeve\Stapler\Attachment')->makePartial();
-        $attachmentConfig = new \Codesleeve\Stapler\AttachmentConfig('testAttachmentConfig', ['styles' => []]);
+        $attachmentConfig = new AttachmentConfig('testAttachmentConfig', ['styles' => []]);
         $attachment->setConfig($attachmentConfig);
         $attachment->storage = $type;
+
+        return $attachment;
+    }
+
+    /**
+     * Build a mock attachment object that uses cloud storage.
+     *
+     * @param string $type
+     *
+     * @return \Codesleeve\Stapler\Attachment
+     */
+    protected function buildMockS3Attachment()
+    {
+        $attachment = m::mock('Codesleeve\Stapler\Attachment')->makePartial();
+        $attachmentConfig = new AttachmentConfig('TestAttachment', [
+            'storage' => 's3',
+            'styles' => [],
+            's3_client_config' => [
+                'key' => '',
+                'secret' => '',
+                'region' => '',
+                'scheme' => 'http',
+            ],
+        ]);
+        $attachment->setConfig($attachmentConfig);
 
         return $attachment;
     }
