@@ -185,7 +185,7 @@ class AttachmentTest extends PHPUnit_Framework_TestCase
         $attachment = new \Codesleeve\Stapler\Attachment($attachmentConfig, $interpolator, $resizer);
         $attachment->setInstance($instance);
 
-        $storageDriver = new \Codesleeve\Stapler\Storage\Filesystem($attachment);
+        $storageDriver = new \Codesleeve\Stapler\Storage\Local($attachment);
         $attachment->setStorageDriver($storageDriver);
 
         return $attachment;

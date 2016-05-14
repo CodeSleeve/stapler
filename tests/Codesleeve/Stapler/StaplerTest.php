@@ -97,13 +97,15 @@ class StaplerTest extends PHPUnit_Framework_TestCase
 
     /**
      * Test that the Stapler class can build a single instance of
-     * Aws\S3\S3Client for each model/attachment combo.
+     * League\Flysystem\Filesyste for each model/attachment combo that's
+     * using cloud storage.
      *
      * @test
      */
-    public function it_should_be_able_to_create_a_singleton_s3_client_instance_for_each_model_attachment_combo()
+    public function it_should_be_able_to_create_a_singleton_filesystem_client_instance_for_each_model_attachment_combo()
     {
         $dummyConfig = new AttachmentConfig('TestAttachment', [
+            'storage' => 's3',
             'styles' => [],
             's3_client_config' => [
                 'key' => '',
@@ -116,11 +118,11 @@ class StaplerTest extends PHPUnit_Framework_TestCase
         $mockAttachment->shouldReceive('getInstanceClass')->twice()->andReturn('TestModel');
         $mockAttachment->setConfig($dummyConfig);
 
-        $s3Client1 = Stapler::getS3ClientInstance($mockAttachment);
-        $s3Client2 = Stapler::getS3ClientInstance($mockAttachment);
+        $filesystem1 = Stapler::filesystemForAttachment($mockAttachment);
+        $filesystem2 = Stapler::filesystemForAttachment($mockAttachment);
 
-        $this->assertInstanceOf('Aws\S3\S3Client', $s3Client1);
-        $this->assertSame($s3Client1, $s3Client2);
+        $this->assertInstanceOf('League\Flysystem\Filesystem', $filesystem1);
+        $this->assertSame($filesystem1, $filesystem2);
     }
 
     /**
