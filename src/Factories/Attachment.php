@@ -2,8 +2,7 @@
 
 namespace Codesleeve\Stapler\Factories;
 
-use Codesleeve\Stapler\Stapler;
-use Codesleeve\Stapler\AttachmentConfig;
+use Codesleeve\Stapler\{Stapler, AttachmentConfig, Attachment};
 use Codesleeve\Stapler\Factories\Storage as StorageFactory;
 
 class Attachment
@@ -14,9 +13,9 @@ class Attachment
      * @param string $name
      * @param array  $options
      *
-     * @return \Codesleeve\Stapler\Attachment
+     * @return Attachment
      */
-    public static function create($name, array $options)
+    public static function create(string $name, array $options) : Attachment
     {
         $options = static::mergeOptions($options);
         Stapler::getValidatorInstance()->validateOptions($options);
@@ -40,7 +39,7 @@ class Attachment
      *
      * @return array
      */
-    protected static function buildDependencies($name, array $options)
+    protected static function buildDependencies(string $name, array $options)
     {
         return [
             new AttachmentConfig($name, $options),
@@ -59,7 +58,7 @@ class Attachment
      *
      * @return array
      */
-    protected static function mergeOptions(array $options)
+    protected static function mergeOptions(array $options) : array
     {
         $config = Stapler::getConfigInstance();
         $defaultOptions = $config->get('stapler');

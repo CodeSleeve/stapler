@@ -3,13 +3,10 @@
 namespace Codesleeve\Stapler;
 
 use Codesleeve\Stapler\File\Image\Resizer;
-use Codesleeve\Stapler\Interfaces\Config as ConfigInterface;
-use Codesleeve\Stapler\Interfaces\Attachment as AttachmentInterface;
+use Codesleeve\Stapler\Interfaces\{Config as ConfigInterface, Attachment as AttachmentInterface};
 use Aws\S3\S3Client;
-use OpenCloud\OpenStack;
-use OpenCloud\Rackspace;
-use League\Flysystem\Filesystem;
-use League\Flysystem\FilesystemInterface;
+use OpenCloud\{OpenStack, Rackspace};
+use League\Flysystem\{Filesystem, FilesystemInterface};
 use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use League\Flysystem\Rackspace\RackspaceAdapter;
 
@@ -74,15 +71,15 @@ class Stapler
     protected static $imageProcessors = [];
 
     /**
-     * A key value store of filesystems.
-     * Because filesystems are model-attachment specific, each
+     * A key value store of cloud-based filesystems.
+     * Because these filesystems are model-attachment specific, each
      * time we create a new one (for a given model/attachment combo)
      * we'll need to cache it here in order to prevent
      * memory leaks.
      *
      * @var array
      */
-    protected static $filesystems = [];
+    protected static $cloudFilesystems = [];
 
     /**
      * Boot up stapler.
@@ -178,19 +175,17 @@ class Stapler
      *
      * @return FilesystemInterface
      */
-    public static function filesystemForAttachment(AttachmentInterface $attachedFile)
+    public static function filesystemForAttachment(AttachmentInterface $attachedFile) : FilesystemInterface
     {
         $modelName = $attachedFile->getInstanceClass();
         $attachmentName = $attachedFile->getConfig()->name;
         $key = "$modelName.$attachmentName";
 
-        if (!array_key_exists($key, static::$filesystems)) {
-            static::$filesystems[$key] = static::buildFilesystem($attachedFile);
+        if (!array_key_exists($key, static::$cloudFilesystems)) {
+            static::$cloudFilesystems[$key] = static::buildCloudFilesystem($attachedFile);
         }
 
-        $filesystem = static::$filesystems[$key];
-
-        return static::$filesystems[$key];
+        return static::$cloudFilesystems[$key];
     }
 
     /**
@@ -227,7 +222,7 @@ class Stapler
      *
      * @return FilesystemInterface|void
      */
-    protected static function buildFilesystem(AttachmentInterface $attachedFile)
+    protected static function buildCloudFilesystem(AttachmentInterface $attachedFile)
     {
         if ($attachedFile->storage === 's3') {
             $client = S3Client::factory([

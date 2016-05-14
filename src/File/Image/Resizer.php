@@ -2,13 +2,8 @@
 
 namespace Codesleeve\Stapler\File\Image;
 
-use Codesleeve\Stapler\Interfaces\Resizer as ResizerInterface;
-use Codesleeve\Stapler\Interfaces\File as FileInterface;
-use Codesleeve\Stapler\Interfaces\Style as StyleInterface;
-use Imagine\Image\ImagineInterface;
-use Imagine\Image\ImageInterface;
-use Imagine\Image\Box;
-use Imagine\Image\Point;
+use Codesleeve\Stapler\Interfaces\{Resizer as ResizerInterface, File as FileInterface, Style as StyleInterface};
+use Imagine\Image\{ImagineInterface, ImageInterface, Box, Point};
 
 class Resizer implements ResizerInterface
 {
@@ -37,7 +32,7 @@ class Resizer implements ResizerInterface
      *
      * @return string
      */
-    public function resize(FileInterface $file, StyleInterface $style)
+    public function resize(FileInterface $file, StyleInterface $style) : string
     {
         $filePath = $this->randomFilePath($file->getFilename());
         list($width, $height, $option) = $this->parseStyleDimensions($style);
@@ -82,7 +77,7 @@ class Resizer implements ResizerInterface
      *
      * @return array
      */
-    protected function parseStyleDimensions(StyleInterface $style)
+    protected function parseStyleDimensions(StyleInterface $style) : array
     {
         if (is_callable($style->dimensions)) {
             return [null, null, 'custom'];
@@ -137,12 +132,12 @@ class Resizer implements ResizerInterface
      * image being resized to a square).
      *
      * @param ImageInterface $image
-     * @param string         $width  - The image's new width.
-     * @param string         $height - The image's new height.
+     * @param int            $width  - The image's new width.
+     * @param int            $height - The image's new height.
      *
      * @return ImageInterface
      */
-    protected function resizeAuto(ImageInterface $image, $width, $height)
+    protected function resizeAuto(ImageInterface $image, int $width, int $height) : ImageInterface
     {
         $size = $image->getSize();
         $originalWidth = $size->getWidth();
@@ -171,12 +166,12 @@ class Resizer implements ResizerInterface
      * Resize an image as a landscape (width fixed).
      *
      * @param ImageInterface $image
-     * @param string         $width  - The image's new width.
-     * @param string         $height - The image's new height.
+     * @param int            $width  - The image's new width.
+     * @param int            $height - The image's new height.
      *
      * @return ImageInterface
      */
-    protected function resizeLandscape(ImageInterface $image, $width, $height)
+    protected function resizeLandscape(ImageInterface $image, int $width, int $height) : ImageInterface
     {
         $optimalHeight = $this->getSizeByFixedWidth($image, $width);
         $dimensions = $image->getSize()
@@ -192,12 +187,12 @@ class Resizer implements ResizerInterface
      * Resize an image as a portrait (height fixed).
      *
      * @param ImageInterface $image
-     * @param string         $width  - The image's new width.
-     * @param string         $height - The image's new height.
+     * @param int            $width  - The image's new width.
+     * @param int            $height - The image's new height.
      *
      * @return ImageInterface
      */
-    protected function resizePortrait(ImageInterface $image, $width, $height)
+    protected function resizePortrait(ImageInterface $image, int $width, int $height) : ImageInterface
     {
         $optimalWidth = $this->getSizeByFixedHeight($image, $height);
         $dimensions = $image->getSize()
@@ -213,12 +208,12 @@ class Resizer implements ResizerInterface
      * Resize an image and then center crop it.
      *
      * @param ImageInterface $image
-     * @param string         $width  - The image's new width.
-     * @param string         $height - The image's new height.
+     * @param int            $width  - The image's new width.
+     * @param int            $height - The image's new height.
      *
      * @return ImageInterface
      */
-    protected function resizeCrop(ImageInterface $image, $width, $height)
+    protected function resizeCrop(ImageInterface $image, int $width, int $height) : ImageInterface
     {
         list($optimalWidth, $optimalHeight) = $this->getOptimalCrop($image->getSize(), $width, $height);
 
@@ -234,12 +229,12 @@ class Resizer implements ResizerInterface
      * Resize an image to an exact width and height.
      *
      * @param ImageInterface $image
-     * @param string         $width  - The image's new width.
-     * @param string         $height - The image's new height.
+     * @param int            $width  - The image's new width.
+     * @param int            $height - The image's new height.
      *
      * @return ImageInterface
      */
-    protected function resizeExact(ImageInterface $image, $width, $height)
+    protected function resizeExact(ImageInterface $image, int $width, int $height) : ImageInterface
     {
         return $image->resize(new Box($width, $height));
     }
@@ -247,12 +242,12 @@ class Resizer implements ResizerInterface
     /**
      * Resize an image using a user defined callback.
      *
-     * @param FileInterface $file
+     * @param  FileInterface $file
      * @param  $callable
      *
      * @return ImageInterface
      */
-    protected function resizeCustom(FileInterface $file, callable $callable)
+    protected function resizeCustom(FileInterface $file, callable $callable) : ImageInterface
     {
         return call_user_func_array($callable, [$file, $this->imagine]);
     }
@@ -265,7 +260,7 @@ class Resizer implements ResizerInterface
      *
      * @return int
      */
-    private function getSizeByFixedHeight(ImageInterface $image, $newHeight)
+    private function getSizeByFixedHeight(ImageInterface $image, int $newHeight) : int
     {
         $box = $image->getSize();
         $ratio = $box->getWidth() / $box->getHeight();
@@ -282,7 +277,7 @@ class Resizer implements ResizerInterface
      *
      * @return int
      */
-    private function getSizeByFixedWidth(ImageInterface $image, $newWidth)
+    private function getSizeByFixedWidth(ImageInterface $image, int $newWidth) : int
     {
         $box = $image->getSize();
         $ratio = $box->getHeight() / $box->getWidth();
@@ -295,13 +290,13 @@ class Resizer implements ResizerInterface
      * Attempts to find the best way to crop.
      * Takes into account the image being a portrait or landscape.
      *
-     * @param Box    $size   - The image's current size.
-     * @param string $width  - The image's new width.
-     * @param string $height - The image's new height.
+     * @param Box  $size   - The image's current size.
+     * @param int  $width  - The image's new width.
+     * @param int  $height - The image's new height.
      *
      * @return array
      */
-    protected function getOptimalCrop(Box $size, $width, $height)
+    protected function getOptimalCrop(Box $size, int $width, int $height) : array
     {
         $heightRatio = $size->getHeight() / $height;
         $widthRatio = $size->getWidth() / $width;
@@ -331,7 +326,7 @@ class Resizer implements ResizerInterface
      *
      * @return ImageInterface $image
      */
-    protected function autoOrient($path, ImageInterface $image)
+    protected function autoOrient(string $path, ImageInterface $image) : ImageInterface
     {
         if (function_exists('exif_read_data')) {
             try {
@@ -381,7 +376,7 @@ class Resizer implements ResizerInterface
      * @param  string $filename
      * @return string
      */
-    protected function randomFilePath($filename)
+    protected function randomFilePath(string $filename) : string
     {
         $chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
         $filePath = sys_get_temp_dir() . '/stapler.';

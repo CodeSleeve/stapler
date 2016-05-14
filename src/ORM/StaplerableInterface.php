@@ -5,11 +5,11 @@ namespace Codesleeve\Stapler\ORM;
 interface StaplerableInterface
 {
     /**
-     * Accessor method for the $attachedFiles property.
+     * Accessor method for the $attachments property.
      *
      * @return array
      */
-    public function getAttachedFiles();
+    public function getAttachments() : array;
 
     /**
      * Add a new file attachment type to the list of available attachments.
@@ -18,7 +18,7 @@ interface StaplerableInterface
      * @param string $name
      * @param array  $options
      */
-    public function hasAttachedFile($name, array $options = []);
+    public function addAttachment(string $name, array $options = []);
 
     /**
      * Handle the dynamic retrieval of attachment objects.
@@ -43,7 +43,7 @@ interface StaplerableInterface
      * @param  string $attachmentName
      * @return array
      */
-    public function pathsForAttachment($attachmentName);
+    public function pathsForAttachment(string $attachmentName) : array;
 
     /**
      * Return the image urls (across all styles) for a given attachment.
@@ -51,5 +51,5 @@ interface StaplerableInterface
      * @param  string $attachmentName
      * @return array
      */
-    public function urlsForAttachment($attachmentName);
+    public function urlsForAttachment(string $attachmentName) : array;
 }

@@ -11,7 +11,7 @@ interface Storage
      *
      * @return string
      */
-    public function url($styleName);
+    public function url(string $styleName) : string;
 
     /**
      * For filesystem storage this method returns the path (on disk) of a file upload.
@@ -21,7 +21,7 @@ interface Storage
      *
      * @return string
      */
-    public function path($styleName);
+    public function path(string $styleName) : string;
 
     /**
      * Remove an attached file.
@@ -38,5 +38,5 @@ interface Storage
      * @param string $file
      * @param string $filePath
      */
-    public function move($file, $filePath);
+    public function move(string $file, string $filePath);
 }

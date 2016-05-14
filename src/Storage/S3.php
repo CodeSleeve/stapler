@@ -20,7 +20,7 @@ class S3 extends CloudStorage implements StorageInterface
      *
      * @return string|void
      */
-    public function url($styleName)
+    public function url(string $styleName) : string
     {
         $bucket = $this->attachedFile->s3_object_config['Bucket'];
         $path = $this->path($styleName);
@@ -37,7 +37,7 @@ class S3 extends CloudStorage implements StorageInterface
      * @param string $file
      * @param string $filePath
      */
-    public function move($file, $filePath)
+    public function move(string $file, string $filePath)
     {
         $objectConfig = $this->attachedFile->s3_object_config;
         $fileSpecificConfig = ['Key' => $filePath, 'SourceFile' => $file, 'ContentType' => $this->attachedFile->contentType()];

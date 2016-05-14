@@ -3,8 +3,7 @@
 namespace Codesleeve\Stapler\Interfaces;
 
 use Imagine\Image\ImagineInterface;
-use Codesleeve\Stapler\Interfaces\File as FileInterface;
-use Codesleeve\Stapler\Interfaces\Style as StyleInterface;
+use Codesleeve\Stapler\Interfaces\{File as FileInterface, Style as StyleInterface};
 
 interface Resizer
 {
@@ -23,7 +22,7 @@ interface Resizer
      *
      * @return string
      */
-    public function resize(FileInterface $file, StyleInterface $style);
+    public function resize(FileInterface $file, StyleInterface $style) : string;
 
     /**
      * Accessor method for the $imagine property.

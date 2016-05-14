@@ -74,11 +74,11 @@ class NativeConfig implements ConfigInterface
     /**
      * Retrieve a configuration value.
      *
-     * @param $name
+     * @param string $name
      *
      * @return mixed
      */
-    public function get($name)
+    public function get(string $name)
     {
         list($group, $item) = array_pad(explode('.', $name), 2, null);
 
@@ -92,10 +92,10 @@ class NativeConfig implements ConfigInterface
     /**
      * Set a configuration value.
      *
-     * @param $name
-     * @param $value
+     * @param string $name
+     * @param mixed  $value
      */
-    public function set($name, $value)
+    public function set(string $name, $value)
     {
         list($group, $item) = array_pad(explode('.', $name), 2, null);
 
@@ -113,7 +113,7 @@ class NativeConfig implements ConfigInterface
      * @param string $group
      * @param string $item
      */
-    protected function loadItemFromFile($group, $item)
+    protected function loadItemFromFile(string $group, string $item)
     {
         if (array_key_exists($group, $this->items) && array_key_exists($item, $this->items[$group])) {
             return $this->items[$group][$item];
@@ -126,7 +126,7 @@ class NativeConfig implements ConfigInterface
      *
      * @param string $group
      */
-    protected function loadAllFromFile($group)
+    protected function loadAllFromFile(string $group)
     {
         if (array_key_exists($group, $this->items)) {
             return $this->items[$group];

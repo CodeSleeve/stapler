@@ -40,7 +40,7 @@ abstract class CloudStorage
      *
      * @return string
      */
-    public function path($styleName)
+    public function path(string $styleName) : string
     {
         $path = $this->attachedFile->path;
         $interpolator = $this->attachedFile->getInterpolator();
@@ -53,7 +53,7 @@ abstract class CloudStorage
      *
      * @param array $filePaths
      */
-    public function remove(array $filePaths)
+    public function remove(array $filePaths) : string
     {
         if ($filePaths) {
             foreach ($filePaths as $filePath) {
@@ -69,7 +69,7 @@ abstract class CloudStorage
      *
      * @return string|void
      */
-    abstract public function url($styleName);
+    abstract public function url(string $styleName) : string;
 
     /**
      * Move an uploaded file to its intended destination.
@@ -77,5 +77,5 @@ abstract class CloudStorage
      * @param string $file
      * @param string $filePath
      */
-    abstract public function move($file, $filePath);
+    abstract public function move(string $file, string $filePath);
 }

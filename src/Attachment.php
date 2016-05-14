@@ -2,10 +2,7 @@
 
 namespace Codesleeve\Stapler;
 
-use Codesleeve\Stapler\Interfaces\Attachment as AttachmentInterface;
-use Codesleeve\Stapler\Interfaces\Interpolator as InterpolatorInterface;
-use Codesleeve\Stapler\Interfaces\Resizer as ResizerInterface;
-use Codesleeve\Stapler\Interfaces\Storage as StorageInterface;
+use Codesleeve\Stapler\Interfaces\{Attachment as AttachmentInterface, Interpolator as InterpolatorInterface, Resizer as ResizerInterface, Storage as StorageInterface};
 use Codesleeve\Stapler\ORM\StaplerableInterface;
 use Codesleeve\Stapler\Factories\File as FileFactory;
 use JsonSerializable;
@@ -242,9 +239,9 @@ class Attachment implements AttachmentInterface, JsonSerializable
     /**
      * Accessor method for the Config property.
      *
-     * @return array
+     * @return AttachmentConfig
      */
-    public function getConfig()
+    public function getConfig() : AttachmentConfig
     {
         return $this->config;
     }
@@ -254,7 +251,7 @@ class Attachment implements AttachmentInterface, JsonSerializable
      *
      * @return array
      */
-    public function getQueuedForDeletion()
+    public function getQueuedForDeletion() : array
     {
         return $this->queuedForDeletion;
     }
@@ -264,7 +261,7 @@ class Attachment implements AttachmentInterface, JsonSerializable
      *
      * @param array $array
      */
-    public function setQueuedForDeletion($array)
+    public function setQueuedForDeletion(array $array)
     {
         $this->queuedForDeletion = $array;
     }
@@ -295,7 +292,7 @@ class Attachment implements AttachmentInterface, JsonSerializable
      *
      * @return string
      */
-    public function url($styleName = '')
+    public function url(string $styleName = '') : string
     {
         if ($this->originalFilename()) {
             return $this->storageDriver->url($styleName, $this);
@@ -312,7 +309,7 @@ class Attachment implements AttachmentInterface, JsonSerializable
      *
      * @return string
      */
-    public function path($styleName = '')
+    public function path(string $styleName = '') : string
     {
         if ($this->originalFilename()) {
             return $this->storageDriver->path($styleName, $this);
@@ -512,7 +509,7 @@ class Attachment implements AttachmentInterface, JsonSerializable
      *
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize() : array
     {
         $data = [];
 
@@ -600,7 +597,7 @@ class Attachment implements AttachmentInterface, JsonSerializable
      *
      * @return string
      */
-    protected function defaultUrl($styleName = '')
+    protected function defaultUrl(string $styleName = '')
     {
         if ($url = $this->default_url) {
             return $this->getInterpolator()->interpolate($url, $this, $styleName);
@@ -616,7 +613,7 @@ class Attachment implements AttachmentInterface, JsonSerializable
      *
      * @return string
      */
-    protected function defaultPath($styleName = '')
+    protected function defaultPath(string $styleName = '')
     {
         return $this->public_path.$this->defaultUrl($styleName);
     }

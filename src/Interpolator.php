@@ -2,8 +2,7 @@
 
 namespace Codesleeve\Stapler;
 
-use Codesleeve\Stapler\Interfaces\Interpolator as InterpolatorInterface;
-use Codesleeve\Stapler\Interfaces\Attachment as AttachmentInterface;
+use Codesleeve\Stapler\Interfaces\{Interpolator as InterpolatorInterface, Attachment as AttachmentInterface};
 use Doctrine\Common\Inflector\Inflector;
 
 class Interpolator implements InterpolatorInterface
@@ -24,7 +23,7 @@ class Interpolator implements InterpolatorInterface
      *
      * @return string
      */
-    public function interpolate($string, AttachmentInterface $attachment, $styleName = '')
+    public function interpolate($string, AttachmentInterface $attachment, string $styleName = '') : string
     {
         foreach ($this->interpolations() as $key => $value) {
             if (strpos($string, $key) !== false) {
@@ -70,7 +69,7 @@ class Interpolator implements InterpolatorInterface
      *
      * @return string
      */
-    protected function filename(AttachmentInterface $attachment, $styleName = '')
+    protected function filename(AttachmentInterface $attachment, string $styleName = '')
     {
         return $attachment->originalFilename();
     }
@@ -83,7 +82,7 @@ class Interpolator implements InterpolatorInterface
      *
      * @return string
      */
-    protected function url(AttachmentInterface $attachment, $styleName = '')
+    protected function url(AttachmentInterface $attachment, string $styleName = '')
     {
         return $this->interpolate($attachment->url, $attachment, $styleName);
     }
@@ -96,7 +95,7 @@ class Interpolator implements InterpolatorInterface
      *
      * @return string
      */
-    protected function appRoot(AttachmentInterface $attachment, $styleName = '')
+    protected function appRoot(AttachmentInterface $attachment, string $styleName = '')
     {
         return $attachment->base_path;
     }
@@ -110,7 +109,7 @@ class Interpolator implements InterpolatorInterface
      *
      * @return string
      */
-    protected function getClass(AttachmentInterface $attachment, $styleName = '')
+    protected function getClass(AttachmentInterface $attachment, string $styleName = '')
     {
         return $this->handleBackslashes($attachment->getInstanceClass());
     }
@@ -124,7 +123,7 @@ class Interpolator implements InterpolatorInterface
      *
      * @return string
      */
-    protected function getClassName(AttachmentInterface $attachment, $styleName = '')
+    protected function getClassName(AttachmentInterface $attachment, string $styleName = '')
     {
         $classComponents = explode('\\', $attachment->getInstanceClass());
 
@@ -140,7 +139,7 @@ class Interpolator implements InterpolatorInterface
      *
      * @return string
      */
-    protected function getNamespace(AttachmentInterface $attachment, $styleName = '')
+    protected function getNamespace(AttachmentInterface $attachment, string $styleName = '')
     {
         $classComponents = explode('\\', $attachment->getInstanceClass());
 
@@ -155,7 +154,7 @@ class Interpolator implements InterpolatorInterface
      *
      * @return string
      */
-    protected function basename(AttachmentInterface $attachment, $styleName = '')
+    protected function basename(AttachmentInterface $attachment, string $styleName = '')
     {
         return pathinfo($attachment->originalFilename(), PATHINFO_FILENAME);
     }
@@ -168,7 +167,7 @@ class Interpolator implements InterpolatorInterface
      *
      * @return string
      */
-    protected function extension(AttachmentInterface $attachment, $styleName = '')
+    protected function extension(AttachmentInterface $attachment, string $styleName = '')
     {
         return pathinfo($attachment->originalFilename(), PATHINFO_EXTENSION);
     }
@@ -181,7 +180,7 @@ class Interpolator implements InterpolatorInterface
      *
      * @return string
      */
-    protected function id(AttachmentInterface $attachment, $styleName = '')
+    protected function id(AttachmentInterface $attachment, string $styleName = '')
     {
         return $this->ensurePrintable($attachment->getInstance()->getKey());
     }
@@ -192,7 +191,7 @@ class Interpolator implements InterpolatorInterface
      * @param AttachmentInterface $attachment
      * @param string              $styleName
      */
-    protected function secureHash(AttachmentInterface $attachment, $styleName = '')
+    protected function secureHash(AttachmentInterface $attachment, string $styleName = '')
     {
         return hash('sha256', $this->id($attachment, $styleName).$attachment->size().$attachment->originalFilename());
     }
@@ -203,7 +202,7 @@ class Interpolator implements InterpolatorInterface
      * @param AttachmentInterface $attachment
      * @param string              $styleName
      */
-    protected function hash(AttachmentInterface $attachment, $styleName = '')
+    protected function hash(AttachmentInterface $attachment, string $styleName = '')
     {
         return hash('sha256', $this->id($attachment, $styleName));
     }
@@ -217,7 +216,7 @@ class Interpolator implements InterpolatorInterface
      *
      * @return mixed
      */
-    protected function idPartition(AttachmentInterface $attachment, $styleName = '')
+    protected function idPartition(AttachmentInterface $attachment, string $styleName = '')
     {
         $id = $this->ensurePrintable($attachment->getInstance()->getKey());
 
@@ -239,7 +238,7 @@ class Interpolator implements InterpolatorInterface
      *
      * @return string
      */
-    protected function attachment(AttachmentInterface $attachment, $styleName = '')
+    protected function attachment(AttachmentInterface $attachment, string $styleName = '')
     {
         return Inflector::pluralize($attachment->name);
     }
@@ -252,7 +251,7 @@ class Interpolator implements InterpolatorInterface
      *
      * @return string
      */
-    protected function style(AttachmentInterface $attachment, $styleName = '')
+    protected function style(AttachmentInterface $attachment, string $styleName = '')
     {
         return $styleName ?: $attachment->default_style;
     }
@@ -265,7 +264,7 @@ class Interpolator implements InterpolatorInterface
      *
      * @return string
      */
-    protected function handleBackslashes($string)
+    protected function handleBackslashes(string $string) : string
     {
         return str_replace('\\', '/', ltrim($string, '\\'));
     }
