@@ -22,7 +22,7 @@ class S3 extends CloudStorage implements StorageInterface
      */
     public function url(string $styleName) : string
     {
-        $bucket = $this->attachedFile->s3_object_config['Bucket'];
+        $bucket = $this->attachment->s3_object_config['Bucket'];
         $path = $this->path($styleName);
 
         return $this->filesystem
@@ -39,8 +39,8 @@ class S3 extends CloudStorage implements StorageInterface
      */
     public function move(string $file, string $filePath)
     {
-        $objectConfig = $this->attachedFile->s3_object_config;
-        $fileSpecificConfig = ['Key' => $filePath, 'SourceFile' => $file, 'ContentType' => $this->attachedFile->contentType()];
+        $objectConfig = $this->attachment->s3_object_config;
+        $fileSpecificConfig = ['Key' => $filePath, 'SourceFile' => $file, 'ContentType' => $this->attachment->contentType()];
         $mergedConfig = array_merge($objectConfig, $fileSpecificConfig);
         $this->filesystem->put($filePath, file_get_contents($file), $mergedConfig);
         @unlink($file);

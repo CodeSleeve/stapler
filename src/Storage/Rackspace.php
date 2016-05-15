@@ -22,7 +22,7 @@ class Rackspace extends CloudStorage implements StorageInterface
 
         $path = $this->path($styleName);
 
-        if ($this->attachedFile->use_ssl === true) {
+        if ($this->attachment->use_ssl === true) {
             return $cdn->getCdnSslUri() . "/$path";
         } else {
             return $cdn->getCdnUri() . "/$path";
