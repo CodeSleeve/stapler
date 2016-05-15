@@ -98,7 +98,7 @@ class Local implements StorageInterface
      * @param string $filePath
      * @param bool   $overrideFilePermissions
      */
-    protected function setPermissions(string $filePath, bool $overrideFilePermissions)
+    protected function setPermissions(string $filePath, bool $overrideFilePermissions = null)
     {
         if ($overrideFilePermissions) {
             chmod($filePath, $overrideFilePermissions & ~umask());

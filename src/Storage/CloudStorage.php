@@ -8,11 +8,11 @@ use Codesleeve\Stapler\Attachment;
 abstract class CloudStorage
 {
     /**
-     * The current attachedFile object being processed.
+     * The current attachment object being processed.
      *
      * @var \Codesleeve\Stapler\Attachment
      */
-    public $attachedFile;
+    public $attachment;
 
     /**
      * The AWS S3Client instance.
@@ -24,12 +24,12 @@ abstract class CloudStorage
     /**
      * Constructor method.
      *
-     * @param Attachment           $attachedFile
+     * @param Attachment           $attachment
      * @param FilesystemInterface  $filesystem
      */
-    public function __construct(Attachment $attachedFile, FilesystemInterface $filesystem)
+    public function __construct(Attachment $attachment, FilesystemInterface $filesystem)
     {
-        $this->attachedFile = $attachedFile;
+        $this->attachment = $attachment;
         $this->filesystem = $filesystem;
     }
 
@@ -42,10 +42,10 @@ abstract class CloudStorage
      */
     public function path(string $styleName) : string
     {
-        $path = $this->attachedFile->path;
-        $interpolator = $this->attachedFile->getInterpolator();
+        $path = $this->attachment->path;
+        $interpolator = $this->attachment->getInterpolator();
 
-        return $interpolator->interpolate($path, $this->attachedFile, $styleName);
+        return $interpolator->interpolate($path, $this->attachment, $styleName);
     }
 
     /**
@@ -53,7 +53,7 @@ abstract class CloudStorage
      *
      * @param array $filePaths
      */
-    public function remove(array $filePaths) : string
+    public function remove(array $filePaths)
     {
         if ($filePaths) {
             foreach ($filePaths as $filePath) {
