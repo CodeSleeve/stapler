@@ -108,10 +108,13 @@ class StaplerTest extends PHPUnit_Framework_TestCase
             'storage' => 's3',
             'styles' => [],
             's3_client_config' => [
-                'key' => '',
-                'secret' => '',
+                'credentials' => [
+                    'key' => '',
+                    'secret' => '',
+                ],
                 'region' => '',
                 'scheme' => 'http',
+                'version' => 'latest'
             ],
         ]);
         $mockAttachment = m::mock('Codesleeve\Stapler\Attachment')->makePartial();
