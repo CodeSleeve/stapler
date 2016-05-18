@@ -137,7 +137,7 @@ class Resizer implements ResizerInterface
      *
      * @return ImageInterface
      */
-    protected function resizeAuto(ImageInterface $image, int $width, int $height) : ImageInterface
+    protected function resizeAuto(ImageInterface $image, $width, $height) : ImageInterface
     {
         $size = $image->getSize();
         $originalWidth = $size->getWidth();
@@ -171,7 +171,7 @@ class Resizer implements ResizerInterface
      *
      * @return ImageInterface
      */
-    protected function resizeLandscape(ImageInterface $image, int $width, int $height) : ImageInterface
+    protected function resizeLandscape(ImageInterface $image, $width, $height) : ImageInterface
     {
         $optimalHeight = $this->getSizeByFixedWidth($image, $width);
         $dimensions = $image->getSize()
@@ -192,7 +192,7 @@ class Resizer implements ResizerInterface
      *
      * @return ImageInterface
      */
-    protected function resizePortrait(ImageInterface $image, int $width, int $height) : ImageInterface
+    protected function resizePortrait(ImageInterface $image, $width, $height) : ImageInterface
     {
         $optimalWidth = $this->getSizeByFixedHeight($image, $height);
         $dimensions = $image->getSize()
@@ -213,7 +213,7 @@ class Resizer implements ResizerInterface
      *
      * @return ImageInterface
      */
-    protected function resizeCrop(ImageInterface $image, int $width, int $height) : ImageInterface
+    protected function resizeCrop(ImageInterface $image, $width, $height) : ImageInterface
     {
         list($optimalWidth, $optimalHeight) = $this->getOptimalCrop($image->getSize(), $width, $height);
 
@@ -234,7 +234,7 @@ class Resizer implements ResizerInterface
      *
      * @return ImageInterface
      */
-    protected function resizeExact(ImageInterface $image, int $width, int $height) : ImageInterface
+    protected function resizeExact(ImageInterface $image, $width, $height) : ImageInterface
     {
         return $image->resize(new Box($width, $height));
     }
@@ -260,7 +260,7 @@ class Resizer implements ResizerInterface
      *
      * @return int
      */
-    private function getSizeByFixedHeight(ImageInterface $image, int $newHeight) : int
+    private function getSizeByFixedHeight(ImageInterface $image, $newHeight) : int
     {
         $box = $image->getSize();
         $ratio = $box->getWidth() / $box->getHeight();
@@ -277,7 +277,7 @@ class Resizer implements ResizerInterface
      *
      * @return int
      */
-    private function getSizeByFixedWidth(ImageInterface $image, int $newWidth) : int
+    private function getSizeByFixedWidth(ImageInterface $image, $newWidth) : int
     {
         $box = $image->getSize();
         $ratio = $box->getHeight() / $box->getWidth();
@@ -296,7 +296,7 @@ class Resizer implements ResizerInterface
      *
      * @return array
      */
-    protected function getOptimalCrop(Box $size, int $width, int $height) : array
+    protected function getOptimalCrop(Box $size, $width, $height) : array
     {
         $heightRatio = $size->getHeight() / $height;
         $widthRatio = $size->getWidth() / $width;
