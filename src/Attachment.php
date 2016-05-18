@@ -66,6 +66,13 @@ class Attachment implements AttachmentInterface, JsonSerializable
     protected $queuedForWrite = [];
 
     /**
+     * The uploaded/resized files that have been queued up to be renamed in storage.
+     *
+     * @var array
+     */
+    protected $queuedForRewrite = [];
+
+    /**
      * Constructor method.
      *
      * @param AttachmentConfig $config
@@ -107,6 +114,8 @@ class Attachment implements AttachmentInterface, JsonSerializable
      * Mutator method for the uploadedFile property.
      * Accepts the following inputs:
      * - An absolute string url (for fetching remote files).
+     * - An data URI string
+     * - An array of data of data with two keys: 'file' and 'file_name'
      * - An array (data parsed from the $_FILES array),
      * - A Symfony uploaded file object.
      *
@@ -114,22 +123,35 @@ class Attachment implements AttachmentInterface, JsonSerializable
      */
     public function setUploadedFile($uploadedFile)
     {
-        if (!$this->keep_old_files) {
-            $this->clear();
-        }
-
-        if ($uploadedFile == STAPLER_NULL) {
+        if ($uploadedFile === STAPLER_NULL) {
             $this->clearAttributes();
 
             return;
         }
 
-        $this->uploadedFile = FileFactory::create($uploadedFile);
-        $this->instanceWrite('file_name', $this->uploadedFile->getFilename());
-        $this->instanceWrite('file_size', $this->uploadedFile->getSize());
-        $this->instanceWrite('content_type', $this->uploadedFile->getMimeType());
-        $this->instanceWrite('updated_at', date('Y-m-d H:i:s'));
-        $this->queueAllForWrite();
+        $fileName = '';
+        $originalFilename = $this->originalFilename();
+
+        if (is_array($uploadedFile) && array_key_exists('file', $uploadedFile) && isset($uploadedFile['file_name'])) {
+            $fileName = $uploadedFile['file_name'];
+            $uploadedFile = $uploadedFile['file'];
+        }
+
+        if ($uploadedFile) {
+            if (!$this->keep_old_files) {
+                $this->clear();
+            }
+
+            $this->uploadedFile = FileFactory::create($uploadedFile);
+            $this->instanceWrite('file_name', $fileName ?: $this->uploadedFile->getFilename());
+            $this->instanceWrite('file_size', $this->uploadedFile->getSize());
+            $this->instanceWrite('content_type', $this->uploadedFile->getMimeType());
+            $this->instanceWrite('updated_at', date('Y-m-d H:i:s'));
+            $this->queueAllForWrite();
+        } else if ($fileName && $originalFilename && $fileName !== $originalFilename){
+            $this->queueAllForRewrite($fileName);
+            $this->instanceWrite('file_name', $fileName);
+        }
     }
 
     /**
@@ -278,7 +300,7 @@ class Attachment implements AttachmentInterface, JsonSerializable
      */
     public function __call($method, $parameters)
     {
-        $callable = ['remove', 'move'];
+        $callable = ['remove', 'move', 'rename'];
 
         if (in_array($method, $callable)) {
             return call_user_func_array([$this->storageDriver, $method], $parameters);
@@ -478,6 +500,7 @@ class Attachment implements AttachmentInterface, JsonSerializable
     {
         $this->flushDeletes();
         $this->flushWrites();
+        $this->flushRewrites();
     }
 
     /**
@@ -552,11 +575,40 @@ class Attachment implements AttachmentInterface, JsonSerializable
     }
 
     /**
-     * Fill the queuedForWrite que with all of this attachment's styles.
+     * Fill the queuedForWrite queue with all of this attachment's styles.
      */
     protected function queueAllForWrite()
     {
         $this->queuedForWrite = $this->styles;
+    }
+
+    /**
+     * Fill the queued for re-write queue the a associative array of key => value
+     * pairs for new and old paths.
+     *
+     * @param  string $fileName
+     * @return void
+     */
+    protected function queueAllForRewrite(string $fileName)
+    {
+        foreach ($this->styles as $style) {
+            $filePath = $this->path($style->name);
+            $directoryName = dirname($filePath);
+            $newFilePath = "$directoryName/$fileName";
+            $this->queuedForRewrite[$filePath] = $newFilePath;
+        }
+    }
+
+    /**
+     * Process the queuedForRewrite queue.
+     *
+     * @return void
+     */
+    public function flushRewrites()
+    {
+        foreach ($this->queuedForRewrite as $filePath => $newFilePath) {
+            $this->rename($filePath, $newFilePath);
+        }
     }
 
     /**
