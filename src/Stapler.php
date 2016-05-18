@@ -225,12 +225,7 @@ class Stapler
     protected static function buildCloudFilesystem(AttachmentInterface $attachedFile)
     {
         if ($attachedFile->storage === 's3') {
-            $client = S3Client::factory([
-                'credentials' => ['key' => $attachedFile->s3_client_config['key'], 'secret' => $attachedFile->s3_client_config['secret']],
-                'region'      => $attachedFile->s3_client_config['region'],
-                'version'     => 'latest'
-            ]);
-
+            $client = S3Client::factory($attachedFile->s3_client_config);
             $bucket = $attachedFile->s3_object_config['Bucket'];
             $adapter = new AwsS3Adapter($client, $bucket);
 
