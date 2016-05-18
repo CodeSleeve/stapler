@@ -30,7 +30,7 @@ trait EloquentTrait
      * @param string $name
      * @param array  $options
      */
-    public function addAttachment(string $name, array $options = [])
+    public function hasAttachedFile(string $name, array $options = [])
     {
         $attachment = AttachmentFactory::create($name, $options);
         $attachment->setInstance($this);
