@@ -39,4 +39,14 @@ interface Storage
      * @param string $filePath
      */
     public function move(string $file, string $filePath);
+
+    /**
+     * Rename and uploaded file.
+     *
+     * @param  string $oldName
+     * @param  string $newName
+     *
+     * @return void
+     */
+    public function rename(string $oldName, string $newName);
 }

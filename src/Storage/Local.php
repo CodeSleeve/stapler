@@ -78,6 +78,19 @@ class Local implements StorageInterface
     }
 
     /**
+     * Rename and uploaded file.
+     *
+     * @param  string $oldName
+     * @param  string $newName
+     *
+     * @return void
+     */
+    public function rename(string $oldName, string $newName)
+    {
+        @rename($oldName, $newName);
+    }
+
+    /**
      * Determine if a style directory needs to be built and if so create it.
      *
      * @param string $filePath

@@ -63,6 +63,19 @@ abstract class CloudStorage
     }
 
     /**
+     * Rename and uploaded file.
+     *
+     * @param  string $oldName
+     * @param  string $newName
+     *
+     * @return void
+     */
+    public function rename(string $oldName, string $newName)
+    {
+        $this->filesystem->rename($oldName, $newName);
+    }
+
+    /**
      * Return the url for a file upload.
      *
      * @param string $styleName
