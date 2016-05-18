@@ -50,11 +50,11 @@ class Validator implements ValidatorInterface
             throw new Exceptions\InvalidUrlOptionException('Invalid Path: a bucket is required for s3 storage.', 1);
         }
 
-        if (!$options['s3_client_config']['secret']) {
+        if (!$options['s3_client_config']['credentials']['secret']) {
             throw new Exceptions\InvalidUrlOptionException('Invalid Path: a secret is required for s3 storage.', 1);
         }
 
-        if (!$options['s3_client_config']['key']) {
+        if (!$options['s3_client_config']['credentials']['key']) {
             throw new Exceptions\InvalidUrlOptionException('Invalid Path: a key is required for s3 storage.', 1);
         }
     }

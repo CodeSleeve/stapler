@@ -31,10 +31,13 @@ class NativeConfig implements ConfigInterface
         ],
         's3' => [
             's3_client_config' => [
-                'key' => '',
-                'secret' => '',
+                'credentials' => [
+                    'key' => '',
+                    'secret' => '',
+                ],
                 'region' => '',
                 'scheme' => 'http',
+                'version' => 'latest'
             ],
             's3_object_config' => [
                 'Bucket' => '',
