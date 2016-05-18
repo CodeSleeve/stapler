@@ -35,7 +35,7 @@ Class Photo extends Eloquent implements StaplerableInterface
     {
         // Define an attachment named 'foo', with both thumbnail (100x100) and large (300x300) styles,
         // using custom url and default_url configurations:
-        $this->addAttachment('foo', [
+        $this->hasAttachedFile('foo', [
             'styles' => [
                 'thumbnail' => '100x100',
                 'large' => '300x300'
@@ -47,7 +47,7 @@ Class Photo extends Eloquent implements StaplerableInterface
         // Define an attachment named 'bar', with both thumbnail (100x100) and large (300x300) styles,
         // using custom url and default_url configurations, with the keep_old_files flag set to true
         // (so that older file uploads aren't deleted from the file system) and image cropping turned on:
-        $this->addAttachment('bar', [
+        $this->hasAttachedFile('bar', [
             'styles' => [
                 'thumbnail' => '100x100#',
                 'large' => '300x300#'
@@ -58,7 +58,7 @@ Class Photo extends Eloquent implements StaplerableInterface
 
         // Define an attachment named 'baz' that has a watermarked style.  Here, we define a style named 'watermarked'
         // that's a closure (so that we can do some complex watermarking stuff):
-        $this->addAttachment('baz', [
+        $this->hasAttachedFile('baz', [
             'styles' => [
                 'thumbnail' => ['dimensions' => '100x100', 'auto-orient' => true, 'convert_options' => ['quality' => 100]],
                 'micro'     => '50X50',
@@ -83,7 +83,7 @@ Class Photo extends Eloquent implements StaplerableInterface
 
         // Define an attachment named 'qux'.  In this attachment, we'll use alternative style notation to define a slightly more
         // complex thumbnail style.  In this example, the thumbnail style will be a 100x100px auto-oriented image with 100% quality:
-        $this->addAttachment('qux', [
+        $this->hasAttachedFile('qux', [
             'styles' => [
                 'thumbnail' => ['dimensions' => '100x100', 'auto-orient' => true, 'convert_options' => ['quality' => 100]],
                 'micro'     => '50X50'
@@ -93,7 +93,7 @@ Class Photo extends Eloquent implements StaplerableInterface
         ]);
 
         // Define an attachment named 'quux' that stores images remotely in an S3 bucket.
-        $this->addAttachment('quux', [
+        $this->hasAttachedFile('quux', [
             'styles' => [
                 'thumbnail' => '100x100#',
                 'large' => '300x300#'

@@ -18,7 +18,7 @@ interface StaplerableInterface
      * @param string $name
      * @param array  $options
      */
-    public function addAttachment(string $name, array $options = []);
+    public function hasAttachedFile(string $name, array $options = []);
 
     /**
      * Handle the dynamic retrieval of attachment objects.
