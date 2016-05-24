@@ -65,17 +65,22 @@ class S3 implements StorageInterface
         return $this->attachedFile->getInterpolator()->interpolate($this->attachedFile->path, $this->attachedFile, $styleName);
     }
 
-    /**
-     * Remove an attached file.
-     *
-     * @param array $filePaths
-     */
-    public function remove(array $filePaths)
-    {
-        if ($filePaths) {
-            $this->s3Client->deleteObjects(['Bucket' => $this->attachedFile->s3_object_config['Bucket'], 'Objects' => $this->getKeys($filePaths)]);
-        }
+/**
+ * Remove an attached file.
+ *
+ * @param array $filePaths
+ */
+public function remove(array $filePaths)
+{
+    if ($filePaths) {
+        $this->s3Client->deleteObjects([
+            'Bucket' => $this->attachedFile->s3_object_config['Bucket'],
+            'Delete' => [
+                'Objects' => $this->getKeys($filePaths)
+            ],
+        ]);
     }
+}
 
     /**
      * Move an uploaded file to it's intended destination.
