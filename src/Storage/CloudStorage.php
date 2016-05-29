@@ -49,7 +49,7 @@ abstract class CloudStorage
     }
 
     /**
-     * Remove an attached file.
+     * Remove an uploaded file.
      *
      * @param array $filePaths
      */
@@ -73,6 +73,17 @@ abstract class CloudStorage
     public function rename(string $oldName, string $newName)
     {
         $this->filesystem->rename($oldName, $newName);
+    }
+
+    /**
+     * Determine if an uploaded file exists.
+     *
+     * @param  string  $filePath
+     * @return boolean
+     */
+    public function has(string $filePath) : bool
+    {
+        return $this->filesystem->has($filePath);
     }
 
     /**

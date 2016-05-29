@@ -49,4 +49,12 @@ interface Storage
      * @return void
      */
     public function rename(string $oldName, string $newName);
+
+    /**
+     * Determine if an uploaded file exists.
+     *
+     * @param  string  $filePath
+     * @return boolean
+     */
+    public function has(string $filePath) : bool;
 }

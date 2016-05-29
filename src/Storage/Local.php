@@ -91,6 +91,17 @@ class Local implements StorageInterface
     }
 
     /**
+     * Determine if an uploaded file exists.
+     *
+     * @param  string  $filePath
+     * @return boolean
+     */
+    public function has(string $filePath) : bool
+    {
+        return file_exists($filePath);
+    }
+
+    /**
      * Determine if a style directory needs to be built and if so create it.
      *
      * @param string $filePath
