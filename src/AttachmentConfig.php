@@ -35,10 +35,6 @@ class AttachmentConfig
      */
     public function __construct($name, array $options)
     {
-        if (!array_key_exists('styles', $options)) {
-            throw new Exceptions\InvalidAttachmentConfigurationException("Attachment configuration options must contain a 'styles' key", 1);
-        }
-
         $this->name = $name;
         $this->options = $options;
         $this->styles = $this->buildStyleObjects($options['styles']);
@@ -80,11 +76,11 @@ class AttachmentConfig
      * Convert the styles array into an array of Style objects.
      * Both array keys and array values will be converted to object properties.
      *
-     * @param mixed $styles
+     * @param array $styles
      *
      * @return array
      */
-    protected function buildStyleObjects($styles)
+    protected function buildStyleObjects(array $styles)
     {
         $config = Stapler::getConfigInstance();
         $className = $config->get('bindings.style');
