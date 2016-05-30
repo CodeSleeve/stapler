@@ -127,8 +127,9 @@ class Interpolator implements InterpolatorInterface
     protected function getClassName(AttachmentInterface $attachment, $styleName = '')
     {
         $classComponents = explode('\\', $attachment->getInstanceClass());
+        $className = end($classComponents);
 
-        return end($classComponents);
+        return strtolower($className);
     }
 
     /**
@@ -143,8 +144,9 @@ class Interpolator implements InterpolatorInterface
     protected function getNamespace(AttachmentInterface $attachment, $styleName = '')
     {
         $classComponents = explode('\\', $attachment->getInstanceClass());
+        $namespace = implode('/', array_slice($classComponents, 0, count($classComponents) - 1));
 
-        return implode('/', array_slice($classComponents, 0, count($classComponents) - 1));
+        return strtolower($namespace);
     }
 
     /**
