@@ -123,7 +123,7 @@ class File
         curl_close($ch);
 
         // Remove the query string and hash if they exist
-        $file = preg_replace('/[#\?].*/', '', $file);
+        $file = preg_replace('/[&#\?].*/', '', $file);
 
         // Get the original name of the file
         $pathinfo = pathinfo($file);
