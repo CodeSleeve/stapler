@@ -8,8 +8,9 @@ use Codesleeve\Stapler\Interfaces\Resizer as ResizerInterface;
 use Codesleeve\Stapler\Interfaces\Storage as StorageInterface;
 use Codesleeve\Stapler\ORM\StaplerableInterface;
 use Codesleeve\Stapler\Factories\File as FileFactory;
+use JsonSerializable;
 
-class Attachment implements AttachmentInterface
+class Attachment implements AttachmentInterface, JsonSerializable
 {
     /**
      * The model instance that the attachment belongs to.
@@ -504,6 +505,25 @@ class Attachment implements AttachmentInterface
         $this->instanceWrite('file_size', null);
         $this->instanceWrite('content_type', null);
         $this->instanceWrite('updated_at', null);
+    }
+
+    /**
+     * Return a JSON representation of this class.
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        $data = [];
+
+        foreach ($this->styles as $style) {
+            $data[$style->name] = [
+                'path' => $this->path($style->name),
+                'url'  => $this->url($style->name)
+            ];
+        }
+
+        return $data;
     }
 
     /**

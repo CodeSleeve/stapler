@@ -336,7 +336,7 @@ class Resizer implements ResizerInterface
         if (function_exists('exif_read_data')) {
             try {
                 $exif = exif_read_data($path);
-            } catch (ErrorException $e) {
+            } catch (\ErrorException $e) {
                 return $image;
             }
 

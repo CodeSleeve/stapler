@@ -42,11 +42,14 @@ Default values:
 *   **override_file_permissions**: null
 
 ### S3-Storage-Configuration
+**Note**: *The current release of Stapler only supports AWS SDK ~2. This is not going to change until the next major release comes out (due to backwards compatibility breaks).*
+
 As your web application grows, you may find yourself in need of more robust file storage than what's provided by the local filesystem (e.g you're using multiple server instances and need a shared location for storing/accessing uploaded file assets).  Stapler provides a simple mechanism for easily storing and retreiving file objects with Amazon Simple Storage Service (Amazon S3).  In fact, aside from a few extra configuration settings, there's really no difference between s3 storage and filesystem storage when interacting with your attachments.  To get started with s3 storage you'll first need to add the AWS SDK to your composer.json file:
 
 ```js
   "require": {
-    "codesleeve/stapler": "dev-master",
+    "codesleeve/stapler":
+    "dev-master",
     "aws/aws-sdk-php": "2.4.*@dev"
   }
 ```
