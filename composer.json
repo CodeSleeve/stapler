@@ -19,7 +19,8 @@
         "mockery/mockery": "0.8.0",
         "aws/aws-sdk-php": "2.4.*@dev",
         "illuminate/database": "4.*|5.*",
-        "illuminate/config": "4.*|5.*"
+        "illuminate/config": "4.*|5.*",
+        "guzzlehttp/guzzle": "^6.0"
     },
     "autoload": {
         "psr-4": {

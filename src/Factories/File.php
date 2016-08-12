@@ -112,40 +112,32 @@ class File
      *
      * @return \Codesleeve\Stapler\File\File
      */
-    protected static function createFromUrl($file)
+    protected static function createFromUrl($url)
     {
-        $ch = curl_init($file);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        if(function_exists('curl_exec_follow'))
-        {
-          $rawFile = curl_exec_follow($ch);
-        } else {
-          $rawFile = curl_exec($ch);
-        }
-        curl_close($ch);
-
         // Remove the query string and hash if they exist
-        $file = preg_replace('/[&#\?].*/', '', $file);
+        $file = preg_replace('/[&#\?].*/', '', $url);
 
         // Get the original name of the file
         $pathinfo = pathinfo($file);
         $name = $pathinfo['basename'];
         $extension = isset($pathinfo['extension']) ? '.'.$pathinfo['extension'] : '';
-
-        // Create a filepath for the file by storing it on disk.
         $filePath = tempnam(sys_get_temp_dir(), 'stapler-')."{$extension}";
-        file_put_contents($filePath, $rawFile);
+        
+        $c = new \GuzzleHttp\Client();
+        $response = $c->request('GET', $url, [
+          'sink'=>$filePath,
+        ]);
+        
+        if($response->getStatusCode()!=200)
+        {
+          throw new \Codesleeve\Stapler\Exceptions\FileException('Invalid URI returned HTTP code ', $response->getStatusCode());
+        }
 
         if (!$extension) {
             $mimeType = MimeTypeGuesser::getInstance()->guess($filePath);
             $extension = static::getMimeTypeExtensionGuesserInstance()->guess($mimeType);
-
-            unlink($filePath);
             $filePath = $filePath.'.'.$extension;
-            file_put_contents($filePath, $rawFile);
+            mv($filePath, $rawFile);
         }
 
         return new StaplerFile($filePath);
