@@ -128,13 +128,13 @@ class File
         // Get the original name of the file
         $pathinfo = pathinfo($file);
         $name = $pathinfo['basename'];
-        $ext = isset($pathinfo['extension']) ? '.'.$pathinfo['extension'] : '';
+        $extension = isset($pathinfo['extension']) ? '.'.$pathinfo['extension'] : '';
 
         // Create a filepath for the file by storing it on disk.
-        $filePath = tempnam(sys_get_temp_dir(), 'stapler-')."{$ext}";
+        $filePath = tempnam(sys_get_temp_dir(), 'stapler-')."{$extension}";
         file_put_contents($filePath, $rawFile);
 
-        if (!$ext) {
+        if (!$extension) {
             $mimeType = MimeTypeGuesser::getInstance()->guess($filePath);
             $extension = static::getMimeTypeExtensionGuesserInstance()->guess($mimeType);
 
