@@ -24,11 +24,15 @@ class Interpolator implements InterpolatorInterface
      *
      * @return string
      */
-    public function interpolate($string, AttachmentInterface $attachment, $styleName = '')
+    public function interpolate($string, AttachmentInterface $attachment, $styleName = '', $shouldUrlencode = false)
     {
         foreach ($this->interpolations() as $key => $value) {
             if (strpos($string, $key) !== false) {
-                $string = preg_replace("/$key\b/", $this->$value($attachment, $styleName), $string);
+                $v = $this->$value($attachment, $styleName);
+                if ($shouldUrlencode) {
+                    $v = join(DIRECTORY_SEPARATOR, array_map('rawurlencode', explode(DIRECTORY_SEPARATOR, $v)));
+                }
+                $string = preg_replace("/$key\b/", $v, $string);
             }
         }
 

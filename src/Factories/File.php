@@ -112,37 +112,33 @@ class File
      *
      * @return \Codesleeve\Stapler\File\File
      */
-    protected static function createFromUrl($file)
+    protected static function createFromUrl($url)
     {
-        $ch = curl_init($file);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        $rawFile = curl_exec($ch);
-        curl_close($ch);
-
-        // Remove the query string if it exists
-        // We should do this before fetching the pathinfo() so that the extension is valid
-        if (strpos($file, '?') !== false) {
-            list($file, $queryString) = explode('?', $file);
-        }
+        // Remove the query string and hash if they exist
+        $file = preg_replace('/[&#\?].*/', '', $url);
 
         // Get the original name of the file
         $pathinfo = pathinfo($file);
         $name = $pathinfo['basename'];
+        $extension = isset($pathinfo['extension']) ? '.'.$pathinfo['extension'] : '';
+        $filePath = tempnam(sys_get_temp_dir(), 'stapler-')."{$extension}";
+        
+        $c = new \GuzzleHttp\Client();
+        $response = $c->request('GET', $url, [
+          'sink'=>$filePath,
+        ]);
+        
+        if($response->getStatusCode()!=200)
+        {
+          throw new \Codesleeve\Stapler\Exceptions\FileException('Invalid URI returned HTTP code ', $response->getStatusCode());
+        }
 
-        // Create a filepath for the file by storing it on disk.
-        $filePath = sys_get_temp_dir()."/$name";
-        file_put_contents($filePath, $rawFile);
-
-        if (empty($pathinfo['extension'])) {
+        if (!$extension) {
             $mimeType = MimeTypeGuesser::getInstance()->guess($filePath);
             $extension = static::getMimeTypeExtensionGuesserInstance()->guess($mimeType);
-
-            unlink($filePath);
-            $filePath = sys_get_temp_dir()."/$name".'.'.$extension;
-            file_put_contents($filePath, $rawFile);
+            $srcPath = $filePath;
+            $filePath = $filePath.'.'.$extension;
+            mv($srcPath, $filePath);
         }
 
         return new StaplerFile($filePath);
