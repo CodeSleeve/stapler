@@ -131,7 +131,8 @@ class File
         $extension = isset($pathinfo['extension']) ? '.'.$pathinfo['extension'] : '';
 
         // Create a filepath for the file by storing it on disk.
-        $filePath = tempnam(sys_get_temp_dir(), 'stapler-')."{$extension}";
+        $lockFile = tempnam(sys_get_temp_dir(), 'stapler-');
+        $filePath = $lockFile."{$extension}";
         file_put_contents($filePath, $rawFile);
 
         if (!$extension) {
@@ -142,6 +143,8 @@ class File
             $filePath = $filePath.'.'.$extension;
             file_put_contents($filePath, $rawFile);
         }
+        
+        unlink($lockFile);
 
         return new StaplerFile($filePath);
     }
