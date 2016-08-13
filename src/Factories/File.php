@@ -138,7 +138,7 @@ class File
             $extension = static::getMimeTypeExtensionGuesserInstance()->guess($mimeType);
             $srcPath = $filePath;
             $filePath = $filePath.'.'.$extension;
-            mv($srcPath, $filePath);
+            rename($srcPath, $filePath);
         }
 
         return new StaplerFile($filePath);
