@@ -121,30 +121,38 @@ class File
         $pathinfo = pathinfo($file);
         $name = $pathinfo['basename'];
         $extension = isset($pathinfo['extension']) ? '.'.$pathinfo['extension'] : '';
-        $lockFile = tempnam(sys_get_temp_dir(), 'stapler-');
-        $filePath = $lockFile."{$extension}";
 
-        $c = new \GuzzleHttp\Client();
-        $response = $c->request('GET', $url, [
-          'sink'=>$filePath,
-        ]);
-        
-        if($response->getStatusCode()!=200)
+        try
         {
-          throw new \Codesleeve\Stapler\Exceptions\FileException('Invalid URI returned HTTP code ', $response->getStatusCode());
-        }
-
-        if (empty($pathinfo['extension'])) {
-            $mimeType = MimeTypeGuesser::getInstance()->guess($filePath);
-            $extension = static::getMimeTypeExtensionGuesserInstance()->guess($mimeType);
-            $srcPath = $filePath;
-            $filePath = $filePath.'.'.$extension;
-            rename($srcPath, $filePath);
-        }
+          $lockFile = tempnam(sys_get_temp_dir(), 'stapler-');
+          $filePath = $lockFile."{$extension}";
         
-        unlink($lockFile);
+          $c = new \GuzzleHttp\Client();
+          $response = $c->request('GET', $url, [
+            'sink'=>$filePath,
+          ]);
+        
+          if($response->getStatusCode()!=200)
+          {
+            throw new \Codesleeve\Stapler\Exceptions\FileException('Invalid URI returned HTTP code ', $response->getStatusCode());
+          }
 
-        return new StaplerFile($filePath);
+          if (!$extension) {
+              $mimeType = MimeTypeGuesser::getInstance()->guess($filePath);
+              $extension = static::getMimeTypeExtensionGuesserInstance()->guess($mimeType);
+              $srcPath = $filePath;
+              $filePath = $filePath.'.'.$extension;
+              rename($srcPath, $filePath);
+          }
+        
+          unlink($lockFile);
+
+          return new StaplerFile($filePath);
+        } catch (\Exception $e) {
+          @unlink($lockFile);
+          @unlink($filePath);
+          throw($e);
+        }
     }
 
     /**
