@@ -121,8 +121,9 @@ class File
         $pathinfo = pathinfo($file);
         $name = $pathinfo['basename'];
         $extension = isset($pathinfo['extension']) ? '.'.$pathinfo['extension'] : '';
-        $filePath = tempnam(sys_get_temp_dir(), 'stapler-')."{$extension}";
-        
+        $lockFile = tempnam(sys_get_temp_dir(), 'stapler-');
+        $filePath = $lockFile."{$extension}";
+
         $c = new \GuzzleHttp\Client();
         $response = $c->request('GET', $url, [
           'sink'=>$filePath,
@@ -140,6 +141,8 @@ class File
             $filePath = $filePath.'.'.$extension;
             rename($srcPath, $filePath);
         }
+        
+        unlink($lockFile);
 
         return new StaplerFile($filePath);
     }
