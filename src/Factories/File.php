@@ -122,28 +122,29 @@ class File
         $rawFile = curl_exec($ch);
         curl_close($ch);
 
-        // Remove the query string if it exists
-        // We should do this before fetching the pathinfo() so that the extension is valid
-        if (strpos($file, '?') !== false) {
-            list($file, $queryString) = explode('?', $file);
-        }
+        // Remove the query string and hash if they exist
+        $file = preg_replace('/[&#\?].*/', '', $file);
 
         // Get the original name of the file
         $pathinfo = pathinfo($file);
         $name = $pathinfo['basename'];
+        $extension = isset($pathinfo['extension']) ? '.'.$pathinfo['extension'] : '';
 
         // Create a filepath for the file by storing it on disk.
-        $filePath = sys_get_temp_dir()."/$name";
+        $lockFile = tempnam(sys_get_temp_dir(), 'stapler-');
+        $filePath = $lockFile."{$extension}";
         file_put_contents($filePath, $rawFile);
 
-        if (empty($pathinfo['extension'])) {
+        if (!$extension) {
             $mimeType = MimeTypeGuesser::getInstance()->guess($filePath);
             $extension = static::getMimeTypeExtensionGuesserInstance()->guess($mimeType);
 
             unlink($filePath);
-            $filePath = sys_get_temp_dir()."/$name".'.'.$extension;
+            $filePath = $filePath.'.'.$extension;
             file_put_contents($filePath, $rawFile);
         }
+        
+        unlink($lockFile);
 
         return new StaplerFile($filePath);
     }
