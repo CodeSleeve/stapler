@@ -139,7 +139,6 @@ class File
             $mimeType = MimeTypeGuesser::getInstance()->guess($filePath);
             $extension = static::getMimeTypeExtensionGuesserInstance()->guess($mimeType);
 
-            unlink($filePath);
             $filePath = $filePath.'.'.$extension;
             file_put_contents($filePath, $rawFile);
         }
