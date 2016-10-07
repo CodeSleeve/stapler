@@ -6,9 +6,13 @@ Before you can begin using Stapler, there's a few things you're going to have to
 // Boot stapler:
 \Codesleeve\Stapler\Stapler::boot();
 
-// Set the configuration driver (we're using the default config driver here; if you choose to implement your own you'll need to implement Codesleeve\Stapler\Config\ConfigurableInterface):
-$config = new Codesleeve\Stapler\Config\NativeConfig;
+// Set the configuration driver (we're using the default config driver here; if you choose to implement your own you'll need to implement Codesleeve\Stapler\Interfaces\Config):
+$config = new Codesleeve\Stapler\NativeConfig;
 Stapler::setConfigInstance($config);
+
+// Set the event dispatcher (we're using the default native driver here, which is just a simple pass through. You can of course implement your own by implementing Codesleeve\Stapler\Interfaces\EventDispatcher):
+$dispatcher = new Codesleeve\Stapler\NativeEventDispatcher;
+Stapler::setDispatcherInstance($dispatcher);
 
 // Set the location to your application's document root:
 $config->set('stapler.public_path', 'path/to/your/document/root');

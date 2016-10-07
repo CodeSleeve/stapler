@@ -180,9 +180,10 @@ class AttachmentTest extends PHPUnit_Framework_TestCase
         ]);
 
         $imagine = m::mock('Imagine\Image\ImagineInterface');
+        $dispatcher = new \Codesleeve\Stapler\NativeEventDispatcher;
         $resizer = new \Codesleeve\Stapler\File\Image\Resizer($imagine);
 
-        $attachment = new \Codesleeve\Stapler\Attachment($attachmentConfig, $interpolator, $resizer);
+        $attachment = new \Codesleeve\Stapler\Attachment($attachmentConfig, $interpolator, $resizer, $dispatcher);
         $attachment->setInstance($instance);
 
         $storageDriver = new \Codesleeve\Stapler\Storage\Local($attachment);

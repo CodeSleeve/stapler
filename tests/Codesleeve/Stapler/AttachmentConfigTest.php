@@ -79,16 +79,4 @@ class AttachmentConfigTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_array($attachmentConfig->styles));
         $this->assertInstanceOf('Codesleeve\Stapler\Interfaces\Style', $attachmentConfig->styles[0]);
     }
-
-    /**
-     * Test that the AttachmentConfig class will throw an exception
-     * if no styles key is present in the options array.
-     *
-     * @test
-     * @expectedException \Codesleeve\Stapler\Exceptions\InvalidAttachmentConfigurationException
-     */
-    public function it_should_throw_an_exception_if_no_styles_key_is_present()
-    {
-        $attachmentConfig = new AttachmentConfig('mockAttachment', []);
-    }
 }

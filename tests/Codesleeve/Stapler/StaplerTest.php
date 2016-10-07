@@ -130,7 +130,7 @@ class StaplerTest extends PHPUnit_Framework_TestCase
 
     /**
      * Test that the stapler class can build a single instance of
-     * Codesleeve\Stapler\Config\NativeConfig.
+     * Codesleeve\Stapler\NativeConfig.
      *
      * @test
      */
@@ -139,7 +139,7 @@ class StaplerTest extends PHPUnit_Framework_TestCase
         $config1 = Stapler::getConfigInstance();
         $config2 = Stapler::getConfigInstance();
 
-        $this->assertInstanceOf('Codesleeve\Stapler\Config\NativeConfig', $config1);
+        $this->assertInstanceOf('Codesleeve\Stapler\NativeConfig', $config1);
         $this->assertInstanceOf('Codesleeve\Stapler\Interfaces\Config', $config1);
         $this->assertSame($config1, $config2);
     }

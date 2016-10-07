@@ -1,6 +1,6 @@
 <?php
 
-use Codesleeve\Stapler\Config\NativeConfig;
+use Codesleeve\Stapler\NativeConfig;
 use Codesleeve\Stapler\Stapler;
 
 $loader = require __DIR__.'/../vendor/autoload.php';

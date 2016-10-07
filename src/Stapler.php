@@ -3,7 +3,7 @@
 namespace Codesleeve\Stapler;
 
 use Codesleeve\Stapler\File\Image\Resizer;
-use Codesleeve\Stapler\Interfaces\{Config as ConfigInterface, Attachment as AttachmentInterface};
+use Codesleeve\Stapler\Interfaces\{Config as ConfigInterface, Attachment as AttachmentInterface, EventDispatcher as DispatcherInterface};
 use Aws\S3\S3Client;
 use OpenCloud\{OpenStack, Rackspace};
 use League\Flysystem\{Filesystem, FilesystemInterface};
@@ -59,6 +59,13 @@ class Stapler
      * @var ConfigInterface
      */
     protected static $config;
+
+    /**
+     * The event dispatcher used to fire events.
+     *
+     * @var DispatcherInterface
+     */
+    protected static $dispatcher;
 
     /**
      * An array of image processing libs.
@@ -205,6 +212,22 @@ class Stapler
     }
 
     /**
+     * Return a dispatcher object instance.
+     * If no instance is currently set, we'll return an instance
+     * of Codesleeve\Stapler\NativeEventDispatcher.
+     *
+     * @return DispatcherInterface
+     */
+    public static function getDispatcherInstance()
+    {
+        if (!static::$dispatcher) {
+            static::$dispatcher = new NativeEventDispatcher;
+        }
+
+        return static::$dispatcher;
+    }
+
+    /**
      * Set the configuration object instance.
      *
      * @param ConfigInterface $config
@@ -212,6 +235,16 @@ class Stapler
     public static function setConfigInstance(ConfigInterface $config)
     {
         static::$config = $config;
+    }
+
+    /**
+     * Set the dispatcher object instance.
+     *
+     * @param DispatcherInterface $dispatcher
+     */
+    public static function setDispatcherInstance(DispatcherInterface $dispatcher)
+    {
+        static::$dispatcher = $dispatcher;
     }
 
     /**

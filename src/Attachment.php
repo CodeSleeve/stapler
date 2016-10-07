@@ -2,7 +2,13 @@
 
 namespace Codesleeve\Stapler;
 
-use Codesleeve\Stapler\Interfaces\{Attachment as AttachmentInterface, Interpolator as InterpolatorInterface, Resizer as ResizerInterface, Storage as StorageInterface};
+use Codesleeve\Stapler\Interfaces\{
+    Attachment as AttachmentInterface,
+    Interpolator as InterpolatorInterface,
+    Resizer as ResizerInterface,
+    Storage as StorageInterface,
+    EventDispatcher as DispatcherInterface
+};
 use Codesleeve\Stapler\ORM\StaplerableInterface;
 use Codesleeve\Stapler\Factories\File as FileFactory;
 use JsonSerializable;
@@ -52,6 +58,13 @@ class Attachment implements AttachmentInterface, JsonSerializable
     protected $resizer;
 
     /**
+     * The event dispatcher used to fire events.
+     *
+     * @var DispatcherInterface
+     */
+    protected $dispacher;
+
+    /**
      * The uploaded/resized files that have been queued up for deletion.
      *
      * @var array
@@ -75,15 +88,21 @@ class Attachment implements AttachmentInterface, JsonSerializable
     /**
      * Constructor method.
      *
-     * @param AttachmentConfig $config
-     * @param InterpolatorInterface     $interpolator
-     * @param ResizerInterface          $resizer
+     * @param AttachmentConfig       $config
+     * @param InterpolatorInterface  $interpolator
+     * @param ResizerInterface       $resizer
+     * @param DispatcherInterface    $dispatcher
      */
-    public function __construct(AttachmentConfig $config, InterpolatorInterface $interpolator, ResizerInterface $resizer)
+    public function __construct(
+        AttachmentConfig $config,
+        InterpolatorInterface $interpolator,
+        ResizerInterface $resizer,
+        DispatcherInterface $dispatcher)
     {
         $this->config = $config;
         $this->interpolator = $interpolator;
         $this->resizer = $resizer;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -705,5 +724,25 @@ class Attachment implements AttachmentInterface, JsonSerializable
     protected function defaultPath(string $styleName = '')
     {
         return $this->public_path.$this->defaultUrl($styleName);
+    }
+
+    /**
+     * Fire the given event for the model.
+     *
+     * @param  string     $event
+     * @param  Attachment $file
+     * @return mixed
+     */
+    protected function fireEvent($event, $file)
+    {
+        if (! isset($this->dispatcher)) {
+            return true;
+        }
+
+        // Append the name of this attachment to the event to distinguish it from
+        // other attachment events that are fired.
+        $event = "stapler.{$event}: ".$this->config->name;
+
+        return $this->dispatcher->fire($event, $file);
     }
 }

@@ -9,14 +9,14 @@ class InterpolatorTest extends PHPUnit_Framework_TestCase
 {
     /**
      * An attachment instance.
-     * 
+     *
      * @var \Codesleeve\Stapler\Attachment
      */
     protected $attachment;
 
     /**
      * An interpolator instance.
-     * 
+     *
      * @var \Codesleeve\Stapler\Interpolator
      */
     protected $interpolator;
@@ -39,7 +39,7 @@ class InterpolatorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test that when no style is passed in, the interpolator 
+     * Test that when no style is passed in, the interpolator
      * will correctly interpolate a string using the default style.
      *
      * @test
@@ -141,8 +141,9 @@ class InterpolatorTest extends PHPUnit_Framework_TestCase
         $attachmentConfig = new AttachmentConfig('photo', ['styles' => [], 'default_style' => 'original']);
         $imagine = m::mock('Imagine\Image\ImagineInterface');
         $resizer = new \Codesleeve\Stapler\File\Image\Resizer($imagine);
+        $dispatcher = new \Codesleeve\Stapler\NativeEventDispatcher;
 
-        $attachment = m::mock('Codesleeve\Stapler\Attachment[getInstanceClass]', [$attachmentConfig, $interpolator, $resizer]);
+        $attachment = m::mock('Codesleeve\Stapler\Attachment[getInstanceClass]', [$attachmentConfig, $interpolator, $resizer, $dispatcher]);
         $attachment->shouldReceive('getInstanceClass')->andReturn($className);
         $attachment->setInstance($instance);
 
@@ -151,7 +152,7 @@ class InterpolatorTest extends PHPUnit_Framework_TestCase
 
     /**
      * Build a mock model instance.
-     * 
+     *
      * @return mixed
      */
     protected function build_mock_instance()
