@@ -130,21 +130,24 @@ class File
         $name = $pathinfo['basename'];
         $extension = isset($pathinfo['extension']) ? '.'.$pathinfo['extension'] : '';
 
-        // Create a filepath for the file by storing it on disk.
-        $lockFile = tempnam(sys_get_temp_dir(), 'stapler-');
-        $filePath = $lockFile."{$extension}";
-        file_put_contents($filePath, $rawFile);
+        // Create a temporary file with a unique name.
+        $tempFile = tempnam(sys_get_temp_dir(), 'stapler-');
 
-        if (!$extension) {
-            $mimeType = MimeTypeGuesser::getInstance()->guess($filePath);
+        if ($extension) {
+            $filePath = $tempFile."{$extension}";
+        } else {
+            // Since we don't have an extension for the file, we'll have to go ahead and write
+            // the contents of the rawfile to disk (using the tempFile path) in order to use
+            // symfony's mime type guesser to generate an extension for the file.
+            file_put_contents($tempFile, $rawFile);
+            $mimeType = MimeTypeGuesser::getInstance()->guess($tempFile);
             $extension = static::getMimeTypeExtensionGuesserInstance()->guess($mimeType);
 
-            unlink($filePath);
-            $filePath = $filePath.'.'.$extension;
-            file_put_contents($filePath, $rawFile);
+            $filePath = $tempFile.'.'.$extension;
         }
-        
-        unlink($lockFile);
+
+        file_put_contents($filePath, $rawFile);
+        unlink($tempFile);
 
         return new StaplerFile($filePath);
     }
