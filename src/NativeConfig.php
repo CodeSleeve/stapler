@@ -1,6 +1,6 @@
 <?php
 
-namespace Codesleeve\Stapler\Config;
+namespace Codesleeve\Stapler;
 
 use Codesleeve\Stapler\Interfaces\Config as ConfigInterface;
 
@@ -22,43 +22,32 @@ class NativeConfig implements ConfigInterface
             'default_style' => 'original',
             'styles' => [],
             'keep_old_files' => false,
-            'preserve_files' => false
+            'preserve_files' => false,
         ],
         'filesystem' => [
             'url' => '/system/:class/:attachment/:id_partition/:style/:filename',
             'path' => ':app_root/public:url',
-            'override_file_permissions' => null
+            'override_file_permissions' => null,
         ],
         's3' => [
             's3_client_config' => [
-                'credentials' => [
-                    'key' => '',
-                    'secret' => '',
-                ],
+                'key' => '',
+                'secret' => '',
                 'region' => '',
                 'scheme' => 'http',
-                'version' => 'latest'
             ],
             's3_object_config' => [
                 'Bucket' => '',
                 'ACL' => 'public-read',
             ],
-            'path' => ':attachment/:id/:style/:filename'
-        ],
-        'rackspace' => [
-            'username' => '',
-            'apiKey' => '',
-            'region' => '',
-            'container' => '',
-            'use_ssl' => true,
-            'path' => ':attachment/:id/:style/:filename'
+            'path' => ':attachment/:id/:style/:filename',
         ],
         'bindings' => [
             'attachment' => '\Codesleeve\Stapler\Attachment',
             'interpolator' => '\Codesleeve\Stapler\Interpolator',
             'resizer' => '\Codesleeve\Stapler\File\Image\Resizer',
             'style' => '\Codesleeve\Stapler\Style',
-            'validator' => '\Codesleeve\Stapler\Validator'
+            'validator' => '\Codesleeve\Stapler\Validator',
         ]
     ];
 
