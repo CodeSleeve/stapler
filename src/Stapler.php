@@ -190,14 +190,14 @@ class Stapler
     /**
      * Return a configuration object instance.
      * If no instance is currently set, we'll return an instance
-     * of Codesleeve\Stapler\NativeConfig.
+     * of Codesleeve\Stapler\Config\NativeConfig.
      *
      * @return ConfigInterface
      */
     public static function getConfigInstance()
     {
         if (!static::$config) {
-            static::$config = new NativeConfig();
+            static::$config = new Config\NativeConfig();
         }
 
         return static::$config;
