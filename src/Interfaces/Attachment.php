@@ -135,6 +135,18 @@ interface Attachment
     public function url($styleName = '');
 
     /**
+     * Generates a temporary url to an uploaded file (or a resized version of it).
+     * AWS Documentation for $expires format at
+     * http://docs.aws.amazon.com/aws-sdk-php/latest/class-Aws.S3.S3Client.html#_getObjectUrl
+     *
+     * @param string $expires
+     * @param string $styleName
+     *
+     * @return string
+     */
+    public function tempUrl($expires, $styleName = '');
+
+    /**
      * Generates the file system path to an uploaded file (or a resized version of it).
      * This is used for saving files, etc.
      *

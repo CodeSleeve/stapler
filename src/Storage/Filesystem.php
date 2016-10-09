@@ -29,10 +29,11 @@ class Filesystem implements StorageInterface
      * Return the url for a file upload.
      *
      * @param string $styleName
+     * @param string $expires
      *
      * @return string
      */
-    public function url($styleName)
+    public function url($styleName, $expires = null)
     {
         return $this->attachedFile->getInterpolator()->interpolate($this->attachedFile->url, $this->attachedFile, $styleName);
     }

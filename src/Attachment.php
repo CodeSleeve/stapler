@@ -299,7 +299,26 @@ class Attachment implements AttachmentInterface, JsonSerializable
     public function url($styleName = '')
     {
         if ($this->originalFilename()) {
-            return $this->storageDriver->url($styleName, $this);
+            return $this->storageDriver->url($styleName, null, $this);
+        }
+
+        return $this->defaultUrl($styleName);
+    }
+
+    /**
+     * Generates a temporary url to an uploaded file (or a resized version of it).
+     * AWS Documentation for $expires format at
+     * http://docs.aws.amazon.com/aws-sdk-php/latest/class-Aws.S3.S3Client.html#_getObjectUrl
+     *
+     * @param string $expires
+     * @param string $styleName
+     *
+     * @return string
+     */
+    public function tempUrl($expires, $styleName = '')
+    {
+        if ($this->originalFilename()) {
+            return $this->storageDriver->url($styleName, $expires, $this);
         }
 
         return $this->defaultUrl($styleName);
