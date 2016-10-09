@@ -65,7 +65,7 @@ class AttachmentTest extends PHPUnit_Framework_TestCase
      *
      * @test
      */
-    public function it_should_be_able_to_return_the_default_url_for_an_attachment_if_no_style_is_given()
+    public function it_should_be_able_to_return_the_default_style_for_an_attachment_if_no_style_is_given()
     {
         $attachment = $this->build_attachment();
         $symfonyUploadedFile = new SymfonyUploadedFile(__DIR__.'/Fixtures/empty.gif', 'empty.gif', null, null, null, true);
@@ -162,6 +162,61 @@ class AttachmentTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Calling url() or path() on a stapler attachment that doesn't have an uploaded file
+     * should always return the url/path configured for the attachment via the 'default_url' setting.
+     *
+     * @test
+     */
+    public function it_should_be_able_to_return_the_default_url_if_no_upload_exists_yet()
+    {
+        // given
+        $attachment = $this->build_attachment_without_an_upload();
+
+        // when/then
+        $this->assertEquals('/photos/original/missing.png', $attachment->url());
+        $this->assertEquals('/home/your-app/public/photos/original/missing.png', $attachment->path());
+    }
+
+    /**
+     * Calling url() or path() on a stapler attachment that doesn't have an uploaded file
+     * should always return the url/path configured for the attachment via the 'default_url' setting.
+     *
+     * @test
+     */
+    public function it_should_be_able_to_return_the_default_url_from_a_callable_if_no_upload_exists_yet()
+    {
+        // given
+        $instance = $this->build_mock_instance_without_an_upload();
+        $interpolator = new Interpolator();
+        $attachmentConfig = new \Codesleeve\Stapler\AttachmentConfig('photo', [
+            'styles' => ['original' => '', 'thumbnail' => '100x100'],
+            'default_style' => 'original',
+            'default_url' => function($style) {
+                return 'https://foo.com/bar/' . $style->name . '.jpg';
+            },
+            'url' => '/system/:attachment/:id_partition/:style/:filename',
+            'path' => ':app_root/public:url',
+            'public_path' => '/home/your-app/public'
+        ]);
+
+        $imagine = m::mock('Imagine\Image\ImagineInterface');
+        $dispatcher = new \Codesleeve\Stapler\NativeEventDispatcher;
+        $resizer = new \Codesleeve\Stapler\File\Image\Resizer($imagine);
+
+        $attachment = new \Codesleeve\Stapler\Attachment($attachmentConfig, $interpolator, $resizer, $dispatcher);
+        $attachment->setInstance($instance);
+
+        $storageDriver = new \Codesleeve\Stapler\Storage\Local($attachment);
+        $attachment->setStorageDriver($storageDriver);
+
+        // when/then
+        $this->assertEquals('https://foo.com/bar/original.jpg', $attachment->url());
+        $this->assertEquals('/bar/original.jpg', $attachment->path());
+        $this->assertEquals('https://foo.com/bar/thumbnail.jpg', $attachment->url('thumbnail'));
+        $this->assertEquals('/bar/thumbnail.jpg', $attachment->path('thumbnail'));
+    }
+
+    /**
      * Build an attachment object.
      *
      * @param  \Codesleeve\Stapler\Interpolator
@@ -175,8 +230,43 @@ class AttachmentTest extends PHPUnit_Framework_TestCase
         $attachmentConfig = new \Codesleeve\Stapler\AttachmentConfig('photo', [
             'styles' => [],
             'default_style' => 'original',
+            'default_url' => '/:attachment/:style/missing.png',
             'url' => '/system/:attachment/:id_partition/:style/:filename',
             'path' => ':app_root/public:url',
+            'public_path' => '/home/your-app/public'
+        ]);
+
+        $imagine = m::mock('Imagine\Image\ImagineInterface');
+        $dispatcher = new \Codesleeve\Stapler\NativeEventDispatcher;
+        $resizer = new \Codesleeve\Stapler\File\Image\Resizer($imagine);
+
+        $attachment = new \Codesleeve\Stapler\Attachment($attachmentConfig, $interpolator, $resizer, $dispatcher);
+        $attachment->setInstance($instance);
+
+        $storageDriver = new \Codesleeve\Stapler\Storage\Local($attachment);
+        $attachment->setStorageDriver($storageDriver);
+
+        return $attachment;
+    }
+
+    /**
+     * Build an attachment object that represents an attachment without an uploaded file.
+     *
+     * @param  \Codesleeve\Stapler\Interpolator
+     *
+     * @return \Codesleeve\Stapler\Attachment
+     */
+    protected function build_attachment_without_an_upload()
+    {
+        $instance = $this->build_mock_instance_without_an_upload();
+        $interpolator = new Interpolator();
+        $attachmentConfig = new \Codesleeve\Stapler\AttachmentConfig('photo', [
+            'styles' => [],
+            'default_style' => 'original',
+            'default_url' => '/:attachment/:style/missing.png',
+            'url' => '/system/:attachment/:id_partition/:style/:filename',
+            'path' => ':app_root/public:url',
+            'public_path' => '/home/your-app/public'
         ]);
 
         $imagine = m::mock('Imagine\Image\ImagineInterface');
@@ -204,6 +294,23 @@ class AttachmentTest extends PHPUnit_Framework_TestCase
         $instance->shouldReceive('getAttribute')->with('photo_file_name')->andReturn('empty.gif');
         $instance->shouldReceive('getAttribute')->with('photo_file_size')->andReturn(0);
         $instance->shouldReceive('getAttribute')->with('photo_content_type')->andReturn('image/gif');
+        $instance->shouldReceive('setAttribute');
+
+        return $instance;
+    }
+
+    /**
+     * Build a mock model instance that doesn't have a file uploaded yet.
+     *
+     * @return mixed
+     */
+    protected function build_mock_instance_without_an_upload()
+    {
+        $instance = m::mock('Codesleeve\Stapler\ORM\StaplerableInterface');
+        $instance->shouldReceive('getKey')->andReturn(1);
+        $instance->shouldReceive('getAttribute')->with('photo_file_name')->andReturn(null);
+        $instance->shouldReceive('getAttribute')->with('photo_file_size')->andReturn(0);
+        $instance->shouldReceive('getAttribute')->with('photo_content_type')->andReturn(null);
         $instance->shouldReceive('setAttribute');
 
         return $instance;

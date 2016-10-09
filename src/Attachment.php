@@ -705,10 +705,20 @@ class Attachment implements AttachmentInterface, JsonSerializable
      *
      * @return string
      */
-    protected function defaultUrl(string $styleName = '')
+    protected function defaultUrl(string $styleName = '') : string
     {
         if ($url = $this->default_url) {
-            return $this->getInterpolator()->interpolate($url, $this, $styleName);
+            if (is_callable($url)) {
+                $styleName = $styleName ?: $this->default_style;
+
+                $style = array_filter($this->styles, function($style) use ($styleName) {
+                    return $style->name === $styleName;
+                });
+
+                return call_user_func($url, array_shift($style));
+            } else {
+                return $this->getInterpolator()->interpolate($url, $this, $styleName);
+            }
         }
 
         return '';
@@ -721,9 +731,15 @@ class Attachment implements AttachmentInterface, JsonSerializable
      *
      * @return string
      */
-    protected function defaultPath(string $styleName = '')
+    protected function defaultPath(string $styleName = '') : string
     {
-        return $this->public_path.$this->defaultUrl($styleName);
+        $url = $this->defaultUrl($styleName);
+
+        if (filter_var($url, FILTER_VALIDATE_URL) !== false) {
+            return parse_url($url, PHP_URL_PATH);
+        } else {
+            return $this->public_path.$url;
+        }
     }
 
     /**
