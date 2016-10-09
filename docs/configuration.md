@@ -10,7 +10,7 @@ The following configuration settings apply to stapler in general.
 
 *   **storage**: The underlying storage driver to uploaded files.  Defaults to filesystem (local storage) but can also be set to 's3' for use with AWS S3.
 *   **image_processing_libarary**: The underlying image processing library being used.  Defaults to GD but can also be set to Imagick or Gmagick.
-*   **default_url**: The default file returned when no file upload is present for a record.
+*   **default_url**: The default file returned when no file upload is present for a record. If you're using Stapler >= 2.0.0, you may use a Callback (Callable) type here.
 *   **default_style**: The default style returned from the Stapler file location helper methods.  An unaltered version of uploaded file
     is always stored within the 'original' style, however the default_style can be set to point to any of the defined syles within the styles array.
 *   **styles**: An array of image sizes defined for the file attachment.  Stapler will attempt to use to format the file upload

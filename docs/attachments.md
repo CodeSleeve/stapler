@@ -27,6 +27,50 @@ This JSON object contains the paths and urls for each style defined on the attac
 }
 ```
 
+### Renaming Files
+If you're running Stapler >= 2.0.0, you may now rename your files by assigning your attachment a simple array of values:
+```php
+$user->avator = [
+    // The new name of the file
+    'file_name' => 'the_new_name_of_the_file.jpg',
+
+    // The uploaded file object from your form, a remote url string, etc
+    'file' => $file
+]
+
+$user->save();
+```
+
+If you're using Laravel (or any other framework that standardizes http request data), this makes it incredibly simple to save/update and name/rename
+your files from a form by using a simple html array:
+
+```php
+// In Your Form
+<form class="form-horizontal">
+    <div class="form-group">
+        <label for="avatar-file-name" class="control-label col-md-1">Filename</label>
+
+        <div class="col-md-6">
+            <input class="form-control" type="text" name="avatar[file_name]" id="avatar-file-name" value="<?= $image->avatar_file_name ?>">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="avatar-file" class="control-label col-md-1">File</label>
+
+        <div class="col-md-6">
+            <input type="file" name="avatar[file]" class="form-control" id="avatar-file">
+        </div>
+    </div>
+</form>
+
+// In your controller
+$user->fill($request->all());
+$user->save();
+```
+
+
+
 ### Methods
 Attachments contain an assortment of methods for working with uploaded files and their properties:
 
