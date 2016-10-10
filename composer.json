@@ -1,5 +1,5 @@
 {
-    "name": "codesleeve/stapler",
+    "name": "a7madev/stapler",
     "description": "Elegant and simple ORM-based file upload package for php.",
     "keywords": ["ORM", "file", "upload", "S3", "AWS", "paperclip"],
     "license": "MIT",
