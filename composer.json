@@ -26,5 +26,8 @@
             "Codesleeve\\Stapler\\": "src/"
         }
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "suggest": {
+        "benallfree/curl-exec-follow": "A version of curl_exec() that works with shared hosting environments."
+    }
 }
