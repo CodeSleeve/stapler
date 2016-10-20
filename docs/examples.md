@@ -56,6 +56,19 @@ Class Photo extends Eloquent implements StaplerableInterface
             'keep_old_files' => true
         ]);
 
+        // Define an attachment named 'bar', rename filename to 'foo', with both thumbnail (100x100) and large (300x300) styles,
+        // using custom url and default_url configurations, with the keep_old_files flag set to true
+        // (so that older file uploads aren't deleted from the file system) and image cropping turned on:
+        $this->hasAttachedFile('bar', [
+            'new_filename' => 'foo',
+            'styles' => [
+                'thumbnail' => '100x100#',
+                'large' => '300x300#'
+            ],
+            'url' => '/system/:attachment/:id_partition/:style/:filename',
+            'keep_old_files' => true
+        ]);
+
         // Define an attachment named 'baz' that has a watermarked style.  Here, we define a style named 'watermarked'
         // that's a closure (so that we can do some complex watermarking stuff):
         $this->hasAttachedFile('baz', [

@@ -129,7 +129,15 @@ class Attachment implements AttachmentInterface, JsonSerializable
         }
 
         $this->uploadedFile = FileFactory::create($uploadedFile);
-        $this->instanceWrite('file_name', $this->uploadedFile->getFilename());
+
+        // Rename file if option new_filename exists
+        if ($this->config->new_filename) {
+            $ext = pathinfo($this->uploadedFile->getFilename(), PATHINFO_EXTENSION);
+            $this->instanceWrite('file_name', $this->config->new_filename . '.' . $ext);
+        } else {
+            $this->instanceWrite('file_name', $this->uploadedFile->getFilename());
+        }
+
         $this->instanceWrite('file_size', $this->uploadedFile->getSize());
         $this->instanceWrite('content_type', $this->uploadedFile->getMimeType());
         $this->instanceWrite('updated_at', new DateTime);
