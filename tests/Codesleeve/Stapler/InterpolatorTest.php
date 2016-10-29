@@ -95,7 +95,7 @@ class InterpolatorTest extends PHPUnit_Framework_TestCase
         $input = '/system/:class_name/:attachment/:id_partition/:style/:filename';
         $interpolatedString = $this->interpolator->interpolate($input, $attachment, 'thumbnail');
 
-        $this->assertEquals('/system/TestModel/photos/000/000/001/thumbnail/test.jpg', $interpolatedString);
+        $this->assertEquals('/system/testmodel/photos/000/000/001/thumbnail/test.jpg', $interpolatedString);
     }
 
     /**
@@ -110,7 +110,7 @@ class InterpolatorTest extends PHPUnit_Framework_TestCase
         $input = '/system/:namespace/:attachment/:id_partition/:style/:filename';
         $interpolatedString = $this->interpolator->interpolate($input, $attachment, 'thumbnail');
 
-        $this->assertEquals('/system/Foo/Faz/Baz/photos/000/000/001/thumbnail/test.jpg', $interpolatedString);
+        $this->assertEquals('/system/foo/faz/baz/photos/000/000/001/thumbnail/test.jpg', $interpolatedString);
     }
 
     /**
