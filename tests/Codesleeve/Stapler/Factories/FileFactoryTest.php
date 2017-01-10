@@ -31,7 +31,7 @@ class FileTest extends PHPUnit_Framework_TestCase
     {
         $symfonyUploadedFile = $this->buildSymfonyUploadedFile(true);
 
-        $uploadedFile = File::create($symfonyUploadedFile);
+        $uploadedFile = FileFactory::create($symfonyUploadedFile);
 
         $this->assertInstanceOf('Codesleeve\Stapler\Interfaces\File', $uploadedFile);
     }
@@ -52,7 +52,7 @@ class FileTest extends PHPUnit_Framework_TestCase
             'error' => null,
         ];
 
-        $uploadedFile = File::create($fileData, true);
+        $uploadedFile = FileFactory::create($fileData, true);
 
         $this->assertInstanceOf('Codesleeve\Stapler\Interfaces\File', $uploadedFile);
     }
@@ -65,7 +65,7 @@ class FileTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_be_able_to_build_a_stapler_uploaded_file_object_from_a_url()
     {
-        $uploadedFile = File::create('https://www.google.com/images/srpr/logo11w.png');
+        $uploadedFile = FileFactory::create('https://www.google.com/images/srpr/logo11w.png');
 
         $this->assertInstanceOf('Codesleeve\Stapler\Interfaces\File', $uploadedFile);
     }
@@ -78,7 +78,7 @@ class FileTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_be_able_to_build_a_stapler_uploaded_file_object_from_a_redirect_url()
     {
-        $uploadedFile = File::create('https://graph.facebook.com/zuck/picture?type=large');
+        $uploadedFile = FileFactory::create('https://graph.facebook.com/zuck/picture?type=large');
 
         $this->assertInstanceOf('Codesleeve\Stapler\Interfaces\File', $uploadedFile);
     }
@@ -91,7 +91,7 @@ class FileTest extends PHPUnit_Framework_TestCase
   public function it_should_be_able_to_build_a_stapler_uploaded_file_object_without_following_querystring_in_basename()
   {
         $url = 'https://graph.facebook.com/zuck/picture?type=large';
-        $uploadedFile = File::create($url);
+        $uploadedFile = FileFactory::create($url);
 
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -115,7 +115,7 @@ class FileTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_be_able_to_build_a_stapler_uploaded_file_object_from_a_string_file_path()
     {
-        $uploadedFile = File::create(__DIR__.'/../Fixtures/empty.gif');
+        $uploadedFile = FileFactory::create(__DIR__.'/../Fixtures/empty.gif');
 
         $this->assertInstanceOf('Codesleeve\Stapler\Interfaces\File', $uploadedFile);
     }

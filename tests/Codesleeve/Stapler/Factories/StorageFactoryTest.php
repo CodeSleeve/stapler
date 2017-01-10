@@ -33,7 +33,7 @@ class StorageTest extends PHPUnit_Framework_TestCase
     {
         $attachment = $this->buildMockAttachment('local');
 
-        $storage = Storage::create($attachment);
+        $storage = StorageFactory::create($attachment);
 
         $this->assertInstanceOf('Codesleeve\Stapler\Storage\Local', $storage);
     }
@@ -48,7 +48,7 @@ class StorageTest extends PHPUnit_Framework_TestCase
     {
         $attachment = $this->buildMockS3Attachment();
 
-        $storage = Storage::create($attachment);
+        $storage = StorageFactory::create($attachment);
 
         $this->assertInstanceOf('Codesleeve\Stapler\Storage\S3', $storage);
     }
@@ -63,7 +63,7 @@ class StorageTest extends PHPUnit_Framework_TestCase
     {
         $attachment = $this->buildMockAttachment();
 
-        $storage = Storage::create($attachment);
+        $storage = StorageFactory::create($attachment);
 
         $this->assertInstanceOf('Codesleeve\Stapler\Storage\Local', $storage);
     }
