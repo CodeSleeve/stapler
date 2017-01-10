@@ -40,7 +40,7 @@ trait EloquentTrait
     /**
      * The "booting" method of the model.
      */
-    public static function boot()
+    public static function bootEloquentTrait()
     {
         parent::boot();
 
