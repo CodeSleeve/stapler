@@ -33,7 +33,7 @@ class FileTest extends PHPUnit_Framework_TestCase
 
         $uploadedFile = FileFactory::create($symfonyUploadedFile);
 
-        $this->assertInstanceOf('Codesleeve\Stapler\Interfaces\File', $uploadedFile);
+        $this->assertInstanceOf('Codesleeve\Stapler\Interfaces\FileInterface', $uploadedFile);
     }
 
     /**
@@ -54,7 +54,7 @@ class FileTest extends PHPUnit_Framework_TestCase
 
         $uploadedFile = FileFactory::create($fileData, true);
 
-        $this->assertInstanceOf('Codesleeve\Stapler\Interfaces\File', $uploadedFile);
+        $this->assertInstanceOf('Codesleeve\Stapler\Interfaces\FileInterface', $uploadedFile);
     }
 
     /**
@@ -67,7 +67,7 @@ class FileTest extends PHPUnit_Framework_TestCase
     {
         $uploadedFile = FileFactory::create('https://www.google.com/images/srpr/logo11w.png');
 
-        $this->assertInstanceOf('Codesleeve\Stapler\Interfaces\File', $uploadedFile);
+        $this->assertInstanceOf('Codesleeve\Stapler\Interfaces\FileInterface', $uploadedFile);
     }
 
     /**
@@ -80,7 +80,7 @@ class FileTest extends PHPUnit_Framework_TestCase
     {
         $uploadedFile = FileFactory::create('https://graph.facebook.com/zuck/picture?type=large');
 
-        $this->assertInstanceOf('Codesleeve\Stapler\Interfaces\File', $uploadedFile);
+        $this->assertInstanceOf('Codesleeve\Stapler\Interfaces\FileInterface', $uploadedFile);
     }
 
   /**
@@ -117,7 +117,7 @@ class FileTest extends PHPUnit_Framework_TestCase
     {
         $uploadedFile = FileFactory::create(__DIR__.'/../Fixtures/empty.gif');
 
-        $this->assertInstanceOf('Codesleeve\Stapler\Interfaces\File', $uploadedFile);
+        $this->assertInstanceOf('Codesleeve\Stapler\Interfaces\FileInterface', $uploadedFile);
     }
 
     /**

@@ -46,7 +46,7 @@ class StaplerTest extends PHPUnit_Framework_TestCase
         $interpolator1 = Stapler::getInterpolatorInstance();
         $interpolator2 = Stapler::getInterpolatorInstance();
 
-        $this->assertInstanceOf('Codesleeve\Stapler\Interfaces\Interpolator', $interpolator1);
+        $this->assertInstanceOf('Codesleeve\Stapler\Interfaces\InterpolatorInterface', $interpolator1);
         $this->assertSame($interpolator1, $interpolator2);
     }
 
@@ -61,7 +61,7 @@ class StaplerTest extends PHPUnit_Framework_TestCase
         $validator1 = Stapler::getValidatorInstance();
         $validator2 = Stapler::getValidatorInstance();
 
-        $this->assertInstanceOf('Codesleeve\Stapler\Interfaces\Validator', $validator1);
+        $this->assertInstanceOf('Codesleeve\Stapler\Interfaces\ValidatorInterface', $validator1);
         $this->assertSame($validator1, $validator2);
     }
 
@@ -76,7 +76,7 @@ class StaplerTest extends PHPUnit_Framework_TestCase
         $resizer1 = Stapler::getResizerInstance('Imagine\Gd\Imagine');
         $resizer2 = Stapler::getResizerInstance('Imagine\Gd\Imagine');
 
-        $this->assertInstanceOf('Codesleeve\Stapler\Interfaces\Resizer', $resizer1);
+        $this->assertInstanceOf('Codesleeve\Stapler\Interfaces\ResizerInterface', $resizer1);
         $this->assertSame($resizer1, $resizer2);
     }
 
@@ -140,7 +140,7 @@ class StaplerTest extends PHPUnit_Framework_TestCase
         $config2 = Stapler::getConfigInstance();
 
         $this->assertInstanceOf('Codesleeve\Stapler\NativeConfig', $config1);
-        $this->assertInstanceOf('Codesleeve\Stapler\Interfaces\Config', $config1);
+        $this->assertInstanceOf('Codesleeve\Stapler\Interfaces\ConfigInterface', $config1);
         $this->assertSame($config1, $config2);
     }
 }

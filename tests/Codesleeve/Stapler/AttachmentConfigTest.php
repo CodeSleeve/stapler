@@ -77,6 +77,6 @@ class AttachmentConfigTest extends PHPUnit_Framework_TestCase
         $attachmentConfig = new AttachmentConfig('mockAttachment', ['styles' => ['baz' => '']]);
 
         $this->assertTrue(is_array($attachmentConfig->styles));
-        $this->assertInstanceOf('Codesleeve\Stapler\Interfaces\Style', $attachmentConfig->styles[0]);
+        $this->assertInstanceOf('Codesleeve\Stapler\Interfaces\StyleInterface', $attachmentConfig->styles[0]);
     }
 }
