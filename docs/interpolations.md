@@ -54,3 +54,14 @@ class CustomerInterpolator extends BaseInterpolator
     }
 }
 ```
+
+Since stapler 2.0, you may also add your own interpolations only fly by calling the `interpolates()` method on the stock Interpolator class:
+
+```php
+
+use Codesleeve\Stapler\Interpolator
+
+Interpolator::interpolates(':foo', function(AttachmentInterface $attachment, string $styleName = '') {
+    return 'bar';
+});
+```
