@@ -2,7 +2,7 @@
 
 namespace Codesleeve\Stapler\Interfaces;
 
-interface File
+interface FileInterface
 {
     /**
      * Return the name of the file.

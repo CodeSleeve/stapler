@@ -2,17 +2,10 @@
 
 namespace Codesleeve\Stapler\Interfaces;
 
-use Codesleeve\Stapler\Interfaces\{
-    Attachment as AttachmentInterface,
-    Interpolator as InterpolatorInterface,
-    Resizer as ResizerInterface,
-    Storage as StorageInterface,
-    EventDispatcher as DispatcherInterface
-};
 use Codesleeve\Stapler\AttachmentConfig;
 use Codesleeve\Stapler\ORM\StaplerableInterface;
 
-interface Attachment
+interface AttachmentInterface
 {
     /**
      * Constructor method.
@@ -22,11 +15,7 @@ interface Attachment
      * @param ResizerInterface       $resizer
      * @param DispatcherInterface    $dispatcher
      */
-    public function __construct(
-        AttachmentConfig $config,
-        InterpolatorInterface $interpolator,
-        ResizerInterface $resizer,
-        DispatcherInterface $dispatcher);
+    public function __construct(AttachmentConfig $config, InterpolatorInterface $interpolator, ResizerInterface $resizer, EventDispatcherInterface $dispatcher);
 
     /**
      * Mutator method for the uploadedFile property.
@@ -49,9 +38,9 @@ interface Attachment
     /**
      * Mutator method for the interpolator property.
      *
-     * @param Interpolator $interpolator
+     * @param InterpolatorInterface $interpolator
      */
-    public function setInterpolator(Interpolator $interpolator);
+    public function setInterpolator(InterpolatorInterface $interpolator);
 
     /**
      * Accessor method for the interpolator property.
@@ -65,7 +54,7 @@ interface Attachment
      *
      * @param Resizer $resizer
      */
-    public function setResizer(Resizer $resizer);
+    public function setResizer(ResizerInterface $resizer);
 
     /**
      * Accessor method for the uploadedFile property.

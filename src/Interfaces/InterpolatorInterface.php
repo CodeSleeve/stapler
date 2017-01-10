@@ -2,9 +2,7 @@
 
 namespace Codesleeve\Stapler\Interfaces;
 
-use Codesleeve\Stapler\Interfaces\Attachment as AttachmentInterface;
-
-interface Interpolator
+interface InterpolatorInterface
 {
     /**
      * Interpolate a string.

@@ -2,7 +2,7 @@
 
 namespace Codesleeve\Stapler\Interfaces;
 
-interface Style
+interface StyleInterface
 {
     /**
      * Constructor method.

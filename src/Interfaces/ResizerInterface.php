@@ -3,9 +3,9 @@
 namespace Codesleeve\Stapler\Interfaces;
 
 use Imagine\Image\ImagineInterface;
-use Codesleeve\Stapler\Interfaces\{File as FileInterface, Style as StyleInterface};
+use Codesleeve\Stapler\Interfaces\{FileInterface, StyleInterface};
 
-interface Resizer
+interface ResizerInterface
 {
     /**
      * Constructor method.

@@ -2,7 +2,7 @@
 
 namespace Codesleeve\Stapler\Interfaces;
 
-interface Storage
+interface StorageInterface
 {
     /**
      * Return the url for a file upload.

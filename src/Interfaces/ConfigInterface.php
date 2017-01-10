@@ -2,7 +2,7 @@
 
 namespace Codesleeve\Stapler\Interfaces;
 
-interface Config
+interface ConfigInterface
 {
     /**
      * Retrieve a configuration value.
