@@ -10,7 +10,7 @@ use Codesleeve\Stapler\Interfaces\{
     EventDispatcher as DispatcherInterface
 };
 use Codesleeve\Stapler\ORM\StaplerableInterface;
-use Codesleeve\Stapler\Factories\File as FileFactory;
+use Codesleeve\Stapler\Factories\FileFactory;
 use JsonSerializable;
 use DateTime;
 

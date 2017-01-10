@@ -2,7 +2,7 @@
 
 namespace Codesleeve\Stapler\ORM;
 
-use Codesleeve\Stapler\Factories\Attachment as AttachmentFactory;
+use Codesleeve\Stapler\Factories\AttachmentFactory;
 
 trait EloquentTrait
 {
