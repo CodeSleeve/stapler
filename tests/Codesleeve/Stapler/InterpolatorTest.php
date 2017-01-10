@@ -138,7 +138,7 @@ class InterpolatorTest extends PHPUnit_Framework_TestCase
     {
         $input = '/system/:class/:attachment/:id_partition/:style/:foo/:filename';
 
-        Interpolator::add(':foo', function($attachment, string $styleName = '') {
+        Interpolator::interpolates(':foo', function($attachment, string $styleName = '') {
             return 'bar';
         });
 
