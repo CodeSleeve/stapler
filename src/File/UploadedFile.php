@@ -4,7 +4,7 @@ namespace Codesleeve\Stapler\File;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
 use Codesleeve\Stapler\Exceptions\FileException;
-use Codesleeve\Stapler\Interfaces\File as FileInterface;
+use Codesleeve\Stapler\Interfaces\FileInterface;
 
 class UploadedFile implements FileInterface
 {

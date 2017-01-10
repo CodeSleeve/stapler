@@ -4,7 +4,7 @@ namespace Codesleeve\Stapler\Factories;
 
 use Codesleeve\Stapler\{Stapler, Attachment as AttachedFile};
 use Codesleeve\Stapler\Storage\{Local as LocalStorage, S3 as S3Storage, Rackspace as RackspaceStorage};
-use Codesleeve\Stapler\Interfaces\Storage as StorageInterface;
+use Codesleeve\Stapler\Interfaces\StorageInterface;
 
 class StorageFactory
 {

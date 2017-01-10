@@ -3,7 +3,7 @@
 namespace Codesleeve\Stapler\File;
 
 use Symfony\Component\HttpFoundation\File\File as SymfonyFile;
-use Codesleeve\Stapler\Interfaces\File as FileInterface;
+use Codesleeve\Stapler\Interfaces\FileInterface;
 
 class File extends SymfonyFile implements FileInterface
 {

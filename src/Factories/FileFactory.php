@@ -3,7 +3,7 @@
 namespace Codesleeve\Stapler\Factories;
 
 use Codesleeve\Stapler\File\{File as StaplerFile, UploadedFile as StaplerUploadedFile};
-use Codesleeve\Stapler\Interfaces\{Config as ConfigInterface, File as FileInterface};
+use Codesleeve\Stapler\Interfaces\{ConfigInterface, FileInterface};
 use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
 use Symfony\Component\HttpFoundation\File\MimeType\{MimeTypeGuesser, MimeTypeExtensionGuesser};
 
