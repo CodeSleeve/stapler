@@ -50,7 +50,7 @@ class InterpolatorTest extends PHPUnit_Framework_TestCase
 
         $interpolatedString = $this->interpolator->interpolate($input, $this->attachment);
 
-        $this->assertEquals('/system/TestModel/photos/1/original/test.jpg', $interpolatedString);
+        $this->assertEquals('/system/test_model/photos/1/original/test.jpg', $interpolatedString);
     }
 
     /**
@@ -65,7 +65,7 @@ class InterpolatorTest extends PHPUnit_Framework_TestCase
 
         $interpolatedString = $this->interpolator->interpolate($input, $this->attachment, 'thumbnail');
 
-        $this->assertEquals('/system/TestModel/photos/1/thumbnail/test.jpg', $interpolatedString);
+        $this->assertEquals('/system/test_model/photos/1/thumbnail/test.jpg', $interpolatedString);
     }
 
     /**
@@ -80,7 +80,7 @@ class InterpolatorTest extends PHPUnit_Framework_TestCase
 
         $interpolatedString = $this->interpolator->interpolate($input, $this->attachment, 'thumbnail');
 
-        $this->assertEquals('/system/TestModel/photos/000/000/001/thumbnail/test.jpg', $interpolatedString);
+        $this->assertEquals('/system/test_model/photos/000/000/001/thumbnail/test.jpg', $interpolatedString);
     }
 
     /**
@@ -95,7 +95,7 @@ class InterpolatorTest extends PHPUnit_Framework_TestCase
         $input = '/system/:class_name/:attachment/:id_partition/:style/:filename';
         $interpolatedString = $this->interpolator->interpolate($input, $attachment, 'thumbnail');
 
-        $this->assertEquals('/system/testmodel/photos/000/000/001/thumbnail/test.jpg', $interpolatedString);
+        $this->assertEquals('/system/test_model/photos/000/000/001/thumbnail/test.jpg', $interpolatedString);
     }
 
     /**
@@ -121,11 +121,11 @@ class InterpolatorTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_be_able_to_interpolate_a_string_using_a_namespace_and_class_name()
     {
-        $attachment = $this->build_mock_attachment($this->interpolator, 'Foo\\Faz\\Baz\\TestModel');
+        $attachment = $this->build_mock_attachment($this->interpolator, 'Foo\\Bar\\Baz\\TestModel');
         $input = '/system/:namespace/:class_name/:attachment/:id_partition/:style/:filename';
         $interpolatedString = $this->interpolator->interpolate($input, $attachment, 'thumbnail');
 
-        $this->assertEquals('/system/Foo/Faz/Baz/TestModel/photos/000/000/001/thumbnail/test.jpg', $interpolatedString);
+        $this->assertEquals('/system/foo/bar/baz/test_model/photos/000/000/001/thumbnail/test.jpg', $interpolatedString);
     }
 
     /**
