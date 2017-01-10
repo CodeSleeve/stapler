@@ -3,9 +3,9 @@
 namespace Codesleeve\Stapler\Factories;
 
 use Codesleeve\Stapler\{Stapler, AttachmentConfig, Attachment};
-use Codesleeve\Stapler\Factories\Storage as StorageFactory;
+use Codesleeve\Stapler\Factories\StorageFactory;
 
-class Attachment
+class AttachmentFactory
 {
     /**
      * Create a new attachment object.

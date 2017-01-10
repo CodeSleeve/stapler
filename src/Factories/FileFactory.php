@@ -7,7 +7,7 @@ use Codesleeve\Stapler\Interfaces\{Config as ConfigInterface, File as FileInterf
 use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
 use Symfony\Component\HttpFoundation\File\MimeType\{MimeTypeGuesser, MimeTypeExtensionGuesser};
 
-class File
+class FileFactory
 {
     /**
      * A instance of Symfony's MIME type extension guesser interface.
