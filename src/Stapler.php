@@ -17,7 +17,7 @@ use League\Flysystem\Rackspace\RackspaceAdapter;
  * paperclip plugin (rails) from which this package is inspired.
  * https://github.com/thoughtbot/paperclip
  *
- * @version v1.1.1
+ * @version v2.0
  *
  * @author Travis Bennett <tandrewbennett@hotmail.com>
  *
