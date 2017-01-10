@@ -20,11 +20,11 @@ class Interpolator implements InterpolatorInterface
     protected static $interpolations = [];
 
     /**
-     * Dynamically add a new interpolator.
+     * Dynamically add a new interpolation this this interpolator.
      *
      * @param Callable $interpolation
      */
-    public static function add(string $key, Callable $value)
+    public static function interpolates(string $key, Callable $value)
     {
         static::$interpolations[$key] = $value;
     }
