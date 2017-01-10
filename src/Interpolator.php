@@ -15,6 +15,21 @@ class Interpolator implements InterpolatorInterface
     protected $inflector;
 
     /**
+     * @var array
+     */
+    protected static $interpolations = [];
+
+    /**
+     * Dynamically add a new interpolator.
+     *
+     * @param Callable $interpolation
+     */
+    public static function add(string $key, Callable $value)
+    {
+        static::$interpolations[$key] = $value;
+    }
+
+    /**
      * Interpolate a string.
      *
      * @param string     $string
@@ -27,7 +42,13 @@ class Interpolator implements InterpolatorInterface
     {
         foreach ($this->interpolations() as $key => $value) {
             if (strpos($string, $key) !== false) {
-                $string = preg_replace("/$key\b/", $this->$value($attachment, $styleName), $string);
+                if (is_callable([$this, $value])) {
+                    $interpolatedValue = call_user_func([$this, $value], $attachment, $styleName);
+                } else {
+                    $interpolatedValue = call_user_func($value, $attachment, $styleName);
+                }
+
+                $string = preg_replace("/$key\b/", $interpolatedValue, $string);
             }
         }
 
@@ -43,22 +64,22 @@ class Interpolator implements InterpolatorInterface
      */
     protected function interpolations()
     {
-        return [
-            ':filename' => 'filename',
-            ':url' => 'url',
-            ':app_root' => 'appRoot',
-            ':class' => 'getClass',
-            ':class_name' => 'getClassName',
-            ':namespace' => 'getNamespace',
-            ':basename' => 'basename',
-            ':extension' => 'extension',
-            ':id' => 'id',
-            ':hash' => 'hash',
-            ':secure_hash' => 'secureHash',
+        return array_merge([
+            ':filename'     => 'filename',
+            ':url'          => 'url',
+            ':app_root'     => 'appRoot',
+            ':class'        => 'getClass',
+            ':class_name'   => 'getClassName',
+            ':namespace'    => 'getNamespace',
+            ':basename'     => 'basename',
+            ':extension'    => 'extension',
+            ':id'           => 'id',
+            ':hash'         => 'hash',
+            ':secure_hash'  => 'secureHash',
             ':id_partition' => 'idPartition',
-            ':attachment' => 'attachment',
-            ':style' => 'style',
-        ];
+            ':attachment'   => 'attachment',
+            ':style'        => 'style',
+        ], static::$interpolations);
     }
 
     /**

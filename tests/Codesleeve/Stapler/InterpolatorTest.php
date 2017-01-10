@@ -54,7 +54,7 @@ class InterpolatorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test the interpolator will correctly interpolate a string when
+     * Test that the interpolator will correctly interpolate a string when
      * using an injected style.
      *
      * @test
@@ -69,7 +69,7 @@ class InterpolatorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test the interpolator will correctly interpolate a string when
+     * Test that the interpolator will correctly interpolate a string when
      * using an id partition.
      *
      * @test
@@ -84,7 +84,7 @@ class InterpolatorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test the interpolator will correctly interpolate a string when
+     * Test that the interpolator will correctly interpolate a string when
      * using a class name.
      *
      * @test
@@ -99,7 +99,7 @@ class InterpolatorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test the interpolator will correctly interpolate a string when
+     * Test that the interpolator will correctly interpolate a string when
      * using a namespace.
      *
      * @test
@@ -114,7 +114,7 @@ class InterpolatorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test the interpolator will correctly interpolate a string when
+     * Test that the interpolator will correctly interpolate a string when
      * using a namespace and class name.
      *
      * @test
@@ -126,6 +126,25 @@ class InterpolatorTest extends PHPUnit_Framework_TestCase
         $interpolatedString = $this->interpolator->interpolate($input, $attachment, 'thumbnail');
 
         $this->assertEquals('/system/foo/bar/baz/test_model/photos/000/000/001/thumbnail/test.jpg', $interpolatedString);
+    }
+
+    /**
+     * Test that the interpolator can interpolate strings that container interpolations that were
+     * added dynamically.
+     *
+     * @test
+     */
+    public function it_should_be_able_to_interpolate_a_string_using_a_dynamic_interpolation()
+    {
+        $input = '/system/:class/:attachment/:id_partition/:style/:foo/:filename';
+
+        Interpolator::add(':foo', function($attachment, string $styleName = '') {
+            return 'bar';
+        });
+
+        $interpolatedString = $this->interpolator->interpolate($input, $this->attachment, 'thumbnail');
+
+        $this->assertEquals('/system/test_model/photos/000/000/001/thumbnail/bar/test.jpg', $interpolatedString);
     }
 
     /**
