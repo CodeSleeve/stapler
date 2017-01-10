@@ -1,8 +1,8 @@
 #Stapler
 [![Build Status](https://travis-ci.org/CodeSleeve/stapler.png?branch=master)](https://travis-ci.org/CodeSleeve/stapler)
-[![Latest Stable Version](https://poser.pugx.org/codesleeve/stapler/v/stable.svg)](https://packagist.org/packages/codesleeve/stapler) 
-[![Total Downloads](https://poser.pugx.org/codesleeve/stapler/downloads.svg)](https://packagist.org/packages/codesleeve/stapler) 
-[![Latest Unstable Version](https://poser.pugx.org/codesleeve/stapler/v/unstable.svg)](https://packagist.org/packages/codesleeve/stapler) 
+[![Latest Stable Version](https://poser.pugx.org/codesleeve/stapler/v/stable.svg)](https://packagist.org/packages/codesleeve/stapler)
+[![Total Downloads](https://poser.pugx.org/codesleeve/stapler/downloads.svg)](https://packagist.org/packages/codesleeve/stapler)
+[![Latest Unstable Version](https://poser.pugx.org/codesleeve/stapler/v/unstable.svg)](https://packagist.org/packages/codesleeve/stapler)
 [![License](https://poser.pugx.org/codesleeve/stapler/license.svg)](https://packagist.org/packages/codesleeve/stapler)
 
 **Note**: *If you've previously been using this package, then you've been using it with Laravel.  This package is no longer directly coupled to the Laravel framework.  As of 1.0.0, Stapler is now framework agnostic.  In order to take advantage of the Laravel specific features provided by the previous Beta releases (service providers, IOC container, commands, migration generator, etc) , I've created a separate package specifically for the purpose of using Stapler within Laravel:  [Laravel-Stapler](https://github.com/CodeSleeve/laravel-stapler).  If you're using Stapler inside a Laravel application I strongly recommend you use this package (it will save you a bit of boilerplate).*
@@ -11,11 +11,22 @@ Stapler is a php-based framework agnostic file upload package inspired by the [R
 
 Stapler was created by [Travis Bennett](https://twitter.com/tandrewbennett).
 
+**2.0 Change Log**
+- Bumped min php version to PHP >=7.0.
+- Stapler now uses League\Flysystem under the hood to manage remove file systems.
+- Added the ability to dynamically add interpolations to an existing interpolator ce22161bc189bfed1cb202d8d17d6f51b472a651.
+- Added the ability to pass a callable as the value of the default_url aca4630f0537dd1ea605dae2cee911cae0842a72.
+- Added the ability to rename files as they are saved (during creation and update) a77e575ab82c97b8e29379c398142bbe7ef7dcb5.
+- Added a simple event dispatching system that can be used to tap into lifecycle events of an attachment as it's processed and uploaded.
+- Removed the :secure_has interpolation.
+- Replaced the :hash interpolation with a more secure hash that now requires the hash_secret option.
+- The Eloquent trait now makes use of the `bootTraits()` method on the base Eloquent model (this will reduce errors due to the `boot()` method already being used on an Eloquent model).
+
 ## Requirements
 Stapler currently requires php >= 5.4 (Stapler is implemented via the use of traits).
 
 ## Installation
-Stapler is distributed as a composer package, which is how it should be used in your app. 
+Stapler is distributed as a composer package, which is how it should be used in your app.
 
 Install the package using Composer.  Edit your project's `composer.json` file to require `codesleeve/stapler`.
 
