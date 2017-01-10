@@ -340,15 +340,13 @@ class Attachment implements AttachmentInterface, JsonSerializable
      *
      * @return string
      */
-    public function url(string $styleName = '', $styleValue = null) : string
+    public function url(string $styleName = '') : string
     {
-        if (!$this->originalFilename()) {
-            return $this->defaultUrl($styleName);
+        if ($this->originalFilename()) {
+            return $this->storageDriver->url($styleName, $this);
         }
 
-        $this->makeStyle($styleName, $styleValue);
-
-        return $this->storageDriver->url($styleName);
+        return $this->defaultUrl($styleName);
     }
 
     /**
@@ -360,41 +358,13 @@ class Attachment implements AttachmentInterface, JsonSerializable
      *
      * @return string
      */
-    public function path(string $styleName = '', $styleValue = null) : string
+    public function path(string $styleName = '') : string
     {
-        if (!$this->originalFilename()) {
-            return $this->defaultPath($styleName);
+        if ($this->originalFilename()) {
+            return $this->storageDriver->path($styleName, $this);
         }
 
-        return $this->makeStyle($styleName, $styleValue);
-    }
-
-    /**
-     * Dynamically create/process a new image style for this attachment.
-     *
-     * @param  string $styleName
-     * @param  mixed  $styleValue
-     * @return string
-     */
-    public function makeStyle(string $styleName, $styleValue) : string
-    {
-        $filePath = $this->storageDriver->path($styleName);
-
-        if (!$this->storageDriver->has($filePath) && $styleValue) {
-            $fileLocation = $this->storage == 'filesystem' ? $this->storageDriver->path('original') : $this->storageDriver->url('original');
-            $file = FileFactory::create($fileLocation);
-            $config = Stapler::getConfigInstance();
-
-            $className = $config->get('bindings.style');
-            $style = new $className($styleName, $styleValue);
-
-            if ($style->dimensions && $file->isImage()) {
-                $file = $this->resizer->resize($file, $style);
-                $this->move($file, $filePath);
-            }
-        }
-
-        return $filePath;
+        return $this->defaultPath($styleName);
     }
 
     /**
