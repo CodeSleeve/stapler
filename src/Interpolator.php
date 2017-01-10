@@ -102,7 +102,7 @@ class Interpolator implements InterpolatorInterface
 
     /**
      * Returns the current class name, taking into account namespaces, e.g
-     * 'Swingline\Stapler' will become Swingline/Stapler.
+     * 'Swingline\Stapler' will become swing_line/stapler.
      *
      * @param AttachmentInterface $attachment
      * @param string              $styleName
@@ -111,12 +111,12 @@ class Interpolator implements InterpolatorInterface
      */
     protected function getClass(AttachmentInterface $attachment, string $styleName = '')
     {
-        return $this->handleBackslashes($attachment->getInstanceClass());
+        return Inflector::tableize($this->handleBackslashes($attachment->getInstanceClass()));
     }
 
     /**
-     * Returns the current class name, not taking into account namespaces, e.g
-     * 'Swingline\Stapler' will become Stapler.
+     * Returns the snake cased current class name, not taking into account namespaces, e.g
+     * 'Swingline\Stapler' will become stapler.
      *
      * @param AttachmentInterface $attachment
      * @param string     $styleName
@@ -128,12 +128,12 @@ class Interpolator implements InterpolatorInterface
         $classComponents = explode('\\', $attachment->getInstanceClass());
         $className = end($classComponents);
 
-        return strtolower($className);
+        return Inflector::tableize($className);
     }
 
     /**
      * Returns the current class name, exclusively taking into account namespaces, e.g
-     * 'Swingline\Stapler' will become Swingline.
+     * 'Swingline\Stapler' will become swing_line.
      *
      * @param AttachmentInterface $attachment
      * @param string              $styleName
@@ -144,8 +144,8 @@ class Interpolator implements InterpolatorInterface
     {
         $classComponents = explode('\\', $attachment->getInstanceClass());
         $namespace = implode('/', array_slice($classComponents, 0, count($classComponents) - 1));
-          
-        return strtolower($namespace);
+
+        return Inflector::tableize($namespace);
     }
 
     /**
