@@ -2,8 +2,9 @@
 
 namespace Codesleeve\Stapler;
 
-use Codesleeve\Stapler\Interfaces\{InterpolatorInterface, AttachmentInterface};
 use Doctrine\Common\Inflector\Inflector;
+use Codesleeve\Stapler\Exceptions\InvalidAttachmentConfigurationException;
+use Codesleeve\Stapler\Interfaces\{InterpolatorInterface, AttachmentInterface};
 
 class Interpolator implements InterpolatorInterface
 {
@@ -209,25 +210,19 @@ class Interpolator implements InterpolatorInterface
     }
 
     /**
-     * Return a secure Bcrypt hash of the attachment's corresponding instance id.
+     * Return a secure hash of the attachment's corresponding instance id.
      *
-     * @param AttachmentInterface $attachment
-     * @param string              $styleName
-     */
-    protected function secureHash(AttachmentInterface $attachment, string $styleName = '')
-    {
-        return hash('sha256', $this->id($attachment, $styleName).$attachment->size().$attachment->originalFilename());
-    }
-
-    /**
-     * Return a Bcrypt hash of the attachment's corresponding instance id.
-     *
-     * @param AttachmentInterface $attachment
-     * @param string              $styleName
+     * @param  AttachmentInterface $attachment
+     * @param  string              $styleName
+     * @throws InvalidAttachmentConfigurationException
      */
     protected function hash(AttachmentInterface $attachment, string $styleName = '')
     {
-        return hash('sha256', $this->id($attachment, $styleName));
+        if (!$attachment->hash_secret) {
+            throw new InvalidAttachmentConfigurationException('Unable to generate hash without :hash_secret', 1);
+        }
+
+        return hash('sha256', $this->id($attachment, $styleName).$attachment->size().$attachment->originalFilename().$attachment->hash_secret);
     }
 
     /**
