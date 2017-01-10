@@ -2,7 +2,7 @@
 
 namespace Codesleeve\Stapler;
 
-use Codesleeve\Stapler\Interfaces\{Interpolator as InterpolatorInterface, Attachment as AttachmentInterface};
+use Codesleeve\Stapler\Interfaces\{InterpolatorInterface, AttachmentInterface};
 use Doctrine\Common\Inflector\Inflector;
 
 class Interpolator implements InterpolatorInterface

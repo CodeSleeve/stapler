@@ -2,7 +2,7 @@
 
 namespace Codesleeve\Stapler;
 
-use Codesleeve\Stapler\Interfaces\Style as StyleInterface;
+use Codesleeve\Stapler\Interfaces\StyleInterface;
 
 class Style implements StyleInterface
 {

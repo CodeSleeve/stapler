@@ -3,7 +3,7 @@
 namespace Codesleeve\Stapler;
 
 use Codesleeve\Stapler\File\Image\Resizer;
-use Codesleeve\Stapler\Interfaces\{Config as ConfigInterface, Attachment as AttachmentInterface, EventDispatcher as DispatcherInterface};
+use Codesleeve\Stapler\Interfaces\{ConfigInterface, AttachmentInterface, EventDispatcherInterface};
 use Aws\S3\S3Client;
 use OpenCloud\{OpenStack, Rackspace};
 use League\Flysystem\{Filesystem, FilesystemInterface};

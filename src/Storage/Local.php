@@ -2,7 +2,7 @@
 
 namespace Codesleeve\Stapler\Storage;
 
-use Codesleeve\Stapler\Interfaces\Storage as StorageInterface;
+use Codesleeve\Stapler\Interfaces\StorageInterface;
 use Codesleeve\Stapler\Exceptions;
 use Codesleeve\Stapler\Attachment;
 

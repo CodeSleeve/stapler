@@ -2,7 +2,7 @@
 
 namespace Codesleeve\Stapler\File\Image;
 
-use Codesleeve\Stapler\Interfaces\{Resizer as ResizerInterface, File as FileInterface, Style as StyleInterface};
+use Codesleeve\Stapler\Interfaces\{ResizerInterface, FileInterface, StyleInterface};
 use Imagine\Image\{ImagineInterface, ImageInterface, Box, Point};
 
 class Resizer implements ResizerInterface

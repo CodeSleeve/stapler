@@ -2,13 +2,7 @@
 
 namespace Codesleeve\Stapler;
 
-use Codesleeve\Stapler\Interfaces\{
-    Attachment as AttachmentInterface,
-    Interpolator as InterpolatorInterface,
-    Resizer as ResizerInterface,
-    Storage as StorageInterface,
-    EventDispatcher as DispatcherInterface
-};
+use Codesleeve\Stapler\Interfaces\{AttachmentInterface, InterpolatorInterface, ResizerInterface, StorageInterface, EventDispatcherInterface};
 use Codesleeve\Stapler\ORM\StaplerableInterface;
 use Codesleeve\Stapler\Factories\FileFactory;
 use JsonSerializable;
@@ -89,16 +83,12 @@ class Attachment implements AttachmentInterface, JsonSerializable
     /**
      * Constructor method.
      *
-     * @param AttachmentConfig       $config
-     * @param InterpolatorInterface  $interpolator
-     * @param ResizerInterface       $resizer
-     * @param DispatcherInterface    $dispatcher
+     * @param AttachmentConfig          $config
+     * @param InterpolatorInterface     $interpolator
+     * @param ResizerInterface          $resizer
+     * @param EventDispatcherInterface  $dispatcher
      */
-    public function __construct(
-        AttachmentConfig $config,
-        InterpolatorInterface $interpolator,
-        ResizerInterface $resizer,
-        DispatcherInterface $dispatcher)
+    public function __construct(AttachmentConfig $config, InterpolatorInterface $interpolator, ResizerInterface $resizer, EventDispatcherInterface $dispatcher)
     {
         $this->config = $config;
         $this->interpolator = $interpolator;

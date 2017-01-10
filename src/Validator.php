@@ -2,7 +2,7 @@
 
 namespace Codesleeve\Stapler;
 
-use Codesleeve\Stapler\Interfaces\Validator as ValidatorInterface;
+use Codesleeve\Stapler\Interfaces\ValidatorInterface;
 
 class Validator implements ValidatorInterface
 {
@@ -16,7 +16,7 @@ class Validator implements ValidatorInterface
     {
         if ($options['storage'] === 'filesystem') {
             $this->validateFilesystemOptions($options);
-        } else if ($options['storage'] === 's3'){
+        } elseif ($options['storage'] === 's3') {
             $this->validateS3Options($options);
         }
     }

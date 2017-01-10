@@ -2,7 +2,7 @@
 
 namespace Codesleeve\Stapler;
 
-use Codesleeve\Stapler\Interfaces\Config as ConfigInterface;
+use Codesleeve\Stapler\Interfaces\ConfigInterface;
 
 class NativeConfig implements ConfigInterface
 {
@@ -48,7 +48,7 @@ class NativeConfig implements ConfigInterface
             'resizer' => '\Codesleeve\Stapler\File\Image\Resizer',
             'style' => '\Codesleeve\Stapler\Style',
             'validator' => '\Codesleeve\Stapler\Validator',
-        ]
+        ],
     ];
 
     /**

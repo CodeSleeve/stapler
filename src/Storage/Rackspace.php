@@ -2,7 +2,7 @@
 
 namespace Codesleeve\Stapler\Storage;
 
-use Codesleeve\Stapler\Interfaces\Storage as StorageInterface;
+use Codesleeve\Stapler\Interfaces\StorageInterface;
 
 class Rackspace extends CloudStorage implements StorageInterface
 {
