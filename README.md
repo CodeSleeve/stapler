@@ -18,9 +18,10 @@ Stapler was created by [Travis Bennett](https://twitter.com/tandrewbennett).
 - Added the ability to pass a callable as the value of the default_url aca4630f0537dd1ea605dae2cee911cae0842a72.
 - Added the ability to rename files as they are saved (during creation and update) a77e575ab82c97b8e29379c398142bbe7ef7dcb5.
 - Added a simple event dispatching system that can be used to tap into lifecycle events of an attachment as it's processed and uploaded.
-- Removed the :secure_has interpolation.
+- Removed the :secure_hash interpolation.
 - Replaced the :hash interpolation with a more secure hash that now requires the hash_secret option.
 - The Eloquent trait now makes use of the `bootTraits()` method on the base Eloquent model (this will reduce errors due to the `boot()` method already being used on an Eloquent model).
+
 
 ## Requirements
 Stapler currently requires php >= 5.4 (Stapler is implemented via the use of traits).
