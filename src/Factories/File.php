@@ -127,7 +127,6 @@ class File
 
         // Get the original name of the file
         $pathinfo = pathinfo($file);
-        $name = $pathinfo['basename'];
         $extension = isset($pathinfo['extension']) ? '.'.$pathinfo['extension'] : '';
 
         // Create a temporary file with a unique name.
