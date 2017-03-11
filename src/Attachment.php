@@ -143,13 +143,8 @@ class Attachment implements AttachmentInterface, JsonSerializable
         $originalFilename = $this->originalFilename();
 
         if (is_array($uploadedFile)) {
-            if (isset($uploadedFile['file_name'])) {
-                $fileName = $uploadedFile['file_name'];
-            }
-
-            if (array_key_exists('file', $uploadedFile)) {
-                $uploadedFile = $uploadedFile['file'];
-            }
+            $fileName = $uploadedFile['file_name'] ?? '';
+            $uploadedFile = $uploadedFile['file'] ?? null;
         }
 
         if ($uploadedFile) {
