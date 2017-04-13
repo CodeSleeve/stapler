@@ -1,5 +1,5 @@
 ## Troubleshooting
-> I get a Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException when attempting ot upload a file with stapler.
+> I get a Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException when attempting to upload a file with stapler.
 
 Check your form to ensure that the **enctype** attribute is set to 'multipart/form-data'.  If you're using Laravel's form helper to create your form, this can be done by adding 'files' => true to the form helper's open() method:
 
