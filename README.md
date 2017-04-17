@@ -1,4 +1,4 @@
-#Stapler
+# Stapler
 [![Build Status](https://travis-ci.org/CodeSleeve/stapler.png?branch=master)](https://travis-ci.org/CodeSleeve/stapler)
 [![Latest Stable Version](https://poser.pugx.org/codesleeve/stapler/v/stable.svg)](https://packagist.org/packages/codesleeve/stapler) 
 [![Total Downloads](https://poser.pugx.org/codesleeve/stapler/downloads.svg)](https://packagist.org/packages/codesleeve/stapler) 
