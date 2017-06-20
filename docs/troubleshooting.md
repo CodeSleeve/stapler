@@ -21,3 +21,71 @@ public static function boot()
     static::bootStapler();
 }
 ```
+
+## mkdir(): Permission denied issue
+
+In case when files can be uploaded either from the web (with `www-data` user for example) and through the CLI (with `dev` user for example), you can face the issue, when `dev` user cannot write to the directory created with `www-data` user.
+
+Even though stapler is trying to create directory with `0777` permissions
+```
+    /**
+     * Determine if a style directory needs to be built and if so create it.
+     *
+     * @param string $filePath
+     */
+    protected function buildDirectory($filePath)
+    {
+        $directory = dirname($filePath);
+
+        if (!is_dir($directory)) {
+            mkdir($directory, 0777, true);
+        }
+    }
+    ```
+
+php's umask can override that anyways.
+
+For this case you can override stapler's `Attachment` to disable `umask` temporary:
+
+```
+<?php
+
+namespace App\Vendor\Codesleeve\Stapler;
+
+use Codesleeve\Stapler\Attachment as BaseAttachment;
+
+class Attachment extends BaseAttachment
+{
+    /**
+     * Handle dynamic method calls on the attachment.
+     * This allows us to call methods on the underlying
+     * storage driver directly via the attachment.
+     *
+     * @param string $method
+     * @param array  $parameters
+     *
+     * @return mixed
+     */
+    public function __call($method, $parameters)
+    {
+        $callable = ['remove', 'move'];
+
+        if (in_array($method, $callable)) {
+
+            // we need to override umask to make 0777 permissions work
+            // this will solve the issue with different permissions for web user and cli user
+            if ($method == 'move') {
+                $oldUmask = umask(0);
+            }
+
+            $result = call_user_func_array([$this->storageDriver, $method], $parameters);
+
+            if ($method == 'move') {
+                umask($oldUmask);
+            }
+
+            return $result;
+        }
+    }
+}
+```
