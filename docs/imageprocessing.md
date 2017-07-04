@@ -4,7 +4,7 @@ Stapler makes use of the [imagine image](https://packagist.org/packages/imagine/
 *   **width**: A style that defines a width only (landscape).  Height will be automagically selected to preserve aspect ratio.  This works well for resizing images for display on mobile devices, etc.
 *   **xheight**: A style that defines a heigh only (portrait).  Width automagically selected to preserve aspect ratio.
 *   **widthxheight#**: Resize then crop.
-*   **widthxheight!**: Resize by exacty width and height.  Width and height emphatically given, original aspect ratio will be ignored.
+*   **widthxheight!**: Resize by exact width and height.  Width and height emphatically given, original aspect ratio will be ignored.
 *   **widthxheight**: Auto determine both width and height when resizing.  This will resize as close as possible to the given dimensions while still preserving the original aspect ratio.
 
 To create styles for an attachment, simply define them (you may use any style name you like: foo, bar, baz, etc) inside the attachment's styles array using a combination of the directives defined above:
