@@ -172,7 +172,7 @@ $photo->foo->contentType();
 ```
 
 #### Deleting-Uploads
-Unless you've set the 'keep_old_files' flag on the attachment to true, deleting a record will automatically remove all uploaded files, across all attachments, across all styles, for the a given model/record:
+Unless you've set the 'keep_old_files' flag on the attachment to true, deleting a record will automatically remove all uploaded files, across all attachments, across all styles, for the given model/record:
 ```php
 $photo->delete();
 ```
