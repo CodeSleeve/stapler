@@ -14,7 +14,17 @@ class Validator implements ValidatorInterface
      */
     public function validateOptions(array $options)
     {
-        $options['storage'] == 'filesystem' ? $this->validateFilesystemOptions($options) : $this->validateS3Options($options);
+        switch ($options['storage']) {
+            case 's3':
+                $this->validateS3Options($options);
+                break;
+            case 'gcs':
+                $this->validateGCSOptions($options);
+                break;
+            case 'filesystem':
+            default:
+                $this->validateFilesystemOptions($options);
+        }
     }
 
     /**
@@ -52,6 +62,29 @@ class Validator implements ValidatorInterface
 
         if (!$options['s3_client_config']['key']) {
             throw new Exceptions\InvalidUrlOptionException('Invalid Path: a key is required for s3 storage.', 1);
+        }
+    }
+
+    /**
+     * Validate the attachment options for an attachment type when the storage
+     * driver is set to 'gcs'.
+     *
+     * @throws InvalidUrlOptionException
+     *
+     * @param array $options
+     */
+    protected function validateGCSOptions(array $options)
+    {
+        if (!$options['google_cloud_project_id']) {
+            throw new InvalidUrlOptionException('Invalid Path: a google project id is required for gcs storage.', 1);
+        }
+
+        if (!$options['google_cloud_key_file']) {
+            throw new InvalidUrlOptionException('Invalid Path: a google key file is required for gcs storage.', 1);
+        }
+
+        if (!$options['google_cloud_storage_bucket']) {
+            throw new InvalidUrlOptionException('Invalid Path: a bucket is required for gcs storage.', 1);
         }
     }
 }
