@@ -79,5 +79,7 @@ class GCS implements StorageInterface
     public function move($file, $filePath)
     {
         $this->filesystem->put($filePath, fopen($file, 'r+'));
+
+        unlink($file);
     }
 }
