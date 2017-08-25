@@ -76,15 +76,15 @@ class Validator implements ValidatorInterface
     protected function validateGCSOptions(array $options)
     {
         if (!$options['google_cloud_project_id']) {
-            throw new InvalidUrlOptionException('Invalid Path: a google project id is required for gcs storage.', 1);
+            throw new Exceptions\InvalidUrlOptionException('Invalid Path: a google project id is required for gcs storage.', 1);
         }
 
         if (!$options['google_cloud_key_file']) {
-            throw new InvalidUrlOptionException('Invalid Path: a google key file is required for gcs storage.', 1);
+            throw new Exceptions\InvalidUrlOptionException('Invalid Path: a google key file is required for gcs storage.', 1);
         }
 
         if (!$options['google_cloud_storage_bucket']) {
-            throw new InvalidUrlOptionException('Invalid Path: a bucket is required for gcs storage.', 1);
+            throw new Exceptions\InvalidUrlOptionException('Invalid Path: a bucket is required for gcs storage.', 1);
         }
     }
 }
