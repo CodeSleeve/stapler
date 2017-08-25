@@ -5,6 +5,9 @@ namespace Codesleeve\Stapler;
 use Codesleeve\Stapler\Interfaces\Attachment as AttachmentInterface;
 use Codesleeve\Stapler\Interfaces\Config as ConfigInterface;
 use Codesleeve\Stapler\File\Image\Resizer;
+use League\Flysystem\Filesystem as LeagueFilesystem;
+use Superbalist\Flysystem\GoogleStorage\GoogleStorageAdapter;
+use Google\Cloud\Storage\StorageClient;
 use Aws\S3\S3Client;
 
 /**
@@ -185,6 +188,26 @@ class Stapler
         static::$s3Clients[$key] = static::buildS3Client($attachedFile);
 
         return static::$s3Clients[$key];
+    }
+
+    /**
+     * Return an Filesystem object for Google Cloud Storage.
+     *
+     * @param AttachmentInterface $attachedFile
+     *
+     * @return \League\Flysystem\Filesystem
+     */
+    public static function getGCSClientInstance(AttachmentInterface $attachedFile)
+    {
+        $storageClient = new StorageClient([
+            'projectId' => $attachedFile->google_cloud_project_id,
+            'keyFilePath' => $attachedFile->google_cloud_key_file,
+        ]);
+
+        $bucket = $storageClient->bucket($attachedFile->google_cloud_storage_bucket);
+        $adapter = new GoogleStorageAdapter($storageClient, $bucket);
+        $filesystem = new LeagueFilesystem($adapter);
+        return $filesystem;
     }
 
     /**

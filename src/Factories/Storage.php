@@ -4,6 +4,7 @@ namespace Codesleeve\Stapler\Factories;
 
 use Codesleeve\Stapler\Attachment as AttachedFile;
 use Codesleeve\Stapler\Storage\Filesystem;
+use Codesleeve\Stapler\Storage\GCS;
 use Codesleeve\Stapler\Storage\S3;
 use Codesleeve\Stapler\Stapler;
 
@@ -27,6 +28,12 @@ class Storage
                 $s3Client = Stapler::getS3ClientInstance($attachment);
 
                 return new S3($attachment, $s3Client);
+                break;
+
+            case 'gcs':
+                $gcsFilesystem = Stapler::getGCSClientInstance($attachment);
+
+                return new GCS($attachment, $gcsFilesystem);
                 break;
 
             default:

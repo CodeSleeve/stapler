@@ -13,7 +13,8 @@
         "php": ">=5.4",
         "symfony/http-foundation": "~2.3|~3.0",
         "imagine/imagine": "~0.6.2",
-        "doctrine/inflector": "~1"
+        "doctrine/inflector": "~1",
+        "superbalist/flysystem-google-storage": "^3.0|^4.0|^5.0"
     },
     "require-dev": {
         "mockery/mockery": "0.8.0",

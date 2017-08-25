@@ -532,15 +532,10 @@ class Attachment implements AttachmentInterface, JsonSerializable
      */
     protected function flushWrites()
     {
-        foreach ($this->queuedForWrite as $style) {
-            if ($style->dimensions && $this->uploadedFile->isImage()) {
-                $file = $this->resizer->resize($this->uploadedFile, $style);
-            } else {
-                $file = $this->uploadedFile->getRealPath();
-            }
-
-            $filePath = $this->path($style->name);
-            $this->move($file, $filePath);
+        if ($this->uploadedFile->isImage()) {
+            $this->queueImages();
+        } else {
+            $this->queueFile();
         }
 
         $this->queuedForWrite = [];
@@ -553,6 +548,27 @@ class Attachment implements AttachmentInterface, JsonSerializable
     {
         $this->remove($this->queuedForDeletion);
         $this->queuedForDeletion = [];
+    }
+
+    protected function queueImages()
+    {
+        foreach ($this->queuedForWrite as $style) {
+            if ($style->dimensions) {
+                $file = $this->resizer->resize($this->uploadedFile, $style);
+            } else {
+                $file = $this->uploadedFile->getRealPath();
+            }
+
+            $filePath = $this->path($style->name);
+            $this->move($file, $filePath);
+        }
+    }
+
+    protected function queueFile()
+    {
+        $file = $this->uploadedFile->getRealPath();
+        $filePath = $this->path($this->config->default_style);
+        $this->move($file, $filePath);
     }
 
     /**
