@@ -50,7 +50,8 @@ class S3 implements StorageInterface
      */
     public function url($styleName)
     {
-        return $this->s3Client->getObjectUrl($this->attachedFile->s3_object_config['Bucket'], $this->path($styleName), null, ['PathStyle' => true]);
+        //return $this->s3Client->getObjectUrl($this->attachedFile->s3_object_config['Bucket'], $this->path($styleName), null, ['PathStyle' => true]);
+	return $this->signedurl($styleName);
     }
 
 
