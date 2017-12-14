@@ -2,14 +2,14 @@
 
 namespace Codesleeve\Stapler;
 
-use Codesleeve\Stapler\Interfaces\Attachment as AttachmentInterface;
-use Codesleeve\Stapler\Interfaces\Interpolator as InterpolatorInterface;
-use Codesleeve\Stapler\Interfaces\Resizer as ResizerInterface;
-use Codesleeve\Stapler\Interfaces\Storage as StorageInterface;
+use DateTime;
+use JsonSerializable;
 use Codesleeve\Stapler\ORM\StaplerableInterface;
 use Codesleeve\Stapler\Factories\File as FileFactory;
-use JsonSerializable;
-use DateTime;
+use Codesleeve\Stapler\Interfaces\Resizer as ResizerInterface;
+use Codesleeve\Stapler\Interfaces\Storage as StorageInterface;
+use Codesleeve\Stapler\Interfaces\Attachment as AttachmentInterface;
+use Codesleeve\Stapler\Interfaces\Interpolator as InterpolatorInterface;
 
 class Attachment implements AttachmentInterface, JsonSerializable
 {
@@ -386,7 +386,7 @@ class Attachment implements AttachmentInterface, JsonSerializable
      */
     public function getInstanceClass()
     {
-        return get_class($this->instance);
+        return is_null($this->instance) ? null : get_class($this->instance);
     }
 
     /**
