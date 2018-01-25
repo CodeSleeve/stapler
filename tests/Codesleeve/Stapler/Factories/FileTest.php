@@ -90,21 +90,21 @@ class FileTest extends PHPUnit_Framework_TestCase
    */
   public function it_should_be_able_to_build_a_stapler_uploaded_file_object_without_following_querystring_in_basename()
   {
-      $url = 'https://graph.facebook.com/zuck/picture?type=large';
-      $uploadedFile = File::create($url);
+        $url = 'https://graph.facebook.com/zuck/picture?type=large';
+        $uploadedFile = File::create($url);
 
-      $ch = curl_init($url);
-      curl_setopt($ch, CURLOPT_URL, $url);
-      curl_setopt($ch, CURLOPT_HEADER, true);
-      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-      curl_exec($ch);
-      $info = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-      curl_close($ch);
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_exec($ch);
+        $info = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+        curl_close($ch);
 
         // To make sure that the exact image URL has query string
         $this->assertGreaterThanOrEqual(0, strpos($info, '?'));
-      $this->assertFalse(strpos($uploadedFile->getFileName(), '?'));
+        $this->assertFalse(strpos($uploadedFile->getFileName(), '?'));
   }
 
     /**

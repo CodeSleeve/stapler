@@ -124,34 +124,40 @@ class File
 
         try
         {
-          $lockFile = tempnam(sys_get_temp_dir(), 'stapler-');
-          $filePath = $lockFile."{$extension}";
+            // Create a temporary file with a unique name.
+            $lockFile = tempnam(sys_get_temp_dir(), 'stapler-');
+            $filePath = $lockFile."{$extension}";
         
-          $c = new \GuzzleHttp\Client();
-          $response = $c->request('GET', $url, [
-            'sink'=>$filePath,
-          ]);
-        
-          if($response->getStatusCode()!=200)
-          {
-            throw new \Codesleeve\Stapler\Exceptions\FileException('Invalid URI returned HTTP code ', $response->getStatusCode());
-          }
+            if ($extension) {
+                $filePath = $tempFile."{$extension}";
+            } else {
+                // Since we don't have an extension for the file, we'll have to go ahead and write
+                // the contents of the rawfile to disk (using the tempFile path) in order to use
+                // symfony's mime type guesser to generate an extension for the file.
+                file_put_contents($tempFile, $rawFile);
+                $mimeType = MimeTypeGuesser::getInstance()->guess($tempFile);
+                $extension = static::getMimeTypeExtensionGuesserInstance()->guess($mimeType);
 
-          if (!$extension) {
-              $mimeType = MimeTypeGuesser::getInstance()->guess($filePath);
-              $extension = static::getMimeTypeExtensionGuesserInstance()->guess($mimeType);
-              $srcPath = $filePath;
-              $filePath = $filePath.'.'.$extension;
-              rename($srcPath, $filePath);
-          }
-        
-          unlink($lockFile);
+                $filePath = $tempFile.'.'.$extension;
+            }         
 
-          return new StaplerFile($filePath);
+            $c = new \GuzzleHttp\Client();
+            $response = $c->request('GET', $url, [
+                'sink'=>$filePath,
+            ]);
+        
+            if($response->getStatusCode()!=200)
+            {
+                throw new \Codesleeve\Stapler\Exceptions\FileException('Invalid URI returned HTTP code ', $response->getStatusCode());
+            }
+
+            unlink($lockFile);
+
+            return new StaplerFile($filePath);
         } catch (\Exception $e) {
-          @unlink($lockFile);
-          @unlink($filePath);
-          throw($e);
+            @unlink($lockFile);
+            @unlink($filePath);
+            throw($e);
         }
     }
 
