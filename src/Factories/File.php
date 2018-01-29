@@ -112,44 +112,51 @@ class File
      *
      * @return \Codesleeve\Stapler\File\File
      */
-    protected static function createFromUrl($file)
+    protected static function createFromUrl($url)
     {
-        $ch = curl_init($file);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        $rawFile = curl_exec($ch);
-        curl_close($ch);
-
         // Remove the query string and hash if they exist
-        $file = preg_replace('/[&#\?].*/', '', $file);
+        $file = preg_replace('/[&#\?].*/', '', $url);
 
         // Get the original name of the file
         $pathinfo = pathinfo($file);
         $name = $pathinfo['basename'];
         $extension = isset($pathinfo['extension']) ? '.'.$pathinfo['extension'] : '';
 
-        // Create a temporary file with a unique name.
-        $tempFile = tempnam(sys_get_temp_dir(), 'stapler-');
-
-        if ($extension) {
-            $filePath = $tempFile."{$extension}";
-        } else {
-            // Since we don't have an extension for the file, we'll have to go ahead and write
-            // the contents of the rawfile to disk (using the tempFile path) in order to use
-            // symfony's mime type guesser to generate an extension for the file.
-            file_put_contents($tempFile, $rawFile);
-            $mimeType = MimeTypeGuesser::getInstance()->guess($tempFile);
-            $extension = static::getMimeTypeExtensionGuesserInstance()->guess($mimeType);
-
-            $filePath = $tempFile.'.'.$extension;
+        try
+        {
+            // Create a temporary file with a unique name.
+            $lockFile = tempnam(sys_get_temp_dir(), 'stapler-');
+            
+            $c = new \GuzzleHttp\Client();
+            $response = $c->request('GET', $url, [
+                'sink'=>$lockFile,
+            ]);
+            
+            if($response->getStatusCode()!=200)
+            {
+                throw new \Codesleeve\Stapler\Exceptions\FileException('Invalid URI returned HTTP code ', $response->getStatusCode());
+            }
+            
+            $extension = isset($pathinfo['extension']) ? '.'.$pathinfo['extension'] : '';
+            if(count($response->getHeader('Content-Type'))>0) {
+              $mimeType = $response->getHeader('Content-Type')[0];
+              $extension = '.' . static::getMimeTypeExtensionGuesserInstance()->guess($mimeType);
+            }
+            
+            if(!$extension) {
+              $mimeType = MimeTypeGuesser::getInstance()->guess($lockFile);
+              $extension = '.' . static::getMimeTypeExtensionGuesserInstance()->guess($mimeType);
+            }
+            
+            $filePath = $lockFile."{$extension}";
+            rename($lockFile, $filePath);
+            
+            return new StaplerFile($filePath);
+        } catch (\Exception $e) {
+            @unlink($lockFile);
+            @unlink($filePath);
+            throw($e);
         }
-
-        file_put_contents($filePath, $rawFile);
-        unlink($tempFile);
-
-        return new StaplerFile($filePath);
     }
 
     /**
