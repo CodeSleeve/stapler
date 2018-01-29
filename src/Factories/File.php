@@ -126,33 +126,31 @@ class File
         {
             // Create a temporary file with a unique name.
             $lockFile = tempnam(sys_get_temp_dir(), 'stapler-');
-            $filePath = $lockFile."{$extension}";
-        
-            if ($extension) {
-                $filePath = $tempFile."{$extension}";
-            } else {
-                // Since we don't have an extension for the file, we'll have to go ahead and write
-                // the contents of the rawfile to disk (using the tempFile path) in order to use
-                // symfony's mime type guesser to generate an extension for the file.
-                file_put_contents($tempFile, $rawFile);
-                $mimeType = MimeTypeGuesser::getInstance()->guess($tempFile);
-                $extension = static::getMimeTypeExtensionGuesserInstance()->guess($mimeType);
-
-                $filePath = $tempFile.'.'.$extension;
-            }         
-
+            
             $c = new \GuzzleHttp\Client();
             $response = $c->request('GET', $url, [
-                'sink'=>$filePath,
+                'sink'=>$lockFile,
             ]);
-        
+            
             if($response->getStatusCode()!=200)
             {
                 throw new \Codesleeve\Stapler\Exceptions\FileException('Invalid URI returned HTTP code ', $response->getStatusCode());
             }
-
-            unlink($lockFile);
-
+            
+            $extension = isset($pathinfo['extension']) ? '.'.$pathinfo['extension'] : '';
+            if(count($response->getHeader('Content-Type'))>0) {
+              $mimeType = $response->getHeader('Content-Type')[0];
+              $extension = '.' . static::getMimeTypeExtensionGuesserInstance()->guess($mimeType);
+            }
+            
+            if(!$extension) {
+              $mimeType = MimeTypeGuesser::getInstance()->guess($lockFile);
+              $extension = '.' . static::getMimeTypeExtensionGuesserInstance()->guess($mimeType);
+            }
+            
+            $filePath = $lockFile."{$extension}";
+            rename($lockFile, $filePath);
+            
             return new StaplerFile($filePath);
         } catch (\Exception $e) {
             @unlink($lockFile);
