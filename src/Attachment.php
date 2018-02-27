@@ -386,7 +386,7 @@ class Attachment implements AttachmentInterface, JsonSerializable
      */
     public function getInstanceClass()
     {
-        return get_class($this->instance);
+        return is_null($this->instance) ? get_class() : get_class($this->instance);
     }
 
     /**
